@@ -147,7 +147,7 @@ def count_dormant_assets(org_id=None):
      parameter: organization_id
     """
     package = table('package')
-    sql = select([func.count(package.c.id).label('NUM')]).where(package.c.state != 'active')
+    sql = select([func.count(package.c.id).label('NUM')]).where(package.c.state != package_state_active)
     if org_id is not None:
         sql = sql.where(package.c.owner_org == org_id)
     rows = model.Session.execute(sql).fetchall()

@@ -49,8 +49,8 @@ class VDojStatsPlugin(SingletonPlugin):
         tk.add_template_directory(config, 'templates')
         tk.add_public_directory(config, 'public')
         tk.add_resource('public', 'ckanext-vdojstats')
-        tk.add_resource('public/dist', 'ckanext-vdojstats-dist')
-        tk.add_resource('public/libs', 'ckanext-vdojstats-libs')
+        #tk.add_resource('public/dist', 'ckanext-vdojstats-dist')
+        #tk.add_resource('public/libs', 'ckanext-vdojstats-libs')
 
     def get_helpers(self):
         # ITemplateHelpers

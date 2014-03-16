@@ -18,8 +18,8 @@ class VDojStatsController(BaseController):
         tk.c.overall = {
             'Private':private_num,
             'Published':published_num,
-            'Active':private_num,
-            'Not Active':private_num,
+            'Active':active_num,
+            'Not Active':dormant_num,
             'Pending Approval':pending_approval_num,
         }
         return render('vdojstats-overall.html')
