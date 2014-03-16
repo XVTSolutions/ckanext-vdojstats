@@ -30,9 +30,21 @@
 
 {% block primary_content_inner %}
 {% endblock %}
+{#
+Displays a single of dataset.
+
+package        - A package to display.
+item_class     - The class name to use on the list item.
+hide_resources - If true hides the resources (default: false).
+banner         - If true displays a popular banner (default: false).
+truncate       - The length to trucate the description to (default: 180)
+truncate_title - The length to truncate the title to (default: 80).
+#}
 
 {% block page_primary_action %}
   {{ super() }}
+{% set truncate = truncate or 180 %}
+{% set truncate_title = truncate_title or 80 %}
 <div id="target">
 <div id="content">
     <h2>{{ _(c.sub_title) }}</h2>
@@ -46,19 +58,19 @@
             <th scope="col">Packasge</th>
             <th scope="col">status</th>
             <th scope="col">Private</th>
-            <th scope="col">Review Date</th>
             <th scope="col">Suspend</th>
+            <th scope="col">Review Date</th>
           </tr>
         </thead>
         <tbody>
           {% for row in c.org_assets %}
               <tr>
-                <td class="dataset-label">{{ row.group_name }}</td>
-                <td class="dataset-details">{{ row.package_name }}</td>
+                <td class="dataset-label">{{ h.link_to(h.truncate(row.group_title or row.group_name, truncate_title), h.url_for(controller='organization', action='read', id=row.group_name)) }}</td>
+                <td class="dataset-details">{{ h.link_to(h.truncate(row.package_title or row.package_name, truncate_title), h.url_for(controller='package', action='read', id=row.package_name)) }}</td>
                 <td class="dataset-details">{{ row.package_state }}</td>
                 <td class="dataset-details">{{ row.is_private }}</td>
-                <td class="dataset-details">{{ row.next_review_date }}</td>
                 <td class="dataset-details">{{ row.is_suspended }}</td>
+                <td class="dataset-details">{{ row.next_review_date }}</td>
               </tr>
           {% endfor %}
         </tbody>

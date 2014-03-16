@@ -33,7 +33,19 @@ class VDojStatsController(BaseController):
     def organizations(self):
         #TODO
         tk.c.sub_title = 'Organizations'
-        tk.c.org_assets = h.list_assets()
+
+        #search parameter
+        org_ids = [];
+
+        if tk.request.method == 'GET':
+            data = tk.request.GET
+            if data.has_key('organization[]'):
+                for key, value in data.iteritems():
+                    if key == 'organization[]' and len(value):
+                        org_id = h.get_organization_id(value)
+                        org_ids.append(org_id)
+
+        tk.c.org_assets = h.list_assets(org_ids=org_ids)
         return render('vdojstats-organizations.html')
 
     def all_users(self):

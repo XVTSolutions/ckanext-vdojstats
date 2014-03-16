@@ -8,6 +8,7 @@ from ckan import model
 from ckan.model.meta import metadata
 from ckan.model import Session
 from ckan.lib.navl.dictization_functions import StopOnError
+from ckan.logic.converters import convert_group_name_or_id_to_id
 from sqlalchemy import *
 import ckan.logic as logic
 
@@ -271,6 +272,15 @@ def list_activities_for_user(user_id, offset=0, limit=1000):
 
     return activity_list
 
+def get_organization_id(name):
+    context = {'model': model,
+               'session': model.Session,
+               'user': tk.c.user or tk.c.author}
+    try:
+        return convert_group_name_or_id_to_id(name, context)
+    except Exception:
+        print 'cannot convert org name to org id'
+
 def list_assets(org_ids=None, package_states=None, private=None, suspend=None, pending_approval=None):
     """
      get list of assets
@@ -326,12 +336,14 @@ def list_assets(org_ids=None, package_states=None, private=None, suspend=None, p
 
         activity_list.append({
             'package_id':row['package_id'],
-            'package_name':row['package_title'] or row['package_name'],
+            'package_title':row['package_title'],
+            'package_name':row['package_name'],
             'package_state':row['package_state'],
             'is_private':'Yes' if row['private'] else 'No',
             'is_suspended':'Yes' if row['package_type'] == package_type_dataset_suspended else 'No',
             'owner_org':row['owner_org'] or '',
-            'group_name':row['group_title'] or row['group_name'],
+            'group_title':row['group_title'],
+            'group_name':row['group_name'],
             'next_review_date':next_review_date or '',
             })
     return activity_list
