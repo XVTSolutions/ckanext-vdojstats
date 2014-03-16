@@ -191,7 +191,7 @@ def count_assets_by_date():
                 activity_type_changed: 0L,
                 activity_type_deleted: 0L,
             }
-        record.update({row['activity_type']:row['num']})
+        record.update({row['detail_type']:row['num']})
     #finalize
     if record is not None:
         records.append(record)
