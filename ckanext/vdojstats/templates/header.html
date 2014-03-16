@@ -1,0 +1,9 @@
+{% ckan_extends %}
+
+{% block header_account_logged %}
+    <li>
+    {{ h.nav_link(_('Statistics'), controller='ckanext.vdojstats.controller:VDojStatsController', action='all_assets', class_='nav_stats', icon='table') }}
+    </li>
+    {{ super() }}
+{% endblock %}
+

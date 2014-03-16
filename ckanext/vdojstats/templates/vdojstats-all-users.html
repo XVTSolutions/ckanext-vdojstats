@@ -51,7 +51,7 @@
         <tbody>
           {% for row in c.user_list %}
               <tr>
-                <td class="dataset-label">{{ row.name }}</td>
+                <td class="dataset-label">{{ h.linked_user(row.name, maxlength=20) }}</td>
                 <td class="dataset-details">{{ row.state }}</td>
                 <td class="dataset-details">{{ row.sysadmin }}</td>
                 <td class="dataset-details">

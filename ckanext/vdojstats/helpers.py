@@ -228,7 +228,8 @@ def list_users():
     for row in rows:
         users_list.append({
             'id':row['id'],
-            'name':row['fullname'] or row['name'] ,
+            'name':row['name'] ,
+            'fullname':row['fullname'],
             'state':'Yes' if row['state'] == user_state_active else 'No',
             'sysadmin':'Yes' if row['sysadmin'] else 'No',
             })
