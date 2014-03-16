@@ -52,9 +52,9 @@
           {% for row in c.allassets %}
               <tr>
                 <td class="dataset-label">{{ row.day }}</td>
-                <td class="dataset-details">{{ states.new }}</td>
-                <td class="dataset-details">{{ states.changed }}</td>
-                <td class="dataset-details">{{ states.deleted }}</td>
+                <td class="dataset-details">{{ row.new }}</td>
+                <td class="dataset-details">{{ row.changed }}</td>
+                <td class="dataset-details">{{ row.deleted }}</td>
               </tr>
           {% endfor %}
         </tbody>
