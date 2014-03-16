@@ -1,0 +1,55 @@
+
+	<section class="module module-narrow">
+		<h2 class="module-heading"><i class="icon-table"></i> {{ _("Statistics") }}</h2>
+		<div class="nav">
+            <ul class="">
+		        <li class="">
+                    {% if current_action == 'overall' or current_action == 'all_assets' %} 
+                        {{_('All Site')}}
+                    {% else %}
+                        <a href="/stats/overall">
+                            All Site
+                        </a>
+                    {% endif %}
+	                <ul class="">
+			            <li class="">
+                            {% if current_action == 'overall'%} 
+                                {{_('Overall')}}
+                            {% else %}
+                                <a href="/stats/overall">
+                                    Overall
+                                </a>
+                            {% endif %}
+                        </li>
+			            <li class="">
+                            {% if current_action == 'all_assets'%} 
+                                {{_('All Assets')}}
+                            {% else %}
+                                <a href="/stats/all_assets">
+                                    All Assets
+                                </a>
+                            {% endif %}
+                        </li>
+		            </ul>
+                </li>
+			    <li class="">
+                    {% if current_action == 'organizations' %} 
+                        {{_('Organisations')}}
+                    {% else %}
+                        <a href="/stats/organizations">
+                            Organisations
+                        </a>
+                    {% endif %}
+                </li>
+			    <li class="">
+                    {% if current_action == 'all_users' or  current_action == 'user' %} 
+                        {{_('Users')}}
+                    {% else %}
+                        <a href="/stats/all_users">
+                            Users
+                        </a>
+                    {% endif %}
+                </li>
+            </ul>
+		</div>
+	</section>
