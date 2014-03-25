@@ -20,8 +20,9 @@ NotAuthorized = logic.NotAuthorized
 activity_type_new = 'new'
 activity_type_changed = 'changed'
 activity_type_deleted = 'deleted'
-package_state_active = 'active'
 package_state_draft = 'draft'
+package_state_active = 'active'
+package_state_deleted = 'deleted'
 user_state_active = 'active'
 package_type_dataset_suspended = 'dataset-suspended'
 
@@ -282,13 +283,13 @@ def get_organization_id(name):
     except Exception:
         print 'cannot convert org name to org id'
 
-def list_assets(org_ids=None, package_states=None, private=None, suspend=None, pending_approval=None):
+def list_assets(org_ids=None, package_states=None, private=None, suspended=None, pending_approval=None):
     """
      get list of assets
      parameter: org_ids (list)
      parameter: package_states (list)
      parameter: private (boolean)
-     parameter: suspend (boolean)
+     parameter: suspended (boolean)
      parameter: pending_approval (boolean)
     """
     #parameter check
@@ -317,8 +318,8 @@ def list_assets(org_ids=None, package_states=None, private=None, suspend=None, p
         sql = sql + "AND P.state IN (%s) "%(",".join(pstats))
     if private is not None:
         sql = sql + "AND P.private = %r "%(private)
-    if suspend is not None:
-        if suspend:
+    if suspended is not None:
+        if suspended:
             sql = sql + "AND P.type = 'dataset-suspended' "
         else:
             sql = sql + "AND P.type <> 'dataset-suspended' "
@@ -350,5 +351,22 @@ def list_assets(org_ids=None, package_states=None, private=None, suspend=None, p
             })
     return activity_list
 
+def get_org_names():
+    context = {'model': model,
+               'user': tk.c.user}
+    data_dict = {}
+    names = get_action('organization_list')(context, data_dict)
+    organization_options = []
+    for name in names:
+        organization_options.append({
+            'name': name,
+            'value': name,
+        })
+    return organization_options
 
-
+def get_package_states():
+    return [
+        {'name': package_state_draft, 'value': package_state_draft},
+        {'name': package_state_active, 'value': package_state_active},
+        {'name': package_state_deleted, 'value': package_state_deleted},
+    ]

@@ -31,12 +31,6 @@
 {% block primary_content_inner %}
 {% endblock %}
 {#
-Displays a single of dataset.
-
-package        - A package to display.
-item_class     - The class name to use on the list item.
-hide_resources - If true hides the resources (default: false).
-banner         - If true displays a popular banner (default: false).
 truncate       - The length to trucate the description to (default: 180)
 truncate_title - The length to truncate the title to (default: 80).
 #}
@@ -48,9 +42,131 @@ truncate_title - The length to truncate the title to (default: 80).
 <div id="target">
 <div id="content">
     <h2>{{ _(c.sub_title) }}</h2>
-    <section class="module-content">
-    <p>Package Information</p>
-    </section>
+    <form class="form-horizontal" method="get" action="{{ action }}" data-module="basic-form">
+        
+        <p id='search_option_trigger' 
+            {% if c.search %}
+                class="icon-minus-sign"
+            {% else %}            
+                class="icon-plus-sign"
+            {% endif %}            
+            > 
+            Search Options</p>
+        <section id='search_option_panel' class="module-content" 
+            {% if c.search %}
+            {% else %}            
+                style='display:none'
+            {% endif %}            
+        >
+        <div class="control-group control-medium">
+            <label class="control-label" for="{{_('field-organization')}}">
+            {{ _('Organization') }}
+            </label>
+          <div class="controls ">
+            <select id={{_('field-organization')}} multiple name="organization" data-module="">
+                {% for option in c.option_org_names  %}
+                    <option value="{{ option.value }}" 
+                        {% for sel in c.selected_org_names %}
+                            {% if option.value == sel %}
+                                selected
+                            {% endif %}
+                        {% endfor %}
+                    >
+                    {{ option.text or option.value }}</option>
+                {% endfor %}
+            </select>
+        </div><!--controls-->
+        </div><!--control-group control-medium-->
+        <div class="control-group control-medium">
+            <label class="control-label" for="{{_('field-package_state')}}">
+            {{ _('Package Status') }}
+            </label>
+          <div class="controls ">
+            <select id={{_('field-package_state')}} multiple name="package_state" data-module="">
+                {% for option in c.option_package_states  %}
+                    <option value="{{ option.value }}" 
+                        {% for sel in c.selected_package_states %}
+                            {% if option.value == sel %}
+                                selected
+                            {% endif %}
+                        {% endfor %}
+                    >
+                    {{ option.text or option.value }}</option>
+                {% endfor %}
+            </select>
+        </div><!--controls-->
+        </div><!--control-group control-medium-->
+        <div class="control-group control-medium">
+            <label class="control-label" for="{{_('field-private')}}">
+            {{ _('Publicity') }}
+            </label>
+          <div class="controls ">
+            <label class="radio "><input id="field-private" type="radio" class="private"  name="private[]" value="private" 
+              {% if c.private == "private" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Private')}}</label>
+            <label class="radio "><input id="field-private" type="radio" class="private"  name="private[]" value="published" 
+              {% if c.private == "published" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Published')}}</label>
+            <label class="radio "><input id="" type="radio" class="private"  name="private[]" value="any" 
+              {% if c.private == "any" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Any')}}</label>
+        </div><!--controls-->
+        </div><!--control-group control-medium-->
+        <div class="control-group control-medium">
+            <label class="control-label" for="{{_('field-suspended')}}">
+            {{ _('Suspended') }}
+            </label>
+          <div class="controls ">
+            <label class="radio "><input id="field-suspended" type="radio" class="suspended"  name="suspended[]" value="suspended" 
+              {% if c.suspended == "suspended" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Suspended')}}</label>
+            <label class="radio "><input id="field-not_suspended" type="radio" class="suspended"  name="suspended[]" value="not_suspended" 
+              {% if c.suspended == "not_suspended" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Not suspended')}}</label>
+            <label class="radio "><input id="" type="radio" class="suspended"  name="suspended[]" value="any" 
+              {% if c.suspended == "any" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Any')}}</label>
+        </div><!--controls-->
+        </div><!--control-group control-medium-->
+        <div class="control-group control-medium">
+            <label class="control-label" for="{{_('field-pending_approval')}}">
+            {{ _('Approval') }}
+            </label>
+          <div class="controls ">
+            <label class="radio "><input id="field-pending_approval" type="radio" class="pending_approval"  name="pending_approval[]" value="pending_approval" 
+              {% if c.pending_approval == "pending_approval" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Pending Approval')}}</label>
+            <label class="radio "><input id="field-not_pending_approval" type="radio" class="pending_approval"  name="pending_approval[]" value="not_pending_approval" 
+              {% if c.pending_approval == "not_pending_approval" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Not pending_approval')}}</label>
+            <label class="radio "><input id="" type="radio" class="pending_approval"  name="pending_approval[]" value="any" 
+              {% if c.pending_approval == "any" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Any')}}</label>
+        </div><!--controls-->
+        </div><!--control-group control-medium-->
+    <button id="search_form" class="btn btn-primary" type="submit" name="search" value="search_on">Search
+    </button>
+
+       </section>
+    </form>
     <table class="table table-striped table-bordered table-condensed">
         <thead>
           <tr>

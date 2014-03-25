@@ -35,17 +35,51 @@ class VDojStatsController(BaseController):
         tk.c.sub_title = 'Organizations'
 
         #search parameter
-        org_ids = [];
+        org_ids = []
+        private = None
+        suspended = None
+        pending_approval = None
 
+        tk.c.selected_org_names = []
+        tk.c.selected_package_states = []
         if tk.request.method == 'GET':
             data = tk.request.GET
-            if data.has_key('organization[]'):
+            if data.has_key('search'):
+                tk.c.search = data.get('search')
+            if data.has_key('organization'):
                 for key, value in data.iteritems():
-                    if key == 'organization[]' and len(value):
+                    if key == 'organization' and len(value):
+                        tk.c.selected_org_names.append(value)
                         org_id = h.get_organization_id(value)
                         org_ids.append(org_id)
+            if data.has_key('package_state'):
+                for key, value in data.iteritems():
+                    if key == 'package_state' and len(value):
+                        tk.c.selected_package_states.append(value)
+            if data.has_key('private[]'):
+                tk.c.private = data.get('private[]')
+                if tk.c.private =='private':
+                    private = True
+                if tk.c.private =='published':
+                    private = False
 
-        tk.c.org_assets = h.list_assets(org_ids=org_ids)
+            if data.has_key('suspended[]'):
+                tk.c.suspended = data.get('suspended[]')
+                if tk.c.suspended =='suspended':
+                    suspended = True
+                if tk.c.suspended =='not_suspended':
+                    suspended = False
+
+            if data.has_key('pending_approval[]'):
+                tk.c.pending_approval = data.get('pending_approval[]')
+                if tk.c.pending_approval =='pending_approval':
+                    pending_approval = True
+                if tk.c.pending_approval =='not_pending_approval':
+                    pending_approval = False
+
+        tk.c.option_org_names = h.get_org_names()
+        tk.c.option_package_states = h.get_package_states()
+        tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_approval=pending_approval)
         return render('vdojstats-organizations.html')
 
     def all_users(self):

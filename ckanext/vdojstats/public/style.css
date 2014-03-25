@@ -12,12 +12,17 @@ li{
     list-style-type: none;
 }
 
+.control-medium input[type="radio"], .control-medium input[type="checkbox"] {
+    width: 10px;
+}
+
 div.category-counts {
 }
 
 div.category-counts-over-time {
   clear: both;
 }
+
 
 /***************************
   * CHART LISTS
