@@ -59,6 +59,7 @@ truncate_title - The length to truncate the title to (default: 80).
             <th scope="col">status</th>
             <th scope="col">Private</th>
             <th scope="col">Suspend</th>
+            <th scope="col">Suspend Reason</th>
             <th scope="col">Review Date</th>
           </tr>
         </thead>
@@ -70,6 +71,7 @@ truncate_title - The length to truncate the title to (default: 80).
                 <td class="dataset-details">{{ row.package_state }}</td>
                 <td class="dataset-details">{{ row.is_private }}</td>
                 <td class="dataset-details">{{ row.is_suspended }}</td>
+                <td class="dataset-details">{{ row.suspend_reason }}</td>
                 <td class="dataset-details">{{ row.next_review_date }}</td>
               </tr>
           {% endfor %}

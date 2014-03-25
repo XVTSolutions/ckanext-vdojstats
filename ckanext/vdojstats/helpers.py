@@ -295,39 +295,39 @@ def list_assets(org_ids=None, package_states=None, private=None, suspend=None, p
     organizations = []
     if org_ids is not None:
         if isinstance(org_ids, list):
-            organizations = org_ids
+            organizations = ["'%s'"%(org_id) for org_id in org_ids]
         else:
-            organizations.append(org_ids)
+            organizations.append("'%s'"%(org_ids))
 
     pstats = []
     if package_states is not None:
         if isinstance(package_states, list):
-            pstats = package_states
+            pstats = ["'%s'"%(package_state) for package_state in package_states]
         else:
-            pstats.append(package_states)
+            pstats.append("'%s'"%(package_states))
 
-    package = table('package')
-    group = table('group')
-    review = table('package_review')
-    cols = [package.c.id.label('package_id'), package.c.title.label('package_title'), package.c.name.label('package_name'), package.c.state.label('package_state'), package.c.private, package.c.type.label('package_type'), package.c.owner_org, group.c.title.label('group_title'), group.c.name.label('group_name'), review.c.next_review_date]
-    sql = select(cols, from_obj=[package.outerjoin(review), group]).where(group.c.id == package.c.owner_org)
+    sql = "SELECT P.id AS package_id, P.title AS package_title, P.name AS package_name, P.state AS package_state, P.private, P.type AS package_type, P.owner_org, G.title AS group_title, G.name AS group_name, review.next_review_date, extra.value AS suspend_reason "
+    sql = sql + "FROM \"group\" G, package P " 
+    sql = sql + "LEFT OUTER JOIN package_review review ON review.package_id = P.id "
+    sql = sql + "LEFT OUTER JOIN package_extra extra ON extra.package_id = P.id AND key = 'suspend_reason' "
+    sql = sql + "WHERE G.id = P.owner_org "
     if len(organizations):
-        sql = sql.where(package.c.owner_org.in_(organizations))
+        sql = sql + "AND P.owner_org IN (%s) "%(",".join(organizations))
     if len(pstats):
-        sql = sql.where(package.c.state.in_(pstats))
+        sql = sql + "AND P.state IN (%s) "%(",".join(pstats))
     if private is not None:
-        sql = sql.where(package.c.private == private)
+        sql = sql + "AND P.private = %r "%(private)
     if suspend is not None:
         if suspend:
-            sql = sql.where(package.c.type == 'dataset-suspended')
+            sql = sql + "AND P.type = 'dataset-suspended' "
         else:
-            sql = sql.where(package.c.type != 'dataset-suspended')
+            sql = sql + "AND P.type <> 'dataset-suspended' "
     if pending_approval is not None:
         if pending_approval:
-            sql = sql.where(review.c.package_id != None)
+            sql = sql + "AND review.package_id IS NOT NULL "
         else:
-            sql = sql.where(review.c.package_id == None)
-    sql = sql.order_by(group.c.name)
+            sql = sql + "AND review.package_id IS NULL "
+    sql = sql + "ORDER BY G.name ASC "
     rows = model.Session.execute(sql).fetchall()
     activity_list = []
     for row in rows:
@@ -342,10 +342,13 @@ def list_assets(org_ids=None, package_states=None, private=None, suspend=None, p
             'package_state':row['package_state'],
             'is_private':'Yes' if row['private'] else 'No',
             'is_suspended':'Yes' if row['package_type'] == package_type_dataset_suspended else 'No',
+            'suspend_reason': row['suspend_reason'] or '',
             'owner_org':row['owner_org'] or '',
             'group_title':row['group_title'],
             'group_name':row['group_name'],
             'next_review_date':next_review_date or '',
             })
     return activity_list
+
+
 
