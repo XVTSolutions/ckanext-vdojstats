@@ -1,0 +1,55 @@
+{% extends "page.html" %}
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="/style.css" />
+{% endblock %}
+{%- block scripts %}
+  {{ super() }}
+{% resource 'ckanext-vdojstats/vdoj_jspdf.js' %}
+{% resource 'ckanext-vdojstats/vdojstats.js' %}
+
+{% endblock -%}
+
+
+{% block subtitle %}{{ _(c.sub_title) }} - {{ c.group_dict.display_name }} - {{ _(c.sub_title) }}{% endblock %}
+{{ c.group_name }}
+{% block breadcrumb_content %}
+  {% block breadcrumb_content_inner %}
+  {% endblock %}
+ {% endblock %}
+
+{% block content_action %}
+  {# remove the 'view' button #}
+{% endblock %}
+
+{% block content_primary_nav %}
+   {# TODO - do something about the navigation #}
+{% endblock %}
+
+{% block secondary_content %}
+	{{ super() }}
+	{% snippet 'snippets/vdojstats-menu.html', current_action=c.action %}
+{% endblock %}
+
+{% block primary_content_inner %}
+{% endblock %}
+
+{% block page_primary_action %}
+  {{ super() }}
+<div id='export'>
+<button data-module='generatePDF' class="btn btn-primary" title={{ _('PDF') }} href="#" ><i class="icon-info"></i>{{ _('PDF') }}</button>
+</div>
+<div id='clear'></div>
+
+<div id="content">
+    <h2>{{ _(c.sub_title) }}</h2>
+    {% block vdojstat_search %}
+    {% endblock %}
+    <div id="target">
+    {% block vdojstat_content %}
+    {% endblock %}
+    </div><!--target-->
+</div>
+{% endblock %}
+
+

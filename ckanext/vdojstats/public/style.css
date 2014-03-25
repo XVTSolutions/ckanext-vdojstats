@@ -19,7 +19,7 @@ li{
 div.category-counts {
 }
 
-div.category-counts-over-time {
+div.category-counts-over-time, div.clear{
   clear: both;
 }
 
@@ -75,4 +75,12 @@ div.category-counts-over-time {
 .chartlist li:hover { 
   background: #EFEFEF; 
 }
+
+
+/* Export */
+#export { 
+  float: right; 
+}
+
+
 
