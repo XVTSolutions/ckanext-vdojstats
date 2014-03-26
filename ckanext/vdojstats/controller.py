@@ -67,9 +67,9 @@ class VDojStatsController(BaseController):
             state.text = key
             count = ET.SubElement(record, 'Count')
             count.text = str(value)
-        response = tk.response
-        response.headers['Content-Type']='text/xml'
-        response.body = ET.tostring(root)
+        file_path = h.get_export_dir() + 'vdojstats-overall.xml'
+        tree = ET.ElementTree(root)
+        response = h.createResponseWithXML(tree, file_path, tk.response)
         return response
 
     '''
@@ -116,9 +116,9 @@ class VDojStatsController(BaseController):
             changed.text = str(row['changed'])
             deleted = ET.SubElement(record, 'Deleted')
             deleted.text = str(row['deleted'])
-        response = tk.response
-        response.headers['Content-Type']='text/xml'
-        response.body = ET.tostring(root)
+        file_path = h.get_export_dir() + 'vdojstats-all-assets.xml'
+        tree = ET.ElementTree(root)
+        response = h.createResponseWithXML(tree, file_path, tk.response)
         return response
 
     '''
@@ -216,9 +216,9 @@ class VDojStatsController(BaseController):
             suspend_reason.text = row['suspend_reason']
             next_review_date = ET.SubElement(record, 'Review_Date')
             next_review_date.text = row['next_review_date']
-        response = tk.response
-        response.headers['Content-Type']='text/xml'
-        response.body = ET.tostring(root)
+        file_path = h.get_export_dir() + 'vdojstats-organizations.xml'
+        tree = ET.ElementTree(root)
+        response = h.createResponseWithXML(tree, file_path, tk.response)
         return response
 
     '''
@@ -264,9 +264,9 @@ class VDojStatsController(BaseController):
             state.text = row['state']
             sysadmin = ET.SubElement(record, 'Is_Administrator')
             sysadmin.text = row['sysadmin']
-        response = tk.response
-        response.headers['Content-Type']='text/xml'
-        response.body = ET.tostring(root)
+        file_path = h.get_export_dir() + 'vdojstats-all-users.xml'
+        tree = ET.ElementTree(root)
+        response = h.createResponseWithXML(tree, file_path, tk.response)
         return response
 
     '''
@@ -315,9 +315,9 @@ class VDojStatsController(BaseController):
             object_type.text = row['object_type']
             detail_type = ET.SubElement(record, 'Activity_Detail')
             detail_type.text = row['detail_type']
-        response = tk.response
-        response.headers['Content-Type']='text/xml'
-        response.body = ET.tostring(root)
+        file_path = h.get_export_dir() + 'vdojstats-user.xml'
+        tree = ET.ElementTree(root)
+        response = h.createResponseWithXML(tree, file_path, tk.response)
         return response
 
     def report_add(self):

@@ -15,6 +15,7 @@ import ckan.logic as logic
 from xhtml2pdf import pisa             # import python module
 import os
 import csv
+import xml.etree.ElementTree as ET
 import pylons.config as config
 
 check_access = logic.check_access
@@ -397,6 +398,7 @@ def convertHtmlToPdf(sourceHtml, outputFilename, response):
     resultFile.close()                 # close output file
 
     response.headers['Content-Type']='application/pdf'
+    response.headers['Content-disposition']='attachment; filename=%s'%(outputFilename)
     response.headers['Content-Length']=len(pdf)
     response.body = pdf
 
@@ -412,6 +414,16 @@ def convertHtmlToCsv(inputFilename, response):
     response.headers['Content-disposition']='attachment; filename=%s'%(inputFilename)
     response.headers['Content-Length']=os.path.getsize(inputFilename)
     response.body = "\n".join(content)
+    return response
+
+def createResponseWithXML(tree, filename, response):
+    #write xml to disk
+    tree.write(filename, encoding="utf-8", xml_declaration=True)
+    #root = tree.parse(filename)
+    response.headers['Content-Type']='text/xml'
+    response.headers['Content-disposition']='attachment; filename=%s'%(filename)
+    response.headers['Content-Length']=os.path.getsize(filename)
+    response.body = ET.tostring(tree.getroot())
     return response
 
 def current_time():
