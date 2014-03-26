@@ -1,6 +1,7 @@
 {% extends "vdojstats-base-pdf.html" %}
 
 {% block vdojstat_content %}
-{% snippet 'snippets/vdojstats-all-users-content.html', user_list=c.user_list %}
+{% snippet 'snippets/vdojstats-all-users-content.html', active_users_num=c.active_users_num, dormant_users_num=c.dormant_users_num,
+user_list=c.user_list %}
 {% endblock %}
 

@@ -14,6 +14,7 @@ from sqlalchemy import *
 import ckan.logic as logic
 from xhtml2pdf import pisa             # import python module
 import os
+import csv
 import pylons.config as config
 
 check_access = logic.check_access
@@ -399,6 +400,18 @@ def convertHtmlToPdf(sourceHtml, outputFilename, response):
     response.headers['Content-Length']=len(pdf)
     response.body = pdf
 
+    return response
+
+def convertHtmlToCsv(inputFilename, response):
+    content = []        
+    with open(inputFilename, 'rb') as csvfile:
+        reader = csv.reader(csvfile, lineterminator = '\n')
+        for row in reader:
+            content.append(','.join(row))
+    response.headers['Content-Type']='application/csv'
+    response.headers['Content-disposition']='attachment; filename=%s'%(inputFilename)
+    response.headers['Content-Length']=os.path.getsize(inputFilename)
+    response.body = "\n".join(content)
     return response
 
 def current_time():

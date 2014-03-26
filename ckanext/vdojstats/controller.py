@@ -3,11 +3,13 @@ import ckan.plugins.toolkit as tk
 import helpers as h
 import model
 import json
+import csv
 from ckan.model import Group, Session, Member, User, Activity
 from sqlalchemy import distinct, desc, not_
 from sqlalchemy.orm import joinedload
 from ckan.lib.activity_streams import activity_stream_string_functions
-import os
+#from bs4 import BeautifulSoup
+
 
 class VDojStatsController(BaseController):
 
@@ -41,6 +43,26 @@ class VDojStatsController(BaseController):
         response = h.convertHtmlToPdf(tk.render('vdojstats-overall-pdf.html'), file_path, tk.response)
         return response
 
+    def overall_csv(self):
+        self._overall()
+        file_path = h.get_export_dir() + 'vdojstats-overall.csv'
+        with open(file_path, 'wb') as csvfile:
+            writer = csv.writer(csvfile, lineterminator = '\n')
+            record = ['State', 'Count']
+            writer.writerow(record)
+            for key, value in tk.c.overall.items():
+                record = [key, str(value)]
+                writer.writerow(record)
+        response = h.convertHtmlToCsv(file_path, tk.response)
+        return response
+
+    def overall_xml(self):
+        #TODO
+        self._overall()
+        html_doc = render('vdojstats-overall.html')
+        soup = BeautifulSoup(html_doc)
+        print soup
+
     '''
     all assets
     '''
@@ -57,6 +79,19 @@ class VDojStatsController(BaseController):
         self._all_assets()
         file_path = h.get_export_dir() + 'vdojstats-all-assets.pdf'
         response = h.convertHtmlToPdf(tk.render('vdojstats-all-assets-pdf.html'), file_path, tk.response)
+        return response
+
+    def all_assets_csv(self):
+        self._all_assets()
+        file_path = h.get_export_dir() + 'vdojstats-all-assets.csv'
+        with open(file_path, 'wb') as csvfile:
+            writer = csv.writer(csvfile, lineterminator = '\n')
+            record = ['Date', 'New', 'Modified', 'Deleted']
+            writer.writerow(record)
+            for row in tk.c.allassets:
+                record = [row['day'], row['new'], row['changed'], row['deleted']]
+                writer.writerow(record)
+        response = h.convertHtmlToCsv(file_path, tk.response)
         return response
 
     '''
@@ -122,6 +157,19 @@ class VDojStatsController(BaseController):
         response = h.convertHtmlToPdf(tk.render('vdojstats-organizations-pdf.html'), file_path, tk.response)
         return response
 
+    def organizations_csv(self):
+        self._organizations()
+        file_path = h.get_export_dir() + 'vdojstats-organizations.csv'
+        with open(file_path, 'wb') as csvfile:
+            writer = csv.writer(csvfile, lineterminator = '\n')
+            record = ['Organisation', 'Packasge', 'status', 'Private', 'Suspend', 'Suspend Reason', 'Review Date']
+            writer.writerow(record)
+            for row in tk.c.org_assets:
+                record = [row['group_title'] or row['group_name'], row['package_title'] or row['package_name'], row['package_state'], row['is_private'], row['is_suspended'], row['suspend_reason'], row['next_review_date']]
+                writer.writerow(record)
+        response = h.convertHtmlToCsv(file_path, tk.response)
+        return response
+
     '''
     all users
     '''
@@ -139,6 +187,19 @@ class VDojStatsController(BaseController):
         self._all_users()
         file_path = h.get_export_dir() + 'vdojstats-all-users.pdf'
         response = h.convertHtmlToPdf(tk.render('vdojstats-all-users-pdf.html'), file_path, tk.response)
+        return response
+
+    def all_users_csv(self):
+        self._all_users()
+        file_path = h.get_export_dir() + 'vdojstats-all-users.csv'
+        with open(file_path, 'wb') as csvfile:
+            writer = csv.writer(csvfile, lineterminator = '\n')
+            record = ['User Name', 'Is Active', 'Is Administrator']
+            writer.writerow(record)
+            for row in tk.c.user_list:
+                record = [row['name'], row['state'], row['sysadmin']]
+                writer.writerow(record)
+        response = h.convertHtmlToCsv(file_path, tk.response)
         return response
 
     '''
@@ -161,6 +222,18 @@ class VDojStatsController(BaseController):
         response = h.convertHtmlToPdf(tk.render('vdojstats-user-pdf.html'), file_path, tk.response)
         return response
 
+    def user_csv(self, id):
+        self._user(id)
+        file_path = h.get_export_dir() + 'vdojstats-user.csv'
+        with open(file_path, 'wb') as csvfile:
+            writer = csv.writer(csvfile, lineterminator = '\n')
+            record = ['Date Time', 'Activity', 'Object (Detail)', 'Activity (Detail)']
+            writer.writerow(record)
+            for row in tk.c.user_activity_list:
+                record = [row['timestamp'], row['activity_type'], row['object_type'], row['detail_type']]
+                writer.writerow(record)
+        response = h.convertHtmlToCsv(file_path, tk.response)
+        return response
     
     def report_add(self):
         """
