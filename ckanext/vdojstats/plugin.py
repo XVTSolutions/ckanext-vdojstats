@@ -101,6 +101,26 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='user_csv')
 
+        map.connect('stats', '/stats/overall_xml',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='overall_xml')
+
+        map.connect('stats', '/stats/all_assets_xml',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_xml')
+
+        map.connect('stats', '/stats/organizations_xml',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='organizations_xml')
+
+        map.connect('stats', '/stats/all_users_xml',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_users_xml')
+
+        map.connect('stats', '/stats/user_xml/{id}',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='user_xml')
+
         return map
 
     def update_config(self, config):

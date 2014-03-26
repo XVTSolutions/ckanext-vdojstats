@@ -4,6 +4,7 @@ import helpers as h
 import model
 import json
 import csv
+import xml.etree.ElementTree as ET
 from ckan.model import Group, Session, Member, User, Activity
 from sqlalchemy import distinct, desc, not_
 from sqlalchemy.orm import joinedload
@@ -59,9 +60,17 @@ class VDojStatsController(BaseController):
     def overall_xml(self):
         #TODO
         self._overall()
-        html_doc = render('vdojstats-overall.html')
-        soup = BeautifulSoup(html_doc)
-        print soup
+        root = ET.Element('root')
+        for key, value in tk.c.overall.items():
+            record = ET.SubElement(root, 'record')
+            state = ET.SubElement(record, 'State')
+            state.text = key
+            count = ET.SubElement(record, 'Count')
+            count.text = str(value)
+        response = tk.response
+        response.headers['Content-Type']='text/xml'
+        response.body = ET.tostring(root)
+        return response
 
     '''
     all assets
@@ -92,6 +101,24 @@ class VDojStatsController(BaseController):
                 record = [row['day'], row['new'], row['changed'], row['deleted']]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
+        return response
+
+    def all_assets_xml(self):
+        self._all_assets()
+        root = ET.Element('root')
+        for row in tk.c.allassets:
+            record = ET.SubElement(root, 'record')
+            day = ET.SubElement(record, 'Date')
+            day.text = row['day']
+            new = ET.SubElement(record, 'New')
+            new.text = str(row['new'])
+            changed = ET.SubElement(record, 'Modified')
+            changed.text = str(row['changed'])
+            deleted = ET.SubElement(record, 'Deleted')
+            deleted.text = str(row['deleted'])
+        response = tk.response
+        response.headers['Content-Type']='text/xml'
+        response.body = ET.tostring(root)
         return response
 
     '''
@@ -170,6 +197,30 @@ class VDojStatsController(BaseController):
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
 
+    def organizations_xml(self):
+        self._organizations()
+        root = ET.Element('root')
+        for row in tk.c.org_assets:
+            record = ET.SubElement(root, 'record')
+            group = ET.SubElement(record, 'Organisation')
+            group.text = row['group_title'] or row['group_name']
+            package = ET.SubElement(record, 'Packasge')
+            package.text = row['package_title'] or row['package_name']
+            status = ET.SubElement(record, 'status')
+            status.text = row['package_state']
+            is_private = ET.SubElement(record, 'Private')
+            is_private.text = row['is_private']
+            is_suspended = ET.SubElement(record, 'Suspend')
+            is_suspended.text = row['is_suspended']
+            suspend_reason = ET.SubElement(record, 'Suspend_Reason')
+            suspend_reason.text = row['suspend_reason']
+            next_review_date = ET.SubElement(record, 'Review_Date')
+            next_review_date.text = row['next_review_date']
+        response = tk.response
+        response.headers['Content-Type']='text/xml'
+        response.body = ET.tostring(root)
+        return response
+
     '''
     all users
     '''
@@ -200,6 +251,22 @@ class VDojStatsController(BaseController):
                 record = [row['name'], row['state'], row['sysadmin']]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
+        return response
+
+    def all_users_xml(self):
+        self._all_users()
+        root = ET.Element('root')
+        for row in tk.c.user_list:
+            record = ET.SubElement(root, 'record')
+            name = ET.SubElement(record, 'User_Name')
+            name.text = row['name']
+            state = ET.SubElement(record, 'Is_Active')
+            state.text = row['state']
+            sysadmin = ET.SubElement(record, 'Is_Administrator')
+            sysadmin.text = row['sysadmin']
+        response = tk.response
+        response.headers['Content-Type']='text/xml'
+        response.body = ET.tostring(root)
         return response
 
     '''
@@ -235,6 +302,24 @@ class VDojStatsController(BaseController):
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
     
+    def user_xml(self, id):
+        self._user(id)
+        root = ET.Element('root')
+        for row in tk.c.user_activity_list:
+            record = ET.SubElement(root, 'record')
+            timestamp = ET.SubElement(record, 'Date_Time')
+            timestamp.text = row['timestamp']
+            activity_type = ET.SubElement(record, 'Activity')
+            activity_type.text = row['activity_type']
+            object_type = ET.SubElement(record, 'Object_Detail')
+            object_type.text = row['object_type']
+            detail_type = ET.SubElement(record, 'Activity_Detail')
+            detail_type.text = row['detail_type']
+        response = tk.response
+        response.headers['Content-Type']='text/xml'
+        response.body = ET.tostring(root)
+        return response
+
     def report_add(self):
         """
         """        

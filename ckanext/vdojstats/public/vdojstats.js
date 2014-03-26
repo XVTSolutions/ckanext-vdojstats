@@ -55,5 +55,23 @@ ckan.module('generateCSV', function ($, _) {
   };
 });
 
+ckan.module('generateXML', function ($, _) {
+  return {
+
+    initialize: function () {
+        this.el.on('click', this._onClick);    
+    },
+
+    _onClick: function(event) {
+        var action = $(this).attr('data-module-action');
+        var id = $(this).attr('data-module-id');
+        var action_url = '/stats/' + action + '_xml';
+        if (id.length){
+            action_url = action_url + '/' + id;
+        }
+        $('#search_form').attr('action', action_url).attr('target', '_blank').submit();
+    }
+  };
+});
 
 

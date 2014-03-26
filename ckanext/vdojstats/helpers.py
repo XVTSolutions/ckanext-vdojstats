@@ -426,3 +426,4 @@ def get_export_dir():
 def get_export_header_title():
     return config.get('vdojstats.export_header', 'Victoria DoJ')
 
+
