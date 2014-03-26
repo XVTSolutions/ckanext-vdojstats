@@ -31,7 +31,7 @@ ckan.module('generatePDF', function ($, _) {
         if (id.length){
             action_url = action_url + '/' + id;
         }
-        window.open(action_url, '_bkank');
+        $('#search_form').attr('action', action_url).attr('target', '_blank').submit();
     }
   };
 });

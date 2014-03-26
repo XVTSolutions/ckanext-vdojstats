@@ -2,7 +2,6 @@
 
 {% block vdojstat_search %}
   {{ super() }}
-    <form class="form-horizontal" method="get" action="{{ action }}" data-module="basic-form">
         
         <p id='search_option_trigger' data-module="search_option_popover"
             {% if c.search %}
@@ -125,8 +124,7 @@
     <button id="search_form" class="btn btn-primary" type="submit" name="search" value="search_on">Search
     </button>
 
-       </section>
-    </form>
+   </section>
 
 {% endblock %}
 

@@ -43,8 +43,10 @@
 
 <div id="content">
     <h2>{{ _(c.sub_title) }}</h2>
+    <form id="search_form" class="form-horizontal" method="get" action="{{ action }}" data-module="basic-form">
     {% block vdojstat_search %}
     {% endblock %}
+    </form>
     <div id="target">
     {% block vdojstat_content %}
     {% endblock %}
