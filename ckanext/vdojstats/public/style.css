@@ -83,4 +83,25 @@ div.category-counts-over-time, div.clear{
 }
 
 
+label.no-colon:after {
+	content:'';
+}
+
+div.control-radio
+{
+	margin-bottom: 5px;
+}
+
+div.control-radio label
+{
+	float: none;
+	font-weight: normal;
+	margin:0
+}
+
+div.control-radio input
+{
+	position:static;
+	margin-right: 5px;
+}
 

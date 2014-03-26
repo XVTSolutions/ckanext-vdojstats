@@ -1,0 +1,89 @@
+{% extends "vdojstats-base.html" %}
+{% import 'macros/form.html' as form %}
+
+{% block vdojstat_actions %}
+	
+	<div style="float: right">
+		<a class="btn btn-primary pull-left" style="margin-right: 1em;" href="/report/edit/{{ c.report['id'] }}" data-module-i18n="{{ locale }}">{{ _('Edit') }}</a>
+	
+		{% set locale = h.dump_json({'content': _('Are you sure you want to delete this report?')}) %}
+		<a class="btn btn-danger pull-left" href="/report/delete/{{ c.report['id'] }}" data-module="confirm-action" data-module-i18n="{{ locale }}">{{ _('Delete') }}</a>
+	</div>
+{% endblock %}
+
+{% block vdojstat_content %}
+	{{ super() }}
+  
+	{% if c.report['report_on'] =='details' %}
+	
+	<table class="table table-striped table-bordered table-condensed">
+        <thead>
+          <tr>
+            <th scope="col">{{ _('Name') }}</th>
+            <th scope="col">{{ _('Email') }}</th>
+            <th scope="col">{{ _('State') }}</th>
+            {% if c.show_org %}
+            <th scope="col">{{ _('Organization') }}</th>
+            {% endif %}
+            <th scope="col">{{ _('Role') }}</th>
+            <th scope="col">{{ _('System Administrator') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in c.users %}
+              <tr>
+                <td class="dataset-label">{{ h.linked_user(row.name) }}</td>
+                <td class="dataset-details"><a href="mailto:{{ row.email }}">{{ row.email }}</a></td>
+                <td class="dataset-details">{{ row.state }}</td>
+                {% if c.show_org %}
+            	<td scope="col">{{ row.organization }}</td>
+            	{% endif %}
+                <td class="dataset-details">{{ row.capacity }}</td>
+                <td class="dataset-details">{{ row.sysadmin }}</td>
+              </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+	
+	{% endif %}
+	
+	{% if c.report['report_on'] =='activities' %}
+	
+	<table class="table table-striped table-bordered table-condensed">
+        <thead>
+          <tr>
+          	<th scope="col">{{ _('Time') }}</th>
+            <th scope="col">{{ _('User') }}</th>
+            {% if c.show_org %}
+            <th scope="col">{{ _('Organization') }}</th>
+            {% endif %}
+            <th scope="col">{{ _('Role') }}</th>
+            <th scope="col">{{ _('Activity Type') }}</th>
+            <th scope="col">{{ _('Data') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in c.activities %}
+              <tr>
+              	<td class="dataset-label">{{ h.render_datetime(row.timestamp, with_hours=True) }}</td>
+                <td class="dataset-label">{{ h.linked_user(row.user) }}</td>
+                {% if c.show_org %}
+            	<td scope="col">{{ row.organization }}</td>
+            	{% endif %}
+                <td class="dataset-details">{{ row.capacity }}</td>
+                <td class="dataset-details">{{ row.activity_type }}</td>
+                <td> 
+                	{% if row.data and 'package' in row.data %}{{ h.dataset_link(row.data['package']) }}{% endif %}
+                	{% if row.data and 'group' in row.data and not row.data['group'].is_organization %}{{ h.group_link(row.data['group']) }}{% endif %}
+                	{% if row.data and 'group' in row.data and row.data['group'].is_organization %}{{ h.organization_link(row.data['group']) }}{% endif %}
+                </td>
+              </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+	
+	{% endif %}
+
+{% endblock %}
+
+

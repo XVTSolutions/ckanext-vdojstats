@@ -1,0 +1,5 @@
+*.pyc
+.project
+.pydevproject
+.settings/
+ckanext_vdojstats.egg-info/

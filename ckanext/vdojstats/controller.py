@@ -1,6 +1,12 @@
 from ckan.lib.base import BaseController, render, config
 import ckan.plugins.toolkit as tk
 import helpers as h
+import model
+import json
+from ckan.model import Group, Session, Member, User, Activity
+from sqlalchemy import distinct, desc
+from sqlalchemy.orm import joinedload
+from ckan.lib.activity_streams import activity_stream_string_functions
 import os
 
 class VDojStatsController(BaseController):
@@ -147,6 +153,183 @@ class VDojStatsController(BaseController):
     def user(self, id):
         self._user(id)
         return render('vdojstats-user.html')
+    
+    
+    def report_add(self):
+        """
+        """        
+        tk.c.sub_title = 'Add Report'
+        
+        if tk.request.method == 'POST':
+            
+            report = model.VDojStatsReport()
+            report.name = tk.request.params.getone('name')
+            report.org_id = tk.request.params.getone('organization')
+            report.permission = tk.request.params.getone('permission')
+            report.report_on = tk.request.params.getone('report_on')
+            report.custodian = 'custodian' in tk.request.params
+            
+            #todo - validate
+            is_valid, errors = report.validate()
+            
+            if is_valid:
+                report.save()
+                        
+                tk.redirect_to(controller="ckanext.vdojstats.controller:VDojStatsController", action="report_view", id=report.id)
+            else :
+                data = report.as_dict()
+                data["organizations"] = [ { 'id': org.id, 'title' : org.title } for org in Session.query(Group.title, Group.id).filter(Group.is_organization == True).order_by(Group.title)]
+                
+                vars = {
+                    'errors': errors,
+                    'data': data
+                }
+            
+                return render('vdojstats-report-add.html', extra_vars = vars)
+        else:
+        
+            vars = {
+                'errors': {},
+                'data': {
+                         'organizations' : [ { 'id': org.id, 'title' : org.title } for org in Session.query(Group.title, Group.id).filter(Group.is_organization == True).order_by(Group.title)]
+                }
+            }
+        
+            return render('vdojstats-report-add.html', extra_vars = vars)
+        
+    def report_view(self, id):
+        """
+        """
+        report = Session.query(model.VDojStatsReport).filter(model.VDojStatsReport.id == id).first()
+        
+        if not report:
+            tk.abort(404, tk._('Report not found'))
+            
+        tk.c.sub_title = report.name
+            
+        #get results
+        if report.report_on == "activities":
+            
+            activity_query = Session.query(User.name.label("user"), Group.title.label("organization"), Member.capacity, Activity.timestamp, Activity.activity_type, Activity.data).join(Member, Member.table_id == User.id).join(Group, Group.id == Member.group_id).join(Activity, User.id == Activity.user_id).filter(Member.table_name == 'user').order_by(desc(Activity.timestamp))
+                       
+            if report.org_id is not None and len(report.org_id) > 0:
+                activity_query = activity_query.filter(Member.group_id == report.org_id)
+                
+            if report.permission != 'all':
+                activity_query = activity_query.filter(Member.capacity == report.permission)
+                
+            #todo -something with custodian
+                
+            activities = [{
+                        'timestamp': u.timestamp,
+                        'user': u.user,
+                        'organization': u.organization,
+                        'capacity': u.capacity,
+                        'activity_type': u.activity_type,
+                        'data': u.data
+                        } for u in activity_query]
+            
+            tk.c.activities = activities
+            tk.c.report = report.as_dict()
+            tk.c.show_org = report.org_id is None or len(report.org_id) == 0
+            
+        elif report.report_on == "details":
+            
+            user_query = Session.query(User.id, User.name, User.email, User.state, User.sysadmin, Group.title.label("organization"), Member.capacity).join(Member, Member.table_id == User.id).join(Group, Group.id == Member.group_id).filter(Member.table_name == 'user')
+                       
+            if report.org_id is not None and len(report.org_id) > 0:
+                user_query = user_query.filter(Member.group_id == report.org_id)
+                
+            if report.permission != 'all':
+                user_query = user_query.filter(Member.capacity == report.permission)
+                
+            #todo -something with custodian
+                
+            users = [{
+                        'id' : u.id,
+                        'name': u.name,
+                        'email': u.email,
+                        'state': u.state,
+                        'sysadmin' : u.sysadmin,
+                        'organization': u.organization,
+                        'capacity': u.capacity
+                        } for u in user_query]
+            
+            tk.c.users = users
+            tk.c.report = report.as_dict()
+            tk.c.show_org = report.org_id is None or len(report.org_id) == 0
+        else:
+            tk.abort(404, tk._('Report not found'))
+            
+        
+        return render('vdojstats-report-view.html')
+    
+    def report_edit(self, id):
+        """
+        """
+        tk.c.sub_title = 'Edit Report'
+        
+        report = Session.query(model.VDojStatsReport).filter(model.VDojStatsReport.id == id).first()
+        
+        if not report:
+            tk.abort(404, tk._('Report not found'))
+    
+        if tk.request.method == 'POST':
+            
+            report.name = tk.request.params.getone('name')
+            report.org_id = tk.request.params.getone('organization')
+            report.permission = tk.request.params.getone('permission')
+            report.report_on = tk.request.params.getone('report_on')
+            report.custodian = 'custodian' in tk.request.params
+            
+            #todo - validate
+            is_valid, errors = report.validate()
+            
+            if is_valid:
+                report.commit()
+                        
+                tk.redirect_to(controller="ckanext.vdojstats.controller:VDojStatsController", action="report_view", id=report.id)
+            else :
+                data = report.as_dict()
+                data["organizations"] = [ { 'id': org.id, 'title' : org.title } for org in Session.query(Group.title, Group.id).filter(Group.is_organization == True).order_by(Group.title)]
+                
+                vars = {
+                    'errors': errors,
+                    'data': data
+                }
+            
+                return render('vdojstats-report-add.html', extra_vars = vars)
+        else:
+            
+            data = report.as_dict()
+            data["organizations"] = [ { 'id': org.id, 'title' : org.title } for org in Session.query(Group.title, Group.id).filter(Group.is_organization == True).order_by(Group.title)]
+        
+            vars = {
+                'errors': {},
+                'data': data
+            }
+        
+            return render('vdojstats-report-add.html', extra_vars = vars)
+    
+    def report_delete(self, id):
+        """
+        """
+        if tk.request.method == 'POST':
+            
+            report = Session.query(model.VDojStatsReport).filter(model.VDojStatsReport.id == id).first()
+        
+            if not report:
+                tk.abort(404, tk._('Report not found'))
+                
+            report.delete()
+            report.commit()
+                
+            tk.redirect_to(controller="ckanext.vdojstats.controller:VDojStatsController", action="overall")
+        else: 
+            tk.abort(404, tk._('Report not found'))  
+        
+    
+
 
     def user_pdf(self, id):
         self._user(id)

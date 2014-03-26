@@ -1,0 +1,62 @@
+{% extends "vdojstats-base.html" %}
+{% import 'macros/form.html' as form %}
+
+{% block vdojstat_actions %}
+{% endblock %}
+
+{% block vdojstat_content %}
+	{{ super() }}
+  
+	<form class="dataset-form form-horizontal" data-module="basic-form" action="" method="post">
+			
+		{{ form.input('name', id='field-name', label=_('Name'), placeholder=_('eg. A descriptive name'), value=data.name, error=errors.name, classes=['control-full', 'control-large']) }}
+	
+		<div class="control-group">
+		    <label for="field-organization" class="control-label">{{ _('Organization') }}</label>
+		    <div class="controls editor">
+			    <select name="organization" id="field-organization" data-module="autocomplete">
+			    	<option value="">Any</option>
+			    	{% for org in data.organizations %}
+            			<option value="{{ org.id }}" {% if org.id == data.org_id %} selected="selected"{% endif %}>{{ org.title }}</option>
+            		{% endfor %}
+			    </select>
+		    </div>
+		</div>
+		
+		<div class="control-group">
+		    <label for="field-permission" class="control-label">{{ _('Permission') }}</label>
+		    <div class="controls editor">
+			    <select name="permission" id="field-permission" data-module="autocomplete">
+			    	<option value="all" {% if data.permission == "all" %} selected="selected"{% endif %}>All</option>
+			    	<option value="admin" {% if data.permission == "admin" %} selected="selected"{% endif %}>Admin</option>
+			    	<option value="editor" {% if data.permission == "editor" %} selected="selected"{% endif %}>Editor</option>
+			    	<option value="member" {% if data.permission == "member" %} selected="selected"{% endif %}>Member</option>
+			    </select>
+		    </div>
+		</div>
+		
+		<div class="control-group">
+		    <label class="control-label" style="float: none;">{{ _('Report on') }}</label>
+		    <div class="controls editor">
+			    <div class="control-radio">
+				    <label class="no-colon"><input type="radio" name="report_on" value="activities" checked="checked"/>User Activities</label>
+				</div>
+				<div class="control-radio">
+				    <label class="no-colon"><input type="radio" name="report_on" value="details" />User Details</label>
+			    </div>
+			</div>
+		</div>
+		
+		<div class="control-group">
+		    <label for="field-custodian" class="control-label">{{ _('Custodian') }}</label>
+		    <div class="controls editor">
+			    <input type="checkbox" name="custodian" id="field-custodian" />
+		    </div>
+		</div>
+	
+		<input class="btn btn-primary" type="submit" value="Save" />
+	</form>
+
+{% endblock %}
+
+
