@@ -13,7 +13,7 @@
 
 {% block vdojstat_content %}
 	{{ super() }}
-  
+	  
 	{% if c.report['report_on'] =='details' %}
 	
 	<table class="table table-striped table-bordered table-condensed">
@@ -54,10 +54,6 @@
           <tr>
           	<th scope="col">{{ _('Time') }}</th>
             <th scope="col">{{ _('User') }}</th>
-            {% if c.show_org %}
-            <th scope="col">{{ _('Organization') }}</th>
-            {% endif %}
-            <th scope="col">{{ _('Role') }}</th>
             <th scope="col">{{ _('Activity Type') }}</th>
             <th scope="col">{{ _('Data') }}</th>
           </tr>
@@ -65,17 +61,14 @@
         <tbody>
           {% for row in c.activities %}
               <tr>
-              	<td class="dataset-label">{{ h.render_datetime(row.timestamp, with_hours=True) }}</td>
-                <td class="dataset-label">{{ h.linked_user(row.user) }}</td>
-                {% if c.show_org %}
-            	<td scope="col">{{ row.organization }}</td>
-            	{% endif %}
-                <td class="dataset-details">{{ row.capacity }}</td>
-                <td class="dataset-details">{{ row.activity_type }}</td>
+              	<td class="dataset-label">{{ h.render_datetime(row.activity.timestamp, with_hours=True) }}</td>
+                <td class="dataset-label">{{ h.linked_user(row.user.name) }}</td>
+                <td class="dataset-details">{{ row.activity.activity_type }}</td>
                 <td> 
-                	{% if row.data and 'package' in row.data %}{{ h.dataset_link(row.data['package']) }}{% endif %}
-                	{% if row.data and 'group' in row.data and not row.data['group'].is_organization %}{{ h.group_link(row.data['group']) }}{% endif %}
-                	{% if row.data and 'group' in row.data and row.data['group'].is_organization %}{{ h.organization_link(row.data['group']) }}{% endif %}
+                	{% if row.activity.data and 'package' in row.activity.data %}{{ h.dataset_link(row.activity.data['package']) }}{% endif %}
+                	{% if row.activity.data and 'dataset' in row.activity.data %}{{ h.dataset_link(row.activity.data['dataset']) }}{% endif %}
+                	{% if row.activity.data and 'group' in row.activity.data and not row.activity.data['group'].is_organization %}{{ h.group_link(row.activity.data['group']) }}{% endif %}
+                	{% if row.activity.data and 'group' in row.activity.data and row.activity.data['group'].is_organization %}{{ h.organization_link(row.activity.data['group']) }}{% endif %}
                 </td>
               </tr>
           {% endfor %}
