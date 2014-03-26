@@ -6,6 +6,7 @@ from ckan.plugins import IRoutes, IConfigurer
 from ckan.lib.navl.dictization_functions import StopOnError
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
+import helpers as h
 
 log = getLogger(__name__)
 
@@ -79,6 +80,6 @@ class VDojStatsPlugin(SingletonPlugin):
         # ITemplateHelpers
         # TODO
         return {
-            #Any   : function,
+            'current_time'   : h.current_time,
                 }
 

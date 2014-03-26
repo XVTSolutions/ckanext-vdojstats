@@ -373,8 +373,6 @@ def get_package_states():
         {'name': package_state_deleted, 'value': package_state_deleted},
     ]
 
-
-
 # Utility function
 def convertHtmlToPdf(sourceHtml, outputFilename, response):
     # open output file for writing (truncated binary)
@@ -394,10 +392,10 @@ def convertHtmlToPdf(sourceHtml, outputFilename, response):
     response.headers['Content-Type']='application/pdf'
     response.headers['Content-Length']=len(pdf)
     response.body = pdf
-    response.attachment = pdf
 
     return response
 
-
+def current_time():
+    return datetime.datetime.utcnow().strftime(DATETIME_FORMAT)
 
 

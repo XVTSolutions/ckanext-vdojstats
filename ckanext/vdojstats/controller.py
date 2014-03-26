@@ -32,7 +32,7 @@ class VDojStatsController(BaseController):
     def overall_pdf(self):
         self._overall()
         file_path = '/tmp/vdojstats-overall.pdf'
-        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-overall-content.html', data={'overall':tk.c.overall} ), file_path, tk.response)
+        response = h.convertHtmlToPdf(tk.render('vdojstats-overall-pdf.html'), file_path, tk.response)
         return response
 
     '''
