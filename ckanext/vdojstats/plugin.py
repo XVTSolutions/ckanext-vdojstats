@@ -2,7 +2,6 @@ import os
 from logging import getLogger
 
 from ckan.plugins import implements, SingletonPlugin
-from ckan.plugins import IRoutes, IConfigurer
 from ckan.lib.navl.dictization_functions import StopOnError
 from model import create_table
 import ckan.plugins as plugins
@@ -16,8 +15,8 @@ class VDojStatsPlugin(SingletonPlugin):
     
     create_table()
 
-    implements(IRoutes, inherit=True)
-    implements(IConfigurer, inherit=True)
+    implements(plugins.IRoutes, inherit=True)
+    implements(plugins.IConfigurer, inherit=True)
     implements(plugins.ITemplateHelpers)
 
     def before_map(self, map):
@@ -101,5 +100,6 @@ class VDojStatsPlugin(SingletonPlugin):
         return {
             'get_reports'   : h.get_reports,
             'current_time'  : h.current_time,
+            'get_export_header_title' : h.get_export_header_title,
                 }
 

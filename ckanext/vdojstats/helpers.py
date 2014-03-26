@@ -13,7 +13,8 @@ from ckan.logic.converters import convert_group_name_or_id_to_id
 from sqlalchemy import *
 import ckan.logic as logic
 from xhtml2pdf import pisa             # import python module
-
+import os
+import pylons.config as config
 
 check_access = logic.check_access
 get_action = logic.get_action
@@ -403,4 +404,12 @@ def convertHtmlToPdf(sourceHtml, outputFilename, response):
 def current_time():
     return datetime.datetime.utcnow().strftime(DATETIME_FORMAT)
 
+def get_export_dir():
+    directory = config.get('vdojstats.export_dir', '/tmp/')
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return directory
+
+def get_export_header_title():
+    return config.get('vdojstats.export_header', 'Victoria DoJ')
 

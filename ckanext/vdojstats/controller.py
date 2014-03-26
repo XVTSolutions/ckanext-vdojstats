@@ -37,7 +37,7 @@ class VDojStatsController(BaseController):
 
     def overall_pdf(self):
         self._overall()
-        file_path = '/tmp/vdojstats-overall.pdf'
+        file_path = h.get_export_dir() + 'vdojstats-overall.pdf'
         response = h.convertHtmlToPdf(tk.render('vdojstats-overall-pdf.html'), file_path, tk.response)
         return response
 
@@ -55,7 +55,7 @@ class VDojStatsController(BaseController):
 
     def all_assets_pdf(self):
         self._all_assets()
-        file_path = '/tmp/vdojstats-all-assets.pdf'
+        file_path = h.get_export_dir() + 'vdojstats-all-assets.pdf'
         response = h.convertHtmlToPdf(tk.render('vdojstats-all-assets-pdf.html'), file_path, tk.response)
         return response
 
@@ -118,7 +118,7 @@ class VDojStatsController(BaseController):
 
     def organizations_pdf(self):
         self._organizations()
-        file_path = '/tmp/vdojstats-organizations.pdf'
+        file_path = h.get_export_dir() + 'vdojstats-organizations.pdf'
         response = h.convertHtmlToPdf(tk.render('vdojstats-organizations-pdf.html'), file_path, tk.response)
         return response
 
@@ -137,7 +137,7 @@ class VDojStatsController(BaseController):
 
     def all_users_pdf(self):
         self._all_users()
-        file_path = '/tmp/vdojstats-all-users.pdf'
+        file_path = h.get_export_dir() + 'vdojstats-all-users.pdf'
         response = h.convertHtmlToPdf(tk.render('vdojstats-all-users-pdf.html'), file_path, tk.response)
         return response
 
@@ -157,7 +157,7 @@ class VDojStatsController(BaseController):
     
     def user_pdf(self, id):
         self._user(id)
-        file_path = '/tmp/vdojstats-user.pdf'
+        file_path = h.get_export_dir() + 'vdojstats-user.pdf'
         response = h.convertHtmlToPdf(tk.render('vdojstats-user-pdf.html'), file_path, tk.response)
         return response
 
