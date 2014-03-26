@@ -1,7 +1,5 @@
 {% extends "vdojstats-base.html" %}
 {% block styles %}
-  {{ super() }}
-  <link rel="stylesheet" href="/style.css" />
 {% endblock %}
 
 {%- block header %}
@@ -112,27 +110,26 @@ h4 small {
     margin-left: 0px;
 }
 div#vdoj_target {
-    margin-top: 8px;
-    margin-right: 8px;
-    margin-bottom: 8px;
-    margin-left: 8px;
+    margin-top: 4px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    margin-left: 4px;
 }
 
 
 .table {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     width: 100%;
-
 }
 .table th, .table td {
     border-top-width: 1px;
     border-top-color: #DDDDDD;
     border-top-style: solid;
-    line-height: 20px;
-    padding-top: 8px;
-    padding-right: 8px;
-    padding-bottom: 8px;
-    padding-left: 8px;
+    line-height: 30px;
+    padding-top: 2px;
+    padding-right: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
     text-align: left;
     vertical-align: top;
 }
@@ -141,18 +138,6 @@ div#vdoj_target {
 }
 .table thead th {
     vertical-align: bottom;
-}
-.table caption + thead tr:first-child th, .table caption + thead tr:first-child td, .table colgroup + thead tr:first-child th, .table colgroup + thead tr:first-child td, .table thead:first-child tr:first-child th, .table thead:first-child tr:first-child td {
-    border-top: 0 none;
-}
-.table tbody + tbody {
-    /*border-top: 2px solid #DDDDDD;*/
-    border-top-width: 2px;
-    border-top-color: #DDDDDD;
-    border-top-style: solid;
-}
-.table .table {
-    /*background-color: #EEEEEE;*/
 }
 .table-condensed th, .table-condensed td {
     padding-top: 4px;
@@ -179,9 +164,6 @@ div#vdoj_target {
     border-left-width: 1px;
     border-left-style: solid;
     border-left-color: #DDDDDD;
-}
-.table-bordered caption + thead tr:first-child th, .table-bordered caption + tbody tr:first-child th, .table-bordered caption + tbody tr:first-child td, .table-bordered colgroup + thead tr:first-child th, .table-bordered colgroup + tbody tr:first-child th, .table-bordered colgroup + tbody tr:first-child td, .table-bordered thead:first-child tr:first-child th, .table-bordered tbody:first-child tr:first-child th, .table-bordered tbody:first-child tr:first-child td {
-    border-top: 0 none;
 }
 tr.odd{
     /*background-color: rgba(0, 0, 0, 0);*/
