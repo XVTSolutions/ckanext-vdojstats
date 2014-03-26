@@ -1,10 +1,8 @@
 <h1>Requirement</h1>
 
 <h2>installment of the pdf liburaries</h2>
-<ul>
-<li>pip install reportlab</li>
-<li>pip install xhtml2pdf</li>
-</ul>
+<p>pip install -r pip-requirements.txt
+</p>
 
 <h2>tweaking for xhtml2pdf with reportlab 3.0</h2>
 
