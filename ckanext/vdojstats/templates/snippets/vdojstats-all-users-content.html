@@ -9,7 +9,9 @@
     </thead>
     <tbody>
       {% for row in user_list %}
-          <tr>
+          <tr 
+            class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
+            >
             <td class="dataset-label">{{ h.linked_user(row.name, maxlength=20) }}</td>
             <td class="dataset-details">{{ row.state }}</td>
             <td class="dataset-details">{{ row.sysadmin }}</td>

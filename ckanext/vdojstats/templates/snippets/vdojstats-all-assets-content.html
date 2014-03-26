@@ -9,7 +9,9 @@
     </thead>
     <tbody>
       {% for row in allassets %}
-          <tr>
+          <tr 
+            class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
+            >
             <td class="dataset-label">{{ row.day }}</td>
             <td class="dataset-details">{{ row.new }}</td>
             <td class="dataset-details">{{ row.changed }}</td>

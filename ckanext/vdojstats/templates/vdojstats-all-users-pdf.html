@@ -1,0 +1,6 @@
+{% extends "vdojstats-base-pdf.html" %}
+
+{% block vdojstat_content %}
+{% snippet 'snippets/vdojstats-all-users-content.html', user_list=c.user_list %}
+{% endblock %}
+
