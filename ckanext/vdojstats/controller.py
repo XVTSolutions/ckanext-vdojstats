@@ -145,9 +145,10 @@ class VDojStatsController(BaseController):
     user activitiy
     '''
     def _user(self, id):
-        tk.c.sub_title = 'User Activities'
         tk.c.id = id
+        user = User.get(id)
         tk.c.user_info = h.get_user(id)
+        tk.c.sub_title = 'User Activities: %s'%(user.fullname or user.name) 
         tk.c.user_activity_list = h.list_activities_for_user(user_id=id)
 
     def user(self, id):
