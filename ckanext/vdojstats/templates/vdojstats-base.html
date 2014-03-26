@@ -37,7 +37,7 @@
 {% block page_primary_action %}
   {{ super() }}
 <div id='export'>
-<button data-module='generatePDF' class="btn btn-primary" title={{ _('PDF') }} href="#" ><i class="icon-info"></i>{{ _('PDF') }}</button>
+<button data-module='generatePDF' data-module-action="{{c.action}}" data-module-id="{{c.id}}" class="btn btn-primary" title={{ _('PDF') }} href="#" ><i class="icon-info"></i>{{ _('PDF') }}</button>
 </div>
 <div id='clear'></div>
 

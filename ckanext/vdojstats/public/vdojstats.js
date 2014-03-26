@@ -1,7 +1,7 @@
 ckan.module('search_option_popover', function ($, _) {
   return {
     initialize: function () {
-      this.el.on('click', this._onClick);    
+      this.el.on('click', this._onClick);
     },
 
     _onClick: function(event) {
@@ -25,20 +25,13 @@ ckan.module('generatePDF', function ($, _) {
     },
 
     _onClick: function(event) {
-        var specialElementHandlers = {
-            '#editor': function (element,renderer) {
-                return true;
-            }
-        };
-
-        var doc = new jsPDF();
-        doc.fromHTML($('#content h2').html(), 15, 15, {
-            'width': 170,'elementHandlers': specialElementHandlers
-        });
-          var string = doc.output('datauristring');
-          var x = window.open();
-          x.document.open();
-          x.document.location=string;
+        var action = $(this).attr('data-module-action');
+        var id = $(this).attr('data-module-id');
+        var action_url = '/stats/' + action + '_pdf';
+        if (id.length){
+            action_url = action_url + '/' + id;
+        }
+        window.open(action_url, '_bkank');
     }
   };
 });
