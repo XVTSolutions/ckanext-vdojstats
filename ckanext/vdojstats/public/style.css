@@ -23,6 +23,9 @@ div.category-counts-over-time, div.clear{
   clear: both;
 }
 
+.table thead th.short{
+    width : 65px;
+}
 
 /***************************
   * CHART LISTS

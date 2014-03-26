@@ -346,7 +346,7 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             'package_id':row['package_id'],
             'package_title':row['package_title'],
             'package_name':row['package_name'],
-            'package_state':row['package_state'],
+            'package_state':row['package_state'].capitalize(),
             'is_private':'Yes' if row['private'] else 'No',
             'is_suspended':'Yes' if row['package_type'] == package_type_dataset_suspended else 'No',
             'suspend_reason': row['suspend_reason'] or '',
@@ -365,16 +365,16 @@ def get_org_names():
     organization_options = []
     for name in names:
         organization_options.append({
-            'name': name,
+            'text': name,
             'value': name,
         })
     return organization_options
 
 def get_package_states():
     return [
-        {'name': package_state_draft, 'value': package_state_draft},
-        {'name': package_state_active, 'value': package_state_active},
-        {'name': package_state_deleted, 'value': package_state_deleted},
+        {'text': package_state_draft.capitalize(), 'value': package_state_draft},
+        {'text': package_state_active.capitalize(), 'value': package_state_active},
+        {'text': package_state_deleted.capitalize(), 'value': package_state_deleted},
     ]
     
 def get_reports():
