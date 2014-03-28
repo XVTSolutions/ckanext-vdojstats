@@ -4,7 +4,7 @@ import helpers as h
 import model
 import json
 from ckan.model import Group, Session, Member, User, Activity
-from sqlalchemy import distinct, desc
+from sqlalchemy import distinct, desc, not_
 from sqlalchemy.orm import joinedload
 from ckan.lib.activity_streams import activity_stream_string_functions
 import os
@@ -209,33 +209,32 @@ class VDojStatsController(BaseController):
             
         #get results
         if report.report_on == "activities":
-            
-            activity_query = Session.query(User.name.label("user"), Group.title.label("organization"), Member.capacity, Activity.timestamp, Activity.activity_type, Activity.data).join(Member, Member.table_id == User.id).join(Group, Group.id == Member.group_id).join(Activity, User.id == Activity.user_id).filter(Member.table_name == 'user').order_by(desc(Activity.timestamp))
+                        
+            activity_query = Session.query(Activity, User).filter(Activity.user_id == User.id).order_by(desc(Activity.timestamp))
+                       
+            member_query = Session.query(Member.table_id).filter(Member.table_name == 'user').filter(Member.state == 'active')
                        
             if report.org_id is not None and len(report.org_id) > 0:
-                activity_query = activity_query.filter(Member.group_id == report.org_id)
+                member_query = member_query.filter(Member.group_id == report.org_id)
                 
             if report.permission != 'all':
-                activity_query = activity_query.filter(Member.capacity == report.permission)
-                
+                member_query = member_query.filter(Member.capacity == report.permission)
+
             #todo -something with custodian
-                
+            
+            activity_query = activity_query.filter(Activity.user_id.in_(member_query))
+
             activities = [{
-                        'timestamp': u.timestamp,
-                        'user': u.user,
-                        'organization': u.organization,
-                        'capacity': u.capacity,
-                        'activity_type': u.activity_type,
-                        'data': u.data
-                        } for u in activity_query]
+                        'activity': a.as_dict(),
+                        'user': u.as_dict()
+                        } for a,u in activity_query]
             
             tk.c.activities = activities
             tk.c.report = report.as_dict()
-            tk.c.show_org = report.org_id is None or len(report.org_id) == 0
             
         elif report.report_on == "details":
             
-            user_query = Session.query(User.id, User.name, User.email, User.state, User.sysadmin, Group.title.label("organization"), Member.capacity).join(Member, Member.table_id == User.id).join(Group, Group.id == Member.group_id).filter(Member.table_name == 'user')
+            user_query = Session.query(User.id, User.name, User.email, User.state, User.sysadmin, Group.title.label("organization"), Member.capacity).join(Member, Member.table_id == User.id).join(Group, Group.id == Member.group_id).filter(Member.table_name == 'user').filter(Member.state == 'active').filter(Group.is_organization == True).order_by(User.name)
                        
             if report.org_id is not None and len(report.org_id) > 0:
                 user_query = user_query.filter(Member.group_id == report.org_id)
