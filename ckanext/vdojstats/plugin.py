@@ -4,13 +4,17 @@ from logging import getLogger
 from ckan.plugins import implements, SingletonPlugin
 from ckan.plugins import IRoutes, IConfigurer
 from ckan.lib.navl.dictization_functions import StopOnError
+from model import create_table
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
+import helpers as h
 
 log = getLogger(__name__)
 
 class VDojStatsPlugin(SingletonPlugin):
     '''Stats plugin.'''
+    
+    create_table()
 
     implements(IRoutes, inherit=True)
     implements(IConfigurer, inherit=True)
@@ -41,6 +45,22 @@ class VDojStatsPlugin(SingletonPlugin):
         map.connect('stats', '/stats/user/{id}',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='user')
+        
+        map.connect('report', '/report/add',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='report_add')
+        
+        map.connect('report', '/report/view/{id}',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='report_view')
+        
+        map.connect('report', '/report/edit/{id}',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='report_edit')
+        
+        map.connect('report', '/report/delete/{id}',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='report_delete')
 
         return map
 
@@ -59,6 +79,6 @@ class VDojStatsPlugin(SingletonPlugin):
         # ITemplateHelpers
         # TODO
         return {
-            #Any   : function,
+            'get_reports'   : h.get_reports,
                 }
 

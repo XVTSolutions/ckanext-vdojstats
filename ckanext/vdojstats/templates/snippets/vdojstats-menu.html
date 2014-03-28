@@ -20,7 +20,7 @@
                                     Overall
                                 </a>
                             {% endif %}
-                        </li>
+                        </li>state
 			            <li class="">
                             {% if current_action == 'all_assets'%} 
                                 {{_('All Assets')}}
@@ -50,6 +50,19 @@
                         </a>
                     {% endif %}
                 </li>
+            </ul>
+		</div>
+	</section>
+	
+	
+	<section class="module module-narrow">
+		<h2 class="module-heading"><i class="icon-table"></i> {{ _("Reports") }}</h2>
+		<div class="nav">
+            <ul class=""  style="margin-top: 1em">
+            	{% for r in h.get_reports() %}
+            		<li><a href="/report/view/{{ r.id }}">{{ r.name }}</a></li>
+            	{% endfor %}
+		        <li class=""><a class="btn btn-primary" style="margin-top: 1em" href="/report/add"><i class="icon-plus-sign-alt"></i>Add Report</a></li>
             </ul>
 		</div>
 	</section>

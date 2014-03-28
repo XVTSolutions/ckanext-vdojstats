@@ -36,10 +36,13 @@
 
 {% block page_primary_action %}
   {{ super() }}
+  
+{% block vdojstat_actions %}
 <div id='export'>
 <button data-module='generatePDF' class="btn btn-primary" title={{ _('PDF') }} href="#" ><i class="icon-info"></i>{{ _('PDF') }}</button>
 </div>
 <div id='clear'></div>
+{% endblock %}
 
 <div id="content">
     <h2>{{ _(c.sub_title) }}</h2>

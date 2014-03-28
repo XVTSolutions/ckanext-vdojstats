@@ -3,6 +3,7 @@ import datetime
 import ckan.plugins.toolkit as tk
 import ckan
 import pylons
+from ckanext.vdojstats.model import VDojStatsReport
 from ckan.common import _
 from ckan import model
 from ckan.model.meta import metadata
@@ -370,3 +371,8 @@ def get_package_states():
         {'name': package_state_active, 'value': package_state_active},
         {'name': package_state_deleted, 'value': package_state_deleted},
     ]
+    
+def get_reports():
+    reports = [r.as_dict() for r in Session.query(VDojStatsReport).order_by(VDojStatsReport.name).all()]
+    return reports
+    
