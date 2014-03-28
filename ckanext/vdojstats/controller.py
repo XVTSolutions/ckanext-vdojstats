@@ -38,7 +38,7 @@ class VDojStatsController(BaseController):
     def overall_pdf(self):
         self._overall()
         file_path = '/tmp/vdojstats-overall.pdf'
-        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-overall-content.html', data={'overall':tk.c.overall} ), file_path, tk.response)
+        response = h.convertHtmlToPdf(tk.render('vdojstats-overall-pdf.html'), file_path, tk.response)
         return response
 
     '''
@@ -56,7 +56,7 @@ class VDojStatsController(BaseController):
     def all_assets_pdf(self):
         self._all_assets()
         file_path = '/tmp/vdojstats-all-assets.pdf'
-        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-all-assets-content.html', data={'allassets':tk.c.allassets} ), file_path, tk.response)
+        response = h.convertHtmlToPdf(tk.render('vdojstats-all-assets-pdf.html'), file_path, tk.response)
         return response
 
     '''
@@ -119,7 +119,7 @@ class VDojStatsController(BaseController):
     def organizations_pdf(self):
         self._organizations()
         file_path = '/tmp/vdojstats-organizations.pdf'
-        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-organizations-content.html', data={'org_assets':tk.c.org_assets} ), file_path, tk.response)
+        response = h.convertHtmlToPdf(tk.render('vdojstats-organizations-pdf.html'), file_path, tk.response)
         return response
 
     '''
@@ -138,22 +138,29 @@ class VDojStatsController(BaseController):
     def all_users_pdf(self):
         self._all_users()
         file_path = '/tmp/vdojstats-all-users.pdf'
-        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-all-users-content.html', data={'user_list':tk.c.user_list} ), file_path, tk.response)
+        response = h.convertHtmlToPdf(tk.render('vdojstats-all-users-pdf.html'), file_path, tk.response)
         return response
 
     '''
     user activitiy
     '''
     def _user(self, id):
-        tk.c.sub_title = 'User Activities'
         tk.c.id = id
+        user = User.get(id)
         tk.c.user_info = h.get_user(id)
+        tk.c.sub_title = 'User Activities: %s'%(user.fullname or user.name) 
         tk.c.user_activity_list = h.list_activities_for_user(user_id=id)
 
     def user(self, id):
         self._user(id)
         return render('vdojstats-user.html')
     
+    def user_pdf(self, id):
+        self._user(id)
+        file_path = '/tmp/vdojstats-user.pdf'
+        response = h.convertHtmlToPdf(tk.render('vdojstats-user-pdf.html'), file_path, tk.response)
+        return response
+
     
     def report_add(self):
         """
@@ -328,13 +335,5 @@ class VDojStatsController(BaseController):
             tk.abort(404, tk._('Report not found'))  
         
     
-
-
-    def user_pdf(self, id):
-        self._user(id)
-        file_path = '/tmp/vdojstats-user.pdf'
-        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-user-content.html', data={'user_activity_list':tk.c.user_activity_list} ), file_path, tk.response)
-        return response
-
 
 

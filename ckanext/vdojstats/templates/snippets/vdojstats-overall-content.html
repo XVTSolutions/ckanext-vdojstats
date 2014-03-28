@@ -7,7 +7,9 @@
     </thead>
     <tbody>
       {% for key, value in overall.items() %}
-          <tr>
+          <tr 
+            class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
+            >
             <td class="dataset-label">{{ key }}</td>
             <td class="dataset-details">{{ value }}</td>
           </tr>

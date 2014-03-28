@@ -14,7 +14,9 @@
     </thead>
     <tbody>
       {% for row in org_assets %}
-          <tr>
+          <tr 
+            class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
+            >
             <td class="dataset-label">{{ h.link_to(h.truncate(row.group_title or row.group_name, truncate_title), h.url_for(controller='organization', action='read', id=row.group_name)) }}</td>
             <td class="dataset-details">{{ h.link_to(h.truncate(row.package_title or row.package_name, truncate_title), h.url_for(controller='package', action='read', id=row.package_name)) }}</td>
             <td class="dataset-details">{{ row.package_state }}</td>

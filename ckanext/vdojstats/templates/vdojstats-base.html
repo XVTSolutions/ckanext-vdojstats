@@ -5,7 +5,6 @@
 {% endblock %}
 {%- block scripts %}
   {{ super() }}
-{% resource 'ckanext-vdojstats/vdoj_jspdf.js' %}
 {% resource 'ckanext-vdojstats/vdojstats.js' %}
 
 {% endblock -%}
@@ -36,21 +35,20 @@
 
 {% block page_primary_action %}
   {{ super() }}
-  
 {% block vdojstat_actions %}
-<div id='export'>
+<div id='vdoj_export'>
 <button data-module='generatePDF' data-module-action="{{c.action}}" data-module-id="{{c.id}}" class="btn btn-primary" title={{ _('PDF') }} href="#" ><i class="icon-info"></i>{{ _('PDF') }}</button>
 </div>
 <div id='clear'></div>
 {% endblock %}
 
-<div id="content">
+<div id="vdoj_content">
     <h2>{{ _(c.sub_title) }}</h2>
     <form id="search_form" class="form-horizontal" method="get" action="{{ action }}" data-module="basic-form">
     {% block vdojstat_search %}
     {% endblock %}
     </form>
-    <div id="target">
+    <div id="vdoj_target">
     {% block vdojstat_content %}
     {% endblock %}
     </div><!--target-->

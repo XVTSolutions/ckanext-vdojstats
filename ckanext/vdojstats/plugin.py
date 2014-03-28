@@ -100,5 +100,6 @@ class VDojStatsPlugin(SingletonPlugin):
         # TODO
         return {
             'get_reports'   : h.get_reports,
+            'current_time'  : h.current_time,
                 }
 
