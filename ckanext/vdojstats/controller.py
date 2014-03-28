@@ -7,15 +7,17 @@ from ckan.model import Group, Session, Member, User, Activity
 from sqlalchemy import distinct, desc
 from sqlalchemy.orm import joinedload
 from ckan.lib.activity_streams import activity_stream_string_functions
+import os
 
 class VDojStatsController(BaseController):
 
 
-    def overall(self):
-        #TODO
+    '''
+    overall
+    '''
+    def _overall(self):
         tk.c.sub_title = 'All sites overall'
 
-        #overall information
         private_num = h.count_private_assets()
         published_num = h.count_published_assets()
         active_num = h.count_active_assets()
@@ -28,16 +30,39 @@ class VDojStatsController(BaseController):
             'Not Active':dormant_num,
             'Pending Approval':pending_approval_num,
         }
+
+    def overall(self):
+        self._overall()
         return render('vdojstats-overall.html')
 
-    def all_assets(self):
-        #TODO
+    def overall_pdf(self):
+        self._overall()
+        file_path = '/tmp/vdojstats-overall.pdf'
+        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-overall-content.html', data={'overall':tk.c.overall} ), file_path, tk.response)
+        return response
+
+    '''
+    all assets
+    '''
+    def _all_assets(self):
         tk.c.sub_title = 'All Packages'
         tk.c.allassets = h.count_assets_by_date()
         return render('vdojstats-all-assets.html')
 
-    def organizations(self):
-        #TODO
+    def all_assets(self):
+        self._all_assets()
+        return render('vdojstats-all-assets.html')
+
+    def all_assets_pdf(self):
+        self._all_assets()
+        file_path = '/tmp/vdojstats-all-assets.pdf'
+        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-all-assets-content.html', data={'allassets':tk.c.allassets} ), file_path, tk.response)
+        return response
+
+    '''
+    Organizations
+    '''
+    def _organizations(self):
         tk.c.sub_title = 'Organizations'
 
         #search parameter
@@ -86,27 +111,47 @@ class VDojStatsController(BaseController):
         tk.c.option_org_names = h.get_org_names()
         tk.c.option_package_states = h.get_package_states()
         tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_approval=pending_approval)
+
+    def organizations(self):
+        self._organizations()
         return render('vdojstats-organizations.html')
 
-    def all_users(self):
-        #TODO
+    def organizations_pdf(self):
+        self._organizations()
+        file_path = '/tmp/vdojstats-organizations.pdf'
+        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-organizations-content.html', data={'org_assets':tk.c.org_assets} ), file_path, tk.response)
+        return response
+
+    '''
+    all users
+    '''
+    def _all_users(self):
         tk.c.sub_title = 'All users'
         tk.c.active_users_num = h.count_active_users()
         tk.c.dormant_users_num = h.count_dormant_users()
         tk.c.user_list = h.list_users()
+
+    def all_users(self):
+        self._all_users()
         return render('vdojstats-all-users.html')
 
-    def user(self, id):
-        #TODO
+    def all_users_pdf(self):
+        self._all_users()
+        file_path = '/tmp/vdojstats-all-users.pdf'
+        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-all-users-content.html', data={'user_list':tk.c.user_list} ), file_path, tk.response)
+        return response
+
+    '''
+    user activitiy
+    '''
+    def _user(self, id):
         tk.c.sub_title = 'User Activities'
-        print '**********************************id**************'
-        print id
-        print '**********************************id**************'
+        tk.c.id = id
         tk.c.user_info = h.get_user(id)
         tk.c.user_activity_list = h.list_activities_for_user(user_id=id)
-        #print '*************user_activity_list**************'
-        #print [activity for activity in tk.c.user_activity_list]
 
+    def user(self, id):
+        self._user(id)
         return render('vdojstats-user.html')
     
     
@@ -284,6 +329,13 @@ class VDojStatsController(BaseController):
             tk.abort(404, tk._('Report not found'))  
         
     
+
+
+    def user_pdf(self, id):
+        self._user(id)
+        file_path = '/tmp/vdojstats-user.pdf'
+        response = h.convertHtmlToPdf(tk.render_snippet('snippets/vdojstats-user-content.html', data={'user_activity_list':tk.c.user_activity_list} ), file_path, tk.response)
+        return response
 
 
 

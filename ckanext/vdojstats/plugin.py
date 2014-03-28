@@ -62,6 +62,26 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='report_delete')
 
+        map.connect('stats', '/stats/overall_pdf',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='overall_pdf')
+
+        map.connect('stats', '/stats/all_assets_pdf',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_pdf')
+
+        map.connect('stats', '/stats/organizations_pdf',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='organizations_pdf')
+
+        map.connect('stats', '/stats/all_users_pdf',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_users_pdf')
+
+        map.connect('stats', '/stats/user_pdf/{id}',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='user_pdf')
+
         return map
 
     def update_config(self, config):

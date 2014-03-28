@@ -12,6 +12,8 @@ from ckan.lib.navl.dictization_functions import StopOnError
 from ckan.logic.converters import convert_group_name_or_id_to_id
 from sqlalchemy import *
 import ckan.logic as logic
+from xhtml2pdf import pisa             # import python module
+
 
 check_access = logic.check_access
 get_action = logic.get_action
@@ -375,4 +377,26 @@ def get_package_states():
 def get_reports():
     reports = [r.as_dict() for r in Session.query(VDojStatsReport).order_by(VDojStatsReport.name).all()]
     return reports
-    
+
+# Utility function
+def convertHtmlToPdf(sourceHtml, outputFilename, response):
+    # open output file for writing (truncated binary)
+    resultFile = open(outputFilename, "w+b")
+
+    # convert HTML to PDF
+    pisaStatus = pisa.CreatePDF(
+            sourceHtml,                # the HTML to convert
+            dest=resultFile)           # file handle to recieve result
+
+    resultFile.seek(0)
+    pdf = resultFile.read()
+
+    # close output file
+    resultFile.close()                 # close output file
+
+    response.headers['Content-Type']='application/pdf'
+    response.headers['Content-Length']=len(pdf)
+    response.body = pdf
+    response.attachment = pdf
+
+    return response

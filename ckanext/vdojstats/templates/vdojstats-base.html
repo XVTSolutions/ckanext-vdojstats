@@ -39,15 +39,17 @@
   
 {% block vdojstat_actions %}
 <div id='export'>
-<button data-module='generatePDF' class="btn btn-primary" title={{ _('PDF') }} href="#" ><i class="icon-info"></i>{{ _('PDF') }}</button>
+<button data-module='generatePDF' data-module-action="{{c.action}}" data-module-id="{{c.id}}" class="btn btn-primary" title={{ _('PDF') }} href="#" ><i class="icon-info"></i>{{ _('PDF') }}</button>
 </div>
 <div id='clear'></div>
 {% endblock %}
 
 <div id="content">
     <h2>{{ _(c.sub_title) }}</h2>
+    <form id="search_form" class="form-horizontal" method="get" action="{{ action }}" data-module="basic-form">
     {% block vdojstat_search %}
     {% endblock %}
+    </form>
     <div id="target">
     {% block vdojstat_content %}
     {% endblock %}
