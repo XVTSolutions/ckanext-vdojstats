@@ -41,7 +41,7 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_users')
 
-        map.connect('stats', '/stats/user/{id}',
+        map.connect('stats', '/stats/user/{username}',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='user')
         
@@ -77,7 +77,7 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_users_pdf')
 
-        map.connect('stats', '/stats/user_pdf/{id}',
+        map.connect('stats', '/stats/user_pdf/{username}',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='user_pdf')
 
@@ -97,7 +97,7 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_users_csv')
 
-        map.connect('stats', '/stats/user_csv/{id}',
+        map.connect('stats', '/stats/user_csv/{username}',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='user_csv')
 
@@ -117,7 +117,7 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_users_xml')
 
-        map.connect('stats', '/stats/user_xml/{id}',
+        map.connect('stats', '/stats/user_xml/{username}',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='user_xml')
 

@@ -272,25 +272,25 @@ class VDojStatsController(BaseController):
     '''
     user activitiy
     '''
-    def _user(self, id):
-        tk.c.id = id
-        user = User.get(id)
-        tk.c.user_info = h.get_user(id)
+    def _user(self, username):
+        tk.c.username = username
+        user = User.get(username)
+        tk.c.user_info = h.get_user(user.id)
         tk.c.sub_title = 'User Activities: %s'%(user.fullname or user.name) 
-        tk.c.user_activity_list = h.list_activities_for_user(user_id=id)
+        tk.c.user_activity_list = h.list_activities_for_user(user_id=user.id)
 
-    def user(self, id):
-        self._user(id)
+    def user(self, username):
+        self._user(username)
         return render('vdojstats-user.html')
     
-    def user_pdf(self, id):
-        self._user(id)
+    def user_pdf(self, username):
+        self._user(username)
         file_path = h.get_export_dir() + 'vdojstats-user.pdf'
         response = h.convertHtmlToPdf(tk.render('vdojstats-user-pdf.html'), file_path, tk.response)
         return response
 
-    def user_csv(self, id):
-        self._user(id)
+    def user_csv(self, username):
+        self._user(username)
         file_path = h.get_export_dir() + 'vdojstats-user.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
@@ -302,8 +302,8 @@ class VDojStatsController(BaseController):
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
     
-    def user_xml(self, id):
-        self._user(id)
+    def user_xml(self, username):
+        self._user(username)
         root = ET.Element('root')
         for row in tk.c.user_activity_list:
             record = ET.SubElement(root, 'record')

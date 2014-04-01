@@ -20,7 +20,7 @@ Number of inactive users = {{_(dormant_users_num)}}</p>
             <td class="dataset-details">{{ row.state }}</td>
             <td class="dataset-details">{{ row.sysadmin }}</td>
             <td class="dataset-details">
-                <a class="btn btn-primary" title={{ _('Detail') }} href="/stats/user/{{ row.id }}" ><i class="icon-info"></i>{{ _('Show Activities') }}</a>
+                <a class="btn btn-primary" title={{ _('Detail') }} href="/stats/user/{{ row.name }}" ><i class="icon-info"></i>{{ _('Show Activities') }}</a>
             </td>
           </tr>
       {% endfor %}

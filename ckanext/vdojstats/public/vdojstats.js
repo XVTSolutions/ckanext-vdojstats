@@ -26,10 +26,10 @@ ckan.module('generatePDF', function ($, _) {
 
     _onClick: function(event) {
         var action = $(this).attr('data-module-action');
-        var id = $(this).attr('data-module-id');
+        var username = $(this).attr('data-module-username');
         var action_url = '/stats/' + action + '_pdf';
-        if (id.length){
-            action_url = action_url + '/' + id;
+        if (username.length){
+            action_url = action_url + '/' + username;
         }
         $('#search_form').attr('action', action_url).attr('target', '_blank').submit();
     }
@@ -45,10 +45,10 @@ ckan.module('generateCSV', function ($, _) {
 
     _onClick: function(event) {
         var action = $(this).attr('data-module-action');
-        var id = $(this).attr('data-module-id');
+        var username = $(this).attr('data-module-username');
         var action_url = '/stats/' + action + '_csv';
-        if (id.length){
-            action_url = action_url + '/' + id;
+        if (username.length){
+            action_url = action_url + '/' + username;
         }
         $('#search_form').attr('action', action_url).attr('target', '_blank').submit();
     }
@@ -64,10 +64,10 @@ ckan.module('generateXML', function ($, _) {
 
     _onClick: function(event) {
         var action = $(this).attr('data-module-action');
-        var id = $(this).attr('data-module-id');
+        var username = $(this).attr('data-module-username');
         var action_url = '/stats/' + action + '_xml';
-        if (id.length){
-            action_url = action_url + '/' + id;
+        if (username.length){
+            action_url = action_url + '/' + username;
         }
         $('#search_form').attr('action', action_url).attr('target', '_blank').submit();
     }

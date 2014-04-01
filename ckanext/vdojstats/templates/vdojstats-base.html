@@ -37,9 +37,9 @@
   {{ super() }}
 {% block vdojstat_actions %}
 <div id='vdoj_export'>
-<button data-module='generatePDF' data-module-action="{{c.action}}" data-module-id="{{c.id}}" data-format='pdf' class="format-label" title={{ _('PDF') }} >{{ _('PDF') }}</button>
-<button data-module='generateCSV' data-module-action="{{c.action}}" data-module-id="{{c.id}}" data-format='csv' class="format-label" title={{ _('CSV') }} >{{ _('CSV') }}</button>
-<button data-module='generateXML' data-module-action="{{c.action}}" data-module-id="{{c.id}}" data-format='xml' class="format-label" title={{ _('XML') }} >{{ _('XML') }}</button>
+<button data-module='generatePDF' data-module-action="{{c.action}}" data-module-username="{{c.username}}" data-format='pdf' class="format-label" title={{ _('PDF') }} >{{ _('PDF') }}</button>
+<button data-module='generateCSV' data-module-action="{{c.action}}" data-module-username="{{c.username}}" data-format='csv' class="format-label" title={{ _('CSV') }} >{{ _('CSV') }}</button>
+<button data-module='generateXML' data-module-action="{{c.action}}" data-module-username="{{c.username}}" data-format='xml' class="format-label" title={{ _('XML') }} >{{ _('XML') }}</button>
 </div>
 <div id='clear'></div>
 {% endblock %}
