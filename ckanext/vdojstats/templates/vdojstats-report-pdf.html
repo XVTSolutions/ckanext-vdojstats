@@ -1,0 +1,5 @@
+{% extends "vdojstats-base-pdf.html" %}
+
+{% block vdojstat_content %}
+{% snippet 'snippets/vdojstats-report-content.html', report=c.report, users = c.users, activities = c.activities, show_org = c.show_org %}
+{% endblock %}

@@ -53,6 +53,18 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='report_view')
         
+        map.connect('report', '/report/pdf/{id}',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='report_view_pdf')
+        
+        map.connect('report', '/report/csv/{id}',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='report_view_csv')
+        
+        map.connect('report', '/report/xml/{id}',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='report_view_xml')
+        
         map.connect('report', '/report/edit/{id}',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='report_edit')
