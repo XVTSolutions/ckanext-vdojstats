@@ -362,15 +362,16 @@ class VDojStatsController(BaseController):
         
             return render('vdojstats-report-add.html', extra_vars = vars)
         
-    def report_view(self, id):
-        """
-        """
+    def _report_view(self, id):
         report = Session.query(model.VDojStatsReport).filter(model.VDojStatsReport.id == id).first()
         
         if not report:
             tk.abort(404, tk._('Report not found'))
             
         tk.c.sub_title = report.name
+        tk.c.action = "report/view"
+        
+        show_org = report.org_id is None or len(report.org_id) == 0
             
         #get results
         if report.report_on == "activities":
@@ -394,12 +395,11 @@ class VDojStatsController(BaseController):
                         'user': u.as_dict()
                         } for a,u in activity_query]
             
-            tk.c.activities = activities
-            tk.c.report = report.as_dict()
+            return report.as_dict(), activities, show_org
             
         elif report.report_on == "details":
             
-            user_query = Session.query(User.id, User.name, User.email, User.state, User.sysadmin, Group.title.label("organization"), Member.capacity).join(Member, Member.table_id == User.id).join(Group, Group.id == Member.group_id).filter(Member.table_name == 'user').filter(Member.state == 'active').filter(Group.is_organization == True).order_by(User.name)
+            user_query = Session.query(User.id, User.name, User.fullname, User.email, User.state, User.sysadmin, Group.title.label("organization"), Member.capacity).join(Member, Member.table_id == User.id).join(Group, Group.id == Member.group_id).filter(Member.table_name == 'user').filter(Member.state == 'active').filter(Group.is_organization == True).order_by(User.name)
                        
             if report.org_id is not None and len(report.org_id) > 0:
                 user_query = user_query.filter(Member.group_id == report.org_id)
@@ -412,6 +412,7 @@ class VDojStatsController(BaseController):
             users = [{
                         'id' : u.id,
                         'name': u.name,
+                        'fullname': u.fullname,
                         'email': u.email,
                         'state': u.state,
                         'sysadmin' : u.sysadmin,
@@ -419,14 +420,97 @@ class VDojStatsController(BaseController):
                         'capacity': u.capacity
                         } for u in user_query]
             
-            tk.c.users = users
-            tk.c.report = report.as_dict()
-            tk.c.show_org = report.org_id is None or len(report.org_id) == 0
+            return report.as_dict(), users, show_org
+        else:
+            tk.abort(404, tk._('Report not found'))
+        
+        
+    def report_view(self, id):
+        """
+        """                    
+        report, results, show_org = self._report_view(id)
+        
+        tk.c.sub_title = report['name']
+            
+        if report['report_on'] == "activities":          
+            tk.c.activities = results
+            tk.c.report = report
+        elif report['report_on'] == "details":
+            tk.c.users = results
+            tk.c.report = report
+            tk.c.show_org = show_org
         else:
             tk.abort(404, tk._('Report not found'))
             
-        
         return render('vdojstats-report-view.html')
+    
+    def report_view_pdf(self, id):
+        report, results, show_org = self._report_view(id)
+        
+        if report['report_on'] == "activities":         
+            tk.c.activities = results
+            tk.c.report = report
+        elif report['report_on'] == "details":
+            tk.c.users = results
+            tk.c.report = report
+            tk.c.show_org = show_org
+        else:
+            tk.abort(404, tk._('Report not found'))
+        
+        file_path = '%s/%s.pdf' % (h.get_export_dir(), report['id'])
+        response = h.convertHtmlToPdf(tk.render('vdojstats-report-pdf.html'), file_path, tk.response)
+        return response
+
+    def report_view_csv(self, id):
+        report, results, show_org = self._report_view(id)
+        file_path = '%s/%s.csv' % (h.get_export_dir(), report['id'])
+        
+        if report['report_on'] == "activities": 
+            with open(file_path, 'wb') as csvfile:
+                writer = csv.writer(csvfile, lineterminator = '\n')
+                record = ['time', 'user', 'activity type']
+                writer.writerow(record)
+                for row in results:
+                    record = [row['activity']['timestamp'], row['user']['fullname'], row['activity']['activity_type']]
+                    writer.writerow(record)    
+        elif report['report_on'] == "details":
+            with open(file_path, 'wb') as csvfile:
+                writer = csv.writer(csvfile, lineterminator = '\n')
+                record = ['name', 'email', 'state', 'organization', 'role', 'system administrator']
+                writer.writerow(record)
+                for row in results:
+                    record = [row['fullname'], row['email'], row['state'], row['organization'], row['capacity'], row['sysadmin']]
+                    writer.writerow(record)
+            
+        response = h.convertHtmlToCsv(file_path, tk.response)
+        return response
+
+    def report_view_xml(self, id):
+        report, results, show_org = self._report_view(id)
+        file_path = '%s/%s.xml' % (h.get_export_dir(), report['id'])
+                
+        if report['report_on'] == "activities":                    
+            tree = h.dict_to_etree({ 'activities' : {'activity' : [ {
+                                                                '@time': row['activity']['timestamp'],
+                                                                '@user': row['user']['fullname'],
+                                                                '@activity_type': row['activity']['activity_type']
+                                                                } for row in results]}})
+            
+            response = h.createResponseWithXML(tree, file_path, tk.response)
+                    
+                    
+        elif report['report_on'] == "details":
+            tree = h.dict_to_etree({ 'users' : {'user' : [ {
+                                                            '@name': row['fullname'],
+                                                            '@email': row['email'],
+                                                            '@state': row['state'],
+                                                            '@organization': row['organization'],
+                                                            '@role': row['capacity'],
+                                                            '@system_administrator': str(row['sysadmin'])
+                                                            } for row in results]}})
+            response = h.createResponseWithXML(tree, file_path, tk.response)      
+        
+        return response
     
     def report_edit(self, id):
         """
