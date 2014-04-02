@@ -4,9 +4,9 @@
 {% block vdojstat_actions %}
 	
 	<div id='vdoj_export'>
-		<a href="/report/pdf/{{ c.report['id'] }}" data-format='pdf' class="format-label" title={{ _('PDF') }} >{{ _('PDF') }}</a>
-		<a href="/report/csv/{{ c.report['id'] }}" data-format='csv' class="format-label" title={{ _('CSV') }} >{{ _('CSV') }}</a>
-		<a href="/report/xml/{{ c.report['id'] }}" data-format='xml' class="format-label" title={{ _('XML') }} >{{ _('XML') }}</a>
+		<a href="/report/pdf/{{ c.report['id'] }}" data-format='pdf' class="format-label" title={{ _('PDF') }} ></a>
+		<a href="/report/csv/{{ c.report['id'] }}" data-format='csv' class="format-label" title={{ _('CSV') }} ></a>
+		<a href="/report/xml/{{ c.report['id'] }}" data-format='xml' class="format-label" title={{ _('XML') }} ></a>
 	
 		<a class="btn btn-primary" style="margin-top: 5px; margin-left: 1em; vertical-align: top;" href="/report/edit/{{ c.report['id'] }}" data-module-i18n="{{ locale }}">{{ _('Edit') }}</a>
 	
