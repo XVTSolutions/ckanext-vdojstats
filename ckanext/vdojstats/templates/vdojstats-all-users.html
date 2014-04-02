@@ -1,5 +1,81 @@
 {% extends "vdojstats-base.html" %}
 
+{% block vdojstat_search %}
+  {{ super() }}
+        
+        <p id='search_option_trigger' data-module="search_option_popover"
+            {% if c.search %}
+                class="icon-minus-sign"
+            {% else %}            
+                class="icon-plus-sign"
+            {% endif %}            
+            > 
+            Search Options</p>
+        <section id='search_option_panel' class="module-content" 
+            {% if c.search %}
+            {% else %}            
+                style='display:none'
+            {% endif %}            
+        >
+        <div class="control-group control-medium">
+            <label class="control-label" for="{{_('field-candidate')}}">
+            {{ _('Name') }}
+            </label>
+          <div class="controls ">
+            <input id="{{_('field-candidate')}}" type="text" name="{{_('candidate')}}" value="{{c.candidate}}" placeholder="{{_('input key word')}}" />
+          </div><!--controls-->
+        </div><!--control-group control-medium-->
+        <div class="control-group control-medium">
+            <label class="control-label" for="{{_('field-state')}}">
+            {{ _('State') }}
+            </label>
+          <div class="controls ">
+            <label class="radio "><input id="field-state" type="radio" class="state"  name="state[]" value="active" 
+              {% if c.state == "active" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Active')}}</label>
+            <label class="radio "><input id="field-state" type="radio" class="state"  name="state[]" value="not_active" 
+              {% if c.state == "not_active" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Not Active')}}</label>
+            <label class="radio "><input id="" type="radio" class="state"  name="state[]" value="any" 
+              {% if c.state == "any" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Any')}}</label>
+          </div><!--controls-->
+        </div><!--control-group control-medium-->
+        <div class="control-group control-medium">
+            <label class="control-label" for="{{_('field-sysadmin')}}">
+            {{ _('Role') }}
+            </label>
+          <div class="controls ">
+            <label class="radio "><input id="field-sysadmin" type="radio" class="sysadmin"  name="sysadmin[]" value="sysadmin" 
+              {% if c.sysadmin == "sysadmin" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('System Administrator')}}</label>
+            <label class="radio "><input id="field-not_sysadmin" type="radio" class="sysadmin"  name="sysadmin[]" value="not_sysadmin" 
+              {% if c.sysadmin == "not_sysadmin" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Not System Administrator')}}</label>
+            <label class="radio "><input id="" type="radio" class="sysadmin"  name="sysadmin[]" value="any" 
+              {% if c.sysadmin == "any" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Any')}}</label>
+          </div><!--controls-->
+        </div><!--control-group control-medium-->
+    <button id="search_form" class="btn btn-primary" type="submit" name="search" value="search_on">Search
+    </button>
+
+   </section>
+
+{% endblock %}
+
 {% block vdojstat_content %}
   {{ super() }}
 {% snippet 'snippets/vdojstats-all-users-content.html', active_users_num=c.active_users_num, dormant_users_num=c.dormant_users_num,

@@ -226,9 +226,30 @@ class VDojStatsController(BaseController):
     '''
     def _all_users(self):
         tk.c.sub_title = 'All users'
+        candidate = None
+        is_active = None
+        is_sysadmin = None
+        if tk.request.method == 'GET':
+            data = tk.request.GET
+            if data.has_key('search'):
+                tk.c.search = data.get('search')
+            if data.has_key('candidate'):
+                tk.c.candidate = candidate = data.get('candidate', '')
+            if data.has_key('state[]'):
+                tk.c.state = data.get('state[]')
+                if tk.c.state =='active':
+                    is_active = True
+                if tk.c.state =='not_active':
+                    is_active = False
+            if data.has_key('sysadmin[]'):
+                tk.c.sysadmin = data.get('sysadmin[]')
+                if tk.c.sysadmin =='sysadmin':
+                    is_sysadmin = True
+                if tk.c.sysadmin =='not_sysadmin':
+                    is_sysadmin = False
         tk.c.active_users_num = h.count_active_users()
         tk.c.dormant_users_num = h.count_dormant_users()
-        tk.c.user_list = h.list_users()
+        tk.c.user_list = h.list_users(candidate=candidate, is_active=is_active, is_sysadmin=is_sysadmin)
 
     def all_users(self):
         self._all_users()

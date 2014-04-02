@@ -214,7 +214,7 @@ def count_modified_assets_by_date():
 def count_deleted_assets_by_date():
     return _count_assets_by_date([activity_type_deleted])
 
-def list_users():
+def list_users(candidate=None, is_active=None, is_sysadmin=True):
     #TODO
     #page = int(request.params.get('page', 1))
     order_by = ('name')
@@ -230,6 +230,15 @@ def list_users():
 
     user = table('user')
     sql = select([user.c.id, user.c.fullname, user.c.name, user.c.state, user.c.sysadmin])
+    if candidate is not None:
+        sql = sql.where(or_(user.c.fullname.like("%"+"%s"%(candidate)+"%"), user.c.name.like("%"+"%s"%(candidate)+"%")))
+    if is_active is not None:
+        if is_active:
+            sql = sql.where(user.c.state==user_state_active)
+        else:
+            sql = sql.where(user.c.state!=user_state_active)
+    if is_sysadmin is not None:
+        sql = sql.where(user.c.sysadmin == is_sysadmin)
     rows = model.Session.execute(sql).fetchall()
     users_list = []
     for row in rows:
