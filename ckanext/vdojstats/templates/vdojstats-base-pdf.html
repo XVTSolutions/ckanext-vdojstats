@@ -15,10 +15,7 @@
 
 {% block primary_content_inner %}
 <style>
-    @page {
-        size: letter portrait;
-    }
-    @page {
+   @page {
         size: a4 portrait;
         @frame header_frame {
             -pdf-frame-content: header_content;
@@ -115,8 +112,6 @@ div#vdoj_target {
     margin-bottom: 4px;
     margin-left: 4px;
 }
-
-
 .table {
     margin-bottom: 10px;
     width: 100%;
@@ -172,6 +167,14 @@ tr.odd{
 tr.even{
     background-color: #F2F2F2;
 }
+/*.masthead .logo img {
+    height: 25px;
+    margin-top: 2px;
+    margin-right: 3px;
+    margin-bottom: 2px;
+    margin-left: 3px;
+    background-image: url("{{ h.get_site_logo_url() }}")
+}*/
 
 </style>
 {% endblock %}
@@ -179,7 +182,13 @@ tr.even{
 {% block page_primary_action %}
 <div id="vdoj_content">
     <div class="masthead">
-        {{ _(h.get_export_header_title()) }}
+      {% block header_logo %}
+        {% if g.site_logo %}
+          <a class="logo" href="{{ h.url('home') }}"><img src="{{ h.get_site_logo_url() }}" style="height:25px;" alt="{{ g.site_title }} Logo" title="{{ g.site_title }} Logo" /></a>
+        {% else %}
+          {{ _(h.get_export_header_title()) }}
+        {% endif %}
+      {% endblock %}
     </div>
     <h2>{{ _(c.sub_title) }}</h2>
     {% block vdojstat_search %}
