@@ -9,11 +9,17 @@ from ckan.model import Group, Session, Member, User, Activity
 from sqlalchemy import distinct, desc, not_
 from sqlalchemy.orm import joinedload
 from ckan.lib.activity_streams import activity_stream_string_functions
-#from bs4 import BeautifulSoup
+from ckan.lib.base import abort
+from ckan.common import _
 
 
 class VDojStatsController(BaseController):
 
+    def __before__(self, action, **params):
+        super(VDojStatsController, self).__before__(action, **params)
+        if not tk.c.userobj:
+            print '**************invador***************'
+            abort(401, _('You are not authorized to display statistics pages.') )
 
     '''
     overall
