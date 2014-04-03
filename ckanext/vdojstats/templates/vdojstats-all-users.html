@@ -22,7 +22,7 @@
             {{ _('Name') }}
             </label>
           <div class="controls ">
-            <input id="{{_('field-candidate')}}" type="text" name="{{_('candidate')}}" value="{{c.candidate}}" placeholder="{{_('input key word')}}" />
+            <input id="{{_('field-candidate')}}" type="text" name="{{_('candidate')}}" value="{{c.candidate}}" placeholder="{{_('input key word')}}" data-module="autocomplete" data-module-source="/stats/autocomplete_user?candidate=?" />
           </div><!--controls-->
         </div><!--control-group control-medium-->
         <div class="control-group control-medium">

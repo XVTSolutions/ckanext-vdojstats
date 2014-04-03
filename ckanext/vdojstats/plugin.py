@@ -133,6 +133,10 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='user_xml')
 
+        map.connect('stats', '/stats/autocomplete_user',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='autocomplete_user')
+
         return map
 
     def update_config(self, config):

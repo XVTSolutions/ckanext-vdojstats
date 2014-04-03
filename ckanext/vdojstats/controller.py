@@ -290,6 +290,15 @@ class VDojStatsController(BaseController):
         response = h.createResponseWithXML(tree, file_path, tk.response)
         return response
 
+    def autocomplete_user(self):
+        if tk.request.method == 'GET':
+            tk.response.headers['Content-Type']='application/json'
+            data = tk.request.GET
+            if data.has_key('candidate'):
+                candidate = data.get('candidate')
+                return json.dumps(h.list_users(candidate))
+        return []
+
     '''
     user activitiy
     '''

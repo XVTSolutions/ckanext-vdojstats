@@ -214,7 +214,7 @@ def count_modified_assets_by_date():
 def count_deleted_assets_by_date():
     return _count_assets_by_date([activity_type_deleted])
 
-def list_users(candidate=None, is_active=None, is_sysadmin=True):
+def list_users(candidate=None, is_active=None, is_sysadmin=None):
     #TODO
     #page = int(request.params.get('page', 1))
     order_by = ('name')
