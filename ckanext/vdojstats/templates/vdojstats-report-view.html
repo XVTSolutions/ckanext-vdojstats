@@ -21,6 +21,23 @@
 	{{ super() }}
 	  
 	{% snippet 'snippets/vdojstats-report-content.html', report=c.report, users = c.users, activities = c.activities, show_org = c.show_org %}
+	
+	{% if c.total > 0 %}
+	<form method="post">
+		<input type="hidden" name="perpage" value="10" />
+		<div class="pull-left">
+			<button type="submit" name="page" value="0" class="btn" title="{{ _('first page') }}" {% if c.page == 0 %} disabled="disabled"{% endif %}><i class="icon-double-angle-left"></i></button>
+			<button type="submit" name="page" value="{{ c.page - 1 }}" class="btn" title="{{ _('previous page') }}" {% if c.page == 0 %} disabled="disabled"{% endif %}><i class="icon-angle-left"></i></button>
+		</div>
+		<div class="pull-right">
+			<button type="submit" name="page" value="{{ c.page + 1 }}" class="btn" title="{{ _('next page') }}" {% if c.page == c.lastpage %} disabled="disabled"{% endif %}><i class="icon-angle-right"></i></button>
+			<button type="submit" name="page" value="{{ c.lastpage }}" class="btn" title="{{ _('last page') }}" {% if c.page == c.lastpage %} disabled="disabled"{% endif %}><i class="icon-double-angle-right"></i></button>
+		</div>
+		<div style="text-align:center; padding: 6px 0">
+			<span>Showing <strong>{{ c.start_record }}</strong> to <strong>{{ c.end_record }}</strong> of <strong>{{ c.total}}</strong></span>
+		</div>
+	</form>
+	{% endif %}
 
 {% endblock %}
 

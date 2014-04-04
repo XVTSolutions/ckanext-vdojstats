@@ -5,6 +5,7 @@ import model
 import json
 import csv
 import re
+import math
 import xml.etree.ElementTree as ET
 from ckan.model import Group, Session, Member, User, Activity, Package
 from sqlalchemy import distinct, desc, not_
@@ -401,7 +402,7 @@ class VDojStatsController(BaseController):
         
             return render('vdojstats-report-add.html', extra_vars = vars)
         
-    def _report_view(self, id):
+    def _report_view(self, id, page, perpage):
         report = Session.query(model.VDojStatsReport).filter(model.VDojStatsReport.id == id).first()
         
         if not report:
@@ -430,13 +431,18 @@ class VDojStatsController(BaseController):
                 activity_query = activity_query.filter(User.name.in_(package_query))
             
             activity_query = activity_query.filter(Activity.user_id.in_(member_query))
-
+            
+            total = activity_query.count()
+            
+            if page is not None and perpage is not None:
+                activity_query = activity_query.offset(page * perpage).limit(perpage)
+                                
             activities = [{
                         'activity': a.as_dict(),
                         'user': u.as_dict()
                         } for a,u in activity_query]
             
-            return report.as_dict(), activities, show_org
+            return report.as_dict(), activities, total, show_org
             
         elif report.report_on == "details":
             
@@ -452,6 +458,11 @@ class VDojStatsController(BaseController):
                 package_query = Session.query(Package.maintainer)
                 user_query = user_query.filter(User.name.in_(package_query))
                 
+            total = user_query.count()
+            
+            if page is not None and perpage is not None:
+                user_query = user_query.offset(page * perpage).limit(perpage)
+                
             users = [{
                         'id' : u.id,
                         'name': u.name,
@@ -463,24 +474,33 @@ class VDojStatsController(BaseController):
                         'capacity': u.capacity
                         } for u in user_query]
             
-            return report.as_dict(), users, show_org
+            return report.as_dict(), users, total, show_org
         else:
             tk.abort(404, tk._('Report not found'))
         
         
     def report_view(self, id):
         """
-        """                    
-        report, results, show_org = self._report_view(id)
+        """    
+        page = int(tk.request.params.get('page', 0))
+        perpage = int(tk.request.params.get('perpage', 10))
+            
+        report, results, total, show_org = self._report_view(id, page, perpage)
         
         tk.c.sub_title = report['name']
+        
+        tk.c.total = total
+        tk.c.page = page
+        tk.c.perpage = perpage
+        tk.c.start_record = (page * perpage) + 1
+        tk.c.end_record = min((page * perpage) + perpage, total)
+        tk.c.lastpage = int(math.ceil(total / perpage))
+        tk.c.report = report
             
         if report['report_on'] == "activities":          
             tk.c.activities = results
-            tk.c.report = report
         elif report['report_on'] == "details":
             tk.c.users = results
-            tk.c.report = report
             tk.c.show_org = show_org
         else:
             tk.abort(404, tk._('Report not found'))
@@ -488,7 +508,7 @@ class VDojStatsController(BaseController):
         return render('vdojstats-report-view.html')
     
     def report_view_pdf(self, id):
-        report, results, show_org = self._report_view(id)
+        report, results, total, show_org = self._report_view(id, None, None)
         
         if report['report_on'] == "activities":         
             tk.c.activities = results
@@ -505,7 +525,7 @@ class VDojStatsController(BaseController):
         return response
 
     def report_view_csv(self, id):
-        report, results, show_org = self._report_view(id)
+        report, results, total, show_org = self._report_view(id, None, None)
         file_path = '%s/%s.csv' % (h.get_export_dir(), re.sub('[^a-zA-Z0-9_-]+', '_', report['name'].encode('ascii','ignore')))
         
         if report['report_on'] == "activities": 
@@ -529,7 +549,7 @@ class VDojStatsController(BaseController):
         return response
 
     def report_view_xml(self, id):
-        report, results, show_org = self._report_view(id)
+        report, results, total, show_org = self._report_view(id, None, None)
         file_path = '%s/%s.xml' % (h.get_export_dir(), re.sub('[^a-zA-Z0-9_-]+', '_', report['name'].encode('ascii','ignore')))
                 
         if report['report_on'] == "activities":                    
