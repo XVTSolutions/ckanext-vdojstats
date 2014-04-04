@@ -6,7 +6,7 @@ import json
 import csv
 import re
 import xml.etree.ElementTree as ET
-from ckan.model import Group, Session, Member, User, Activity
+from ckan.model import Group, Session, Member, User, Activity, Package
 from sqlalchemy import distinct, desc, not_
 from sqlalchemy.orm import joinedload
 from ckan.lib.activity_streams import activity_stream_string_functions
@@ -425,7 +425,9 @@ class VDojStatsController(BaseController):
             if report.permission != 'all':
                 member_query = member_query.filter(Member.capacity == report.permission)
 
-            #todo -something with custodian
+            if report.custodian:
+                package_query = Session.query(Package.maintainer)
+                activity_query = activity_query.filter(User.name.in_(package_query))
             
             activity_query = activity_query.filter(Activity.user_id.in_(member_query))
 
@@ -446,7 +448,9 @@ class VDojStatsController(BaseController):
             if report.permission != 'all':
                 user_query = user_query.filter(Member.capacity == report.permission)
                 
-            #todo -something with custodian
+            if report.custodian:
+                package_query = Session.query(Package.maintainer)
+                user_query = user_query.filter(User.name.in_(package_query))
                 
             users = [{
                         'id' : u.id,
