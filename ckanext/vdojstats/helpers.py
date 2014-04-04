@@ -9,6 +9,8 @@ from ckan import model
 from ckan.model.meta import metadata
 from ckan.model import Session
 from ckan.lib.navl.dictization_functions import StopOnError
+from ckan.lib.helpers import full_current_url
+from urlparse import urlparse
 from ckan.logic.converters import convert_group_name_or_id_to_id
 from sqlalchemy import *
 import ckan.logic as logic
@@ -52,7 +54,6 @@ def _count_public_or_private_assets(is_private, org_id=None):
     if org_id is not None:
         sql = sql.where(package.c.owner_org == org_id)
     rows = model.Session.execute(sql).fetchall()
-    print rows
     for row in rows:
         if row['private']==is_private:
             return row['NUM']
@@ -69,7 +70,6 @@ def _count_state_assets(state, org_id=None):
     if org_id is not None:
         sql = sql.where(package.c.owner_org == org_id)
     rows = model.Session.execute(sql).fetchall()
-    print rows
     for row in rows:
         if row['state']==state:
             return row['NUM']
@@ -84,7 +84,6 @@ def _count_state_users(state):
     user = table('user')
     sql = select([func.count(user.c.id).label('NUM'), user.c.state]).group_by(user.c.state)
     rows = model.Session.execute(sql).fetchall()
-    print rows
     for row in rows:
         if row['state']==state:
             return row['NUM']
@@ -134,7 +133,6 @@ def count_pending_approval_assets(org_id=None):
         package = table('package')
         sql = select(cols, from_obj=[package_review.join(package)]).where(package.c.owner_org == org_id)
     rows = model.Session.execute(sql).fetchall()
-    print rows
     for row in rows:
         return row['NUM']
     return 0
@@ -158,7 +156,6 @@ def count_dormant_assets(org_id=None):
     if org_id is not None:
         sql = sql.where(package.c.owner_org == org_id)
     rows = model.Session.execute(sql).fetchall()
-    print rows
     for row in rows:
         return row['NUM']
     return 0
@@ -175,7 +172,6 @@ def count_dormant_users():
     user = table('user')
     sql = select([func.count(user.c.id).label('NUM')]).where(user.c.state != 'active')
     rows = model.Session.execute(sql).fetchall()
-    print rows
     for row in rows:
         return row['NUM']
     return 0
@@ -213,7 +209,7 @@ def count_modified_assets_by_date():
 def count_deleted_assets_by_date():
     return _count_assets_by_date([activity_type_deleted])
 
-def list_users():
+def list_users(candidate=None, is_active=None, is_sysadmin=None):
     #TODO
     #page = int(request.params.get('page', 1))
     order_by = ('name')
@@ -229,6 +225,15 @@ def list_users():
 
     user = table('user')
     sql = select([user.c.id, user.c.fullname, user.c.name, user.c.state, user.c.sysadmin])
+    if candidate is not None:
+        sql = sql.where(or_(user.c.fullname.like("%"+"%s"%(candidate)+"%"), user.c.name.like("%"+"%s"%(candidate)+"%")))
+    if is_active is not None:
+        if is_active:
+            sql = sql.where(user.c.state==user_state_active)
+        else:
+            sql = sql.where(user.c.state!=user_state_active)
+    if is_sysadmin is not None:
+        sql = sql.where(user.c.sysadmin == is_sysadmin)
     rows = model.Session.execute(sql).fetchall()
     users_list = []
     for row in rows:
@@ -429,13 +434,19 @@ def current_time():
     return datetime.datetime.utcnow().strftime(DATETIME_FORMAT)
 
 def get_export_dir():
-    directory = config.get('vdojstats.export_dir', '/tmp/')
+    site_id = config.get('ckan.site_id', 'default')
+    directory = config.get('vdojstats.export_dir', '/tmp/export/%s/'%(site_id))
     if not os.path.exists(directory):
         os.makedirs(directory)
     return directory
 
 def get_export_header_title():
     return config.get('vdojstats.export_header', 'Victoria DoJ')
+
+def get_site_logo_url():
+    parsed_uri = urlparse(full_current_url())
+    domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+    return "%s%s"%(domain, config.get('ckan.site_logo', 'vdoj-logo-white-transparent.png'))
 
 def dict_to_etree(d):
     def _to_etree(d, root):

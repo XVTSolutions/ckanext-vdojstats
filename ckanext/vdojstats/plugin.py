@@ -133,6 +133,10 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='user_xml')
 
+        map.connect('stats', '/stats/autocomplete_user',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='autocomplete_user')
+
         return map
 
     def update_config(self, config):
@@ -140,11 +144,11 @@ class VDojStatsPlugin(SingletonPlugin):
         tk.add_template_directory(config, 'templates')
         tk.add_public_directory(config, 'public')
         tk.add_resource('public', 'ckanext-vdojstats')
-        #tk.add_resource('jquery.uix.multiselect', 'multiselect')
-        #tk.add_resource('jspdf', 'jspdf')
-        #tk.add_resource('jquery-ui-1.10.3.custom', 'jqueryui')
-        #tk.add_resource('public/jquery.uix.multiselect/css', 'multiselect-css')
-        #tk.add_resource('public/jquery.uix.multiselect/js', 'multiselect-js')
+
+        #configure vicdoj export directory and header
+        site_id = config.get('ckan.site_id', 'default')
+        config.update({'vdojstats.export_dir': '/tmp/export/%s/'%(site_id)})
+        config.update({'vdojstats.export_header': 'Victoria DoJ'})
 
     def get_helpers(self):
         # ITemplateHelpers
@@ -153,5 +157,6 @@ class VDojStatsPlugin(SingletonPlugin):
             'get_reports'   : h.get_reports,
             'current_time'  : h.current_time,
             'get_export_header_title' : h.get_export_header_title,
+            'get_site_logo_url' : h.get_site_logo_url,
                 }
 

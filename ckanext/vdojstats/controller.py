@@ -9,11 +9,17 @@ from ckan.model import Group, Session, Member, User, Activity
 from sqlalchemy import distinct, desc, not_
 from sqlalchemy.orm import joinedload
 from ckan.lib.activity_streams import activity_stream_string_functions
-#from bs4 import BeautifulSoup
+from ckan.lib.base import abort
+from ckan.common import _
 
 
 class VDojStatsController(BaseController):
 
+    def __before__(self, action, **params):
+        super(VDojStatsController, self).__before__(action, **params)
+        if not tk.c.userobj:
+            print '**************invador***************'
+            abort(401, _('You are not authorized to display statistics pages.') )
 
     '''
     overall
@@ -226,9 +232,30 @@ class VDojStatsController(BaseController):
     '''
     def _all_users(self):
         tk.c.sub_title = 'All users'
+        candidate = None
+        is_active = None
+        is_sysadmin = None
+        if tk.request.method == 'GET':
+            data = tk.request.GET
+            if data.has_key('search'):
+                tk.c.search = data.get('search')
+            if data.has_key('candidate'):
+                tk.c.candidate = candidate = data.get('candidate', '')
+            if data.has_key('state[]'):
+                tk.c.state = data.get('state[]')
+                if tk.c.state =='active':
+                    is_active = True
+                if tk.c.state =='not_active':
+                    is_active = False
+            if data.has_key('sysadmin[]'):
+                tk.c.sysadmin = data.get('sysadmin[]')
+                if tk.c.sysadmin =='sysadmin':
+                    is_sysadmin = True
+                if tk.c.sysadmin =='not_sysadmin':
+                    is_sysadmin = False
         tk.c.active_users_num = h.count_active_users()
         tk.c.dormant_users_num = h.count_dormant_users()
-        tk.c.user_list = h.list_users()
+        tk.c.user_list = h.list_users(candidate=candidate, is_active=is_active, is_sysadmin=is_sysadmin)
 
     def all_users(self):
         self._all_users()
@@ -268,6 +295,15 @@ class VDojStatsController(BaseController):
         tree = ET.ElementTree(root)
         response = h.createResponseWithXML(tree, file_path, tk.response)
         return response
+
+    def autocomplete_user(self):
+        if tk.request.method == 'GET':
+            tk.response.headers['Content-Type']='application/json'
+            data = tk.request.GET
+            if data.has_key('candidate'):
+                candidate = data.get('candidate')
+                return json.dumps(h.list_users(candidate))
+        return []
 
     '''
     user activitiy
