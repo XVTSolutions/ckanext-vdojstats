@@ -5,10 +5,10 @@
             <ul class="">
 		        <li class="">
                     {% if current_action == 'overall' or current_action == 'all_assets' %} 
-                        {{_('All Site')}}
+                        {{_('Summary')}}
                     {% else %}
                         <a href="/stats/overall">
-                            All Site
+                            {{_('Summary')}}
                         </a>
                     {% endif %}
 	                <ul class="">
@@ -33,11 +33,11 @@
 		            </ul>
                 </li>
 			    <li class="">
-                    {% if current_action == 'organizations' %} 
-                        {{_('Organisations')}}
+                    {% if current_action == 'assets' %} 
+                        {{_('Assets')}}
                     {% else %}
-                        <a href="/stats/organizations">
-                            Organisations
+                        <a href="/stats/assets">
+                            {{_('Assets')}}
                         </a>
                     {% endif %}
                 </li>

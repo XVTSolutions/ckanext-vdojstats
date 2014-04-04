@@ -83,7 +83,7 @@ class VDojStatsController(BaseController):
     all assets
     '''
     def _all_assets(self):
-        tk.c.sub_title = 'All Packages'
+        tk.c.sub_title = 'All Assets'
         tk.c.allassets = h.count_assets_by_date()
         return render('vdojstats-all-assets.html')
 
@@ -133,8 +133,8 @@ class VDojStatsController(BaseController):
     '''
     Organizations
     '''
-    def _organizations(self):
-        tk.c.sub_title = 'Organizations'
+    def _assets(self):
+        tk.c.sub_title = 'Assets'
 
         #search parameter
         org_ids = []
@@ -183,19 +183,19 @@ class VDojStatsController(BaseController):
         tk.c.option_package_states = h.get_package_states()
         tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_approval=pending_approval)
 
-    def organizations(self):
-        self._organizations()
-        return render('vdojstats-organizations.html')
+    def assets(self):
+        self._assets()
+        return render('vdojstats-assets.html')
 
-    def organizations_pdf(self):
-        self._organizations()
-        file_path = h.get_export_dir() + 'vdojstats-organizations.pdf'
-        response = h.convertHtmlToPdf(tk.render('vdojstats-organizations-pdf.html'), file_path, tk.response)
+    def assets_pdf(self):
+        self._assets()
+        file_path = h.get_export_dir() + 'vdojstats-assets.pdf'
+        response = h.convertHtmlToPdf(tk.render('vdojstats-assets-pdf.html'), file_path, tk.response)
         return response
 
-    def organizations_csv(self):
-        self._organizations()
-        file_path = h.get_export_dir() + 'vdojstats-organizations.csv'
+    def assets_csv(self):
+        self._assets()
+        file_path = h.get_export_dir() + 'vdojstats-assets.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
             record = ['Organisation', 'Packasge', 'status', 'Private', 'Suspend', 'Suspend Reason', 'Review Date']
@@ -206,8 +206,8 @@ class VDojStatsController(BaseController):
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
 
-    def organizations_xml(self):
-        self._organizations()
+    def assets_xml(self):
+        self._assets()
         root = ET.Element('root')
         for row in tk.c.org_assets:
             record = ET.SubElement(root, 'record')
