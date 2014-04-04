@@ -30,7 +30,6 @@ package_state_draft = 'draft'
 package_state_active = 'active'
 package_state_deleted = 'deleted'
 user_state_active = 'active'
-package_type_dataset_suspended = 'dataset-suspended'
 
 
 DATE_FORMAT = '%d-%m-%Y'
@@ -313,10 +312,10 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
         else:
             pstats.append("'%s'"%(package_states))
 
-    sql = "SELECT P.id AS package_id, P.title AS package_title, P.name AS package_name, P.state AS package_state, P.private, P.type AS package_type, P.owner_org, G.title AS group_title, G.name AS group_name, review.next_review_date, extra.value AS suspend_reason "
+    sql = "SELECT P.id AS package_id, P.title AS package_title, P.name AS package_name, P.state AS package_state, P.private, P.type AS package_type, P.owner_org, G.title AS group_title, G.name AS group_name, review.next_review_date, (CASE WHEN suspend.package_id IS NOT NULL THEN True ELSE False END) as suspended, suspend.reason AS suspend_reason "
     sql = sql + "FROM \"group\" G, package P " 
     sql = sql + "LEFT OUTER JOIN package_review review ON review.package_id = P.id "
-    sql = sql + "LEFT OUTER JOIN package_extra extra ON extra.package_id = P.id AND key = 'suspend_reason' "
+    sql = sql + "LEFT OUTER JOIN package_suspend suspend ON suspend.package_id = P.id "
     sql = sql + "WHERE G.id = P.owner_org "
     if len(organizations):
         sql = sql + "AND P.owner_org IN (%s) "%(",".join(organizations))
@@ -326,9 +325,9 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
         sql = sql + "AND P.private = %r "%(private)
     if suspended is not None:
         if suspended:
-            sql = sql + "AND P.type = 'dataset-suspended' "
+            sql = sql + "AND suspend.package_id IS NOT NULL "
         else:
-            sql = sql + "AND P.type <> 'dataset-suspended' "
+            sql = sql + "AND suspend.package_id IS NULL  "
     if pending_approval is not None:
         if pending_approval:
             sql = sql + "AND review.package_id IS NOT NULL "
@@ -348,7 +347,7 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             'package_name':row['package_name'],
             'package_state':row['package_state'].capitalize(),
             'is_private':'Yes' if row['private'] else 'No',
-            'is_suspended':'Yes' if row['package_type'] == package_type_dataset_suspended else 'No',
+            'is_suspended':'Yes' if row['suspended'] else 'No',
             'suspend_reason': row['suspend_reason'] or '',
             'owner_org':row['owner_org'] or '',
             'group_title':row['group_title'],
