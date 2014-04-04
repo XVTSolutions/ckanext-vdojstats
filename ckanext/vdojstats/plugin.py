@@ -33,9 +33,9 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_assets')
 
-        map.connect('stats', '/stats/organizations',
+        map.connect('stats', '/stats/assets',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='organizations')
+            action='assets')
 
         map.connect('stats', '/stats/all_users',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -81,9 +81,9 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_assets_pdf')
 
-        map.connect('stats', '/stats/organizations_pdf',
+        map.connect('stats', '/stats/assets_pdf',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='organizations_pdf')
+            action='assets_pdf')
 
         map.connect('stats', '/stats/all_users_pdf',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -101,9 +101,9 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_assets_csv')
 
-        map.connect('stats', '/stats/organizations_csv',
+        map.connect('stats', '/stats/assets_csv',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='organizations_csv')
+            action='assets_csv')
 
         map.connect('stats', '/stats/all_users_csv',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -121,9 +121,9 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_assets_xml')
 
-        map.connect('stats', '/stats/organizations_xml',
+        map.connect('stats', '/stats/assets_xml',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='organizations_xml')
+            action='assets_xml')
 
         map.connect('stats', '/stats/all_users_xml',
             controller='ckanext.vdojstats.controller:VDojStatsController',

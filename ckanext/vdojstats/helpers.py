@@ -32,6 +32,7 @@ total_per_date = 'total_per_date'
 package_state_draft = 'draft'
 package_state_active = 'active'
 package_state_deleted = 'deleted'
+package_state_suspended = 'suspended'
 user_state_active = 'active'
 
 
@@ -383,6 +384,7 @@ def get_package_states():
         {'text': package_state_draft.capitalize(), 'value': package_state_draft},
         {'text': package_state_active.capitalize(), 'value': package_state_active},
         {'text': package_state_deleted.capitalize(), 'value': package_state_deleted},
+        {'text': package_state_suspended.capitalize(), 'value': package_state_suspended},
     ]
     
 def get_reports():
