@@ -4,6 +4,7 @@ import helpers as h
 import model
 import json
 import csv
+import re
 import xml.etree.ElementTree as ET
 from ckan.model import Group, Session, Member, User, Activity
 from sqlalchemy import distinct, desc, not_
@@ -493,13 +494,13 @@ class VDojStatsController(BaseController):
         else:
             tk.abort(404, tk._('Report not found'))
         
-        file_path = '%s/%s.pdf' % (h.get_export_dir(), report['id'])
+        file_path = '%s/%s.pdf' % (h.get_export_dir(), re.sub('[^a-zA-Z0-9_-]+', '_', report['name'].encode('ascii','ignore')))
         response = h.convertHtmlToPdf(tk.render('vdojstats-report-pdf.html'), file_path, tk.response)
         return response
 
     def report_view_csv(self, id):
         report, results, show_org = self._report_view(id)
-        file_path = '%s/%s.csv' % (h.get_export_dir(), report['id'])
+        file_path = '%s/%s.csv' % (h.get_export_dir(), re.sub('[^a-zA-Z0-9_-]+', '_', report['name'].encode('ascii','ignore')))
         
         if report['report_on'] == "activities": 
             with open(file_path, 'wb') as csvfile:
@@ -523,7 +524,7 @@ class VDojStatsController(BaseController):
 
     def report_view_xml(self, id):
         report, results, show_org = self._report_view(id)
-        file_path = '%s/%s.xml' % (h.get_export_dir(), report['id'])
+        file_path = '%s/%s.xml' % (h.get_export_dir(), re.sub('[^a-zA-Z0-9_-]+', '_', report['name'].encode('ascii','ignore')))
                 
         if report['report_on'] == "activities":                    
             tree = h.dict_to_etree({ 'activities' : {'activity' : [ {

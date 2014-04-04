@@ -402,7 +402,7 @@ def convertHtmlToPdf(sourceHtml, outputFilename, response):
     resultFile.close()                 # close output file
 
     response.headers['Content-Type']='application/pdf'
-    response.headers['Content-disposition']='attachment; filename=%s'%(outputFilename)
+    response.headers['Content-disposition']='attachment; filename=%s'%(os.path.basename(outputFilename.encode('ascii','ignore')))
     response.headers['Content-Length']=len(pdf)
     response.body = pdf
 
@@ -415,7 +415,7 @@ def convertHtmlToCsv(inputFilename, response):
         for row in reader:
             content.append(','.join(row))
     response.headers['Content-Type']='application/csv'
-    response.headers['Content-disposition']='attachment; filename=%s'%(inputFilename)
+    response.headers['Content-disposition']='attachment; filename=%s'%(os.path.basename(inputFilename.encode('ascii','ignore')))
     response.headers['Content-Length']=os.path.getsize(inputFilename)
     response.body = "\n".join(content)
     return response
@@ -425,7 +425,7 @@ def createResponseWithXML(tree, filename, response):
     tree.write(filename, encoding="utf-8", xml_declaration=True)
     #root = tree.parse(filename)
     response.headers['Content-Type']='text/xml'
-    response.headers['Content-disposition']='attachment; filename=%s'%(filename)
+    response.headers['Content-disposition']='attachment; filename=%s'%(os.path.basename(filename.encode('ascii','ignore')))
     response.headers['Content-Length']=os.path.getsize(filename)
     response.body = ET.tostring(tree.getroot())
     return response
