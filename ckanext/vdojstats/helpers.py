@@ -28,6 +28,7 @@ NotAuthorized = logic.NotAuthorized
 activity_type_new = 'new'
 activity_type_changed = 'changed'
 activity_type_deleted = 'deleted'
+total_per_date = 'total_per_date'
 package_state_draft = 'draft'
 package_state_active = 'active'
 package_state_deleted = 'deleted'
@@ -186,6 +187,7 @@ def count_assets_by_date():
     for row in rows:
         if row['day'] != current_day:
             if record is not None:
+                record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]})
                 records.append(record)
 
             current_day = row['day']
@@ -194,10 +196,12 @@ def count_assets_by_date():
                 activity_type_new: 0L,
                 activity_type_changed: 0L,
                 activity_type_deleted: 0L,
+                total_per_date: 0L,
             }
         record.update({row['detail_type']:row['num']})
     #finalize
     if record is not None:
+        record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]})
         records.append(record)
     return records
 

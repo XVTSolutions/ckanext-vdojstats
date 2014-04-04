@@ -101,10 +101,10 @@ class VDojStatsController(BaseController):
         file_path = h.get_export_dir() + 'vdojstats-all-assets.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
-            record = ['Date', 'New', 'Modified', 'Deleted']
+            record = ['Date', 'New', 'Modified', 'Deleted', 'Total']
             writer.writerow(record)
             for row in tk.c.allassets:
-                record = [row['day'], row['new'], row['changed'], row['deleted']]
+                record = [row['day'], row[h.activity_type_new], row[h.activity_type_changed], row[h.activity_type_deleted], row[h.total_per_date]]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
@@ -117,11 +117,13 @@ class VDojStatsController(BaseController):
             day = ET.SubElement(record, 'Date')
             day.text = row['day']
             new = ET.SubElement(record, 'New')
-            new.text = str(row['new'])
+            new.text = str(row[h.activity_type_new])
             changed = ET.SubElement(record, 'Modified')
-            changed.text = str(row['changed'])
+            changed.text = str(row[h.activity_type_changed])
             deleted = ET.SubElement(record, 'Deleted')
-            deleted.text = str(row['deleted'])
+            deleted.text = str(row[h.activity_type_deleted])
+            total = ET.SubElement(record, 'Total')
+            total.text = str(row[h.total_per_date])
         file_path = h.get_export_dir() + 'vdojstats-all-assets.xml'
         tree = ET.ElementTree(root)
         response = h.createResponseWithXML(tree, file_path, tk.response)
