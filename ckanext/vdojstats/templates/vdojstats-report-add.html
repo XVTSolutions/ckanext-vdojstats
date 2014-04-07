@@ -50,7 +50,7 @@
 		<div class="control-group">
 		    <label for="field-custodian" class="control-label">{{ _('Custodian') }}</label>
 		    <div class="controls editor">
-			    <input type="checkbox" name="custodian" id="field-custodian" />
+			    <input type="checkbox" name="custodian" id="field-custodian" {% if data.custodian == True %} checked="checked"{% endif %} />
 		    </div>
 		</div>
 	
