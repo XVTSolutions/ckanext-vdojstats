@@ -37,6 +37,14 @@
           </div><!--controls-->
         </div><!--control-group control-medium-->
         <div class="control-group control-medium">
+            <label class="control-label" for="{{_('field-package')}}">
+            {{ _('Asset') }}
+            </label>
+          <div class="controls ">
+            <input id="{{_('field-package')}}" type="text" name="{{_('package')}}" value="{{c.package}}" placeholder="{{_('input key word')}}" data-module="autocomplete" data-module-source="/stats/autocomplete_package?search_key=?" />
+          </div><!--controls-->
+        </div><!--control-group control-medium-->
+        <div class="control-group control-medium">
             <label class="control-label" for="{{_('field-package_state')}}">
             {{ _('Package Status') }}
             </label>

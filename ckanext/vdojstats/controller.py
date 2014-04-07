@@ -142,6 +142,7 @@ class VDojStatsController(BaseController):
         private = None
         suspended = None
         pending_approval = None
+        package = None
 
         tk.c.selected_org_names = []
         tk.c.selected_package_states = []
@@ -155,6 +156,8 @@ class VDojStatsController(BaseController):
                         tk.c.selected_org_names.append(value)
                         org_id = h.get_organization_id(value)
                         org_ids.append(org_id)
+            if data.has_key('package'):
+                tk.c.package = package = data.get('package', '')
             if data.has_key('package_state'):
                 for key, value in data.iteritems():
                     if key == 'package_state' and len(value):
@@ -182,7 +185,7 @@ class VDojStatsController(BaseController):
 
         tk.c.option_org_names = h.get_org_names()
         tk.c.option_package_states = h.get_package_states()
-        tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_approval=pending_approval)
+        tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_approval=pending_approval, package=package)
 
     def assets(self):
         self._assets()
@@ -230,6 +233,15 @@ class VDojStatsController(BaseController):
         tree = ET.ElementTree(root)
         response = h.createResponseWithXML(tree, file_path, tk.response)
         return response
+
+    def autocomplete_package(self):
+        if tk.request.method == 'GET':
+            tk.response.headers['Content-Type']='application/json'
+            data = tk.request.GET
+            if data.has_key('search_key'):
+                search_key = data.get('search_key')
+                return json.dumps(h.autocomplete_package(search_key))
+        return []
 
     '''
     all users

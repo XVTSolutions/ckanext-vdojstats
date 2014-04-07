@@ -298,7 +298,7 @@ def get_organization_id(name):
     except Exception:
         print 'cannot convert org name to org id'
 
-def list_assets(org_ids=None, package_states=None, private=None, suspended=None, pending_approval=None):
+def list_assets(org_ids=None, package_states=None, private=None, suspended=None, pending_approval=None, package=None):
     """
      get list of assets
      parameter: org_ids (list)
@@ -323,10 +323,11 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             pstats.append("'%s'"%(package_states))
 
     sql = "SELECT P.id AS package_id, P.title AS package_title, P.name AS package_name, P.state AS package_state, P.private, P.type AS package_type, P.owner_org, G.title AS group_title, G.name AS group_name, review.next_review_date, (CASE WHEN suspend.package_id IS NOT NULL THEN True ELSE False END) as suspended, suspend.reason AS suspend_reason "
-    sql = sql + "FROM \"group\" G, package P " 
+    sql = sql + "FROM package P " 
+    sql = sql + "LEFT OUTER JOIN \"group\" G ON P.owner_org = G.id AND G.is_organization IS TRUE "  #only organization
     sql = sql + "LEFT OUTER JOIN package_review review ON review.package_id = P.id "
     sql = sql + "LEFT OUTER JOIN package_suspend suspend ON suspend.package_id = P.id "
-    sql = sql + "WHERE G.id = P.owner_org "
+    sql = sql + "WHERE P.id IS NOT NULL "   #dummy statement
     if len(organizations):
         sql = sql + "AND P.owner_org IN (%s) "%(",".join(organizations))
     if len(pstats):
@@ -343,6 +344,8 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             sql = sql + "AND review.package_id IS NOT NULL "
         else:
             sql = sql + "AND review.package_id IS NULL "
+    if package is not None:
+        sql = sql + "AND (P.title LIKE '%" + package + "%' OR P.name LIKE '%" + package + "%') " 
     sql = sql + "ORDER BY G.name ASC "
     rows = model.Session.execute(sql).fetchall()
     activity_list = []
@@ -360,11 +363,32 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             'is_suspended':'Yes' if row['suspended'] else 'No',
             'suspend_reason': row['suspend_reason'] or '',
             'owner_org':row['owner_org'] or '',
-            'group_title':row['group_title'],
-            'group_name':row['group_name'],
+            'group_title':row['group_title'] or '',
+            'group_name':row['group_name'] or '',
             'next_review_date':next_review_date or '',
             })
     return activity_list
+
+def autocomplete_package(search_key=None):
+    #TODO
+    #page = int(request.params.get('page', 1))
+
+    package = table('package')
+    sql = select([package.c.id, package.c.name, package.c.title])
+    if search_key is not None:
+        sql = sql.where(or_(package.c.name.like("%"+"%s"%(search_key)+"%"), package.c.title.like("%"+"%s"%(search_key)+"%")))
+    sql.order_by(package.c.name.asc()).order_by(package.c.title.asc())
+    rows = model.Session.execute(sql).fetchall()
+    package_list = []
+    for row in rows:
+        package_list.append({
+            'id':row['id'],
+            'name':row['name'] ,
+            'title':row['title'],
+            })
+
+    return package_list
+
 
 def get_org_names():
     context = {'model': model,
