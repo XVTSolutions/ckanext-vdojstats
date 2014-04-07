@@ -85,7 +85,8 @@ class VDojStatsController(BaseController):
     '''
     def _all_assets(self):
         tk.c.sub_title = 'All Assets'
-        tk.c.allassets = h.count_assets_by_date()
+        #tk.c.allassets = h.count_assets_by_date()
+        tk.c.allassets = h.count_assets_by_date_and_state()
         return render('vdojstats-all-assets.html')
 
     def all_assets(self):
@@ -103,10 +104,10 @@ class VDojStatsController(BaseController):
         file_path = h.get_export_dir() + 'vdojstats-all-assets.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
-            record = ['Date', 'New', 'Modified', 'Deleted', 'Total']
+            record = ['Date', 'Draft', 'Active', 'Deleted', 'Suspended', 'Total']
             writer.writerow(record)
             for row in tk.c.allassets:
-                record = [row['day'], row[h.activity_type_new], row[h.activity_type_changed], row[h.activity_type_deleted], row[h.total_per_date]]
+                record = [row['day'], row[h.package_state_draft], row[h.package_state_active], row[h.package_state_deleted], row[h.package_state_suspended], row[h.total_per_date]]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
@@ -118,12 +119,14 @@ class VDojStatsController(BaseController):
             record = ET.SubElement(root, 'record')
             day = ET.SubElement(record, 'Date')
             day.text = row['day']
-            new = ET.SubElement(record, 'New')
-            new.text = str(row[h.activity_type_new])
-            changed = ET.SubElement(record, 'Modified')
-            changed.text = str(row[h.activity_type_changed])
+            draft = ET.SubElement(record, 'Draft')
+            draft.text = str(row[h.package_state_draft])
+            active = ET.SubElement(record, 'Active')
+            active.text = str(row[h.package_state_active])
             deleted = ET.SubElement(record, 'Deleted')
-            deleted.text = str(row[h.activity_type_deleted])
+            deleted.text = str(row[h.package_state_deleted])
+            suspended = ET.SubElement(record, 'Suspended')
+            suspended.text = str(row[h.package_state_suspended])
             total = ET.SubElement(record, 'Total')
             total.text = str(row[h.total_per_date])
         file_path = h.get_export_dir() + 'vdojstats-all-assets.xml'

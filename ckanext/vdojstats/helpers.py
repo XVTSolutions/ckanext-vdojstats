@@ -91,36 +91,36 @@ def _count_state_users(state):
             return row['NUM']
     return 0
 
-def _count_assets_by_date(activity_types=None):
+def _count_assets_by_date_and_state(states_types=None):
     """
      get count of assets by date
      parameter: activity_types (list)
     """
     types = []
-    if activity_types is not None:
-        if isinstance(activity_types, list):
-            types = activity_types
+    if states_types is not None:
+        if isinstance(states_types, list):
+            types = states_types
         else:
-            types.append(activity_types)
+            types.append(states_types)
 
+    revision = table('package_revision')
     package = table('package')
-    activity = table('activity')
-    detail = table('activity_detail')
-    cols = [func.count(activity.c.activity_type).label('num'), activity.c.activity_type.label('activity_type'), detail.c.object_type, detail.c.activity_type.label('detail_type'), func.date_trunc('day', activity.c.timestamp).label('day')]
-    sql = select(cols, from_obj=[package, activity.outerjoin(detail)]).where(package.c.id == activity.c.object_id).where( detail.c.object_type == 'Package')
+    cols = [func.count(revision.c.state).label('num'), revision.c.state.label('state'), func.date_trunc('day', revision.c.revision_timestamp).label('day')]
+    sql = select(cols, from_obj=[revision.outerjoin(package)]).where(package.c.id == revision.c.id)
     if len(types):
-        sql = sql.where(detail.c.activity_type.in_(types))
-    sql = sql.group_by(func.date_trunc('day', activity.c.timestamp)).group_by(activity.c.activity_type).group_by(detail.c.object_type).group_by(detail.c.activity_type).order_by(func.date_trunc('day', activity.c.timestamp).desc())
+        sql = sql.where(revision.c.state.in_(types))
+    sql = sql.group_by(func.date_trunc('day', revision.c.revision_timestamp)).group_by(revision.c.state).order_by(func.date_trunc('day', revision.c.revision_timestamp).desc())
     rows = model.Session.execute(sql).fetchall()
-    activity_list = []
+    state_list = []
     for row in rows:
-        activity_list.append({
+        state_list.append({
             'num':row['num'],
             'day':row['day'].strftime(DATE_FORMAT),
-            'detail_type':row['detail_type'],
+            'state':row['state'],
             })
 
-    return activity_list
+    return state_list
+
 
 def count_pending_approval_assets(org_id=None):
     """
@@ -178,41 +178,33 @@ def count_dormant_users():
         return row['NUM']
     return 0
 
-def count_assets_by_date():
+def count_assets_by_date_and_state():
 
     records = []
     record = None
     current_day = None
-    rows = _count_assets_by_date()
+    rows = _count_assets_by_date_and_state()
     for row in rows:
         if row['day'] != current_day:
             if record is not None:
-                record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]})
+                record.update({total_per_date:record[package_state_draft]+record[package_state_active]+record[package_state_deleted]+record[package_state_suspended]})
                 records.append(record)
 
             current_day = row['day']
             record = {
                 'day': row['day'],
-                activity_type_new: 0L,
-                activity_type_changed: 0L,
-                activity_type_deleted: 0L,
+                package_state_draft: 0L,
+                package_state_active: 0L,
+                package_state_deleted: 0L,
+                package_state_suspended: 0L,
                 total_per_date: 0L,
             }
-        record.update({row['detail_type']:row['num']})
+        record.update({row['state']:row['num']})
     #finalize
     if record is not None:
-        record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]})
+        record.update({total_per_date:record[package_state_draft]+record[package_state_active]+record[package_state_deleted]+record[package_state_suspended]})
         records.append(record)
     return records
-
-def count_created_assets_by_date():
-    return _count_assets_by_date([activity_type_new])
-
-def count_modified_assets_by_date():
-    return _count_assets_by_date([activity_type_changed])
-
-def count_deleted_assets_by_date():
-    return _count_assets_by_date([activity_type_deleted])
 
 def list_users(candidate=None, is_active=None, is_sysadmin=None):
     #TODO

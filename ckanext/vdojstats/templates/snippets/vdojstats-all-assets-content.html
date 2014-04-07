@@ -2,9 +2,10 @@
     <thead>
       <tr>
         <th scope="col">Date</th>
-        <th scope="col">*New</th>
-        <th scope="col">Modified</th>
+        <th scope="col">Draft</th>
+        <th scope="col">Active</th>
         <th scope="col">Deleted</th>
+        <th scope="col">Suspended</th>
         <th scope="col">Total per day</th>
       </tr>
     </thead>
@@ -14,13 +15,14 @@
             class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
             >
             <td class="dataset-label">{{ row.day }}</td>
-            <td class="dataset-details">{{ row.new }}</td>
-            <td class="dataset-details">{{ row.changed }}</td>
+            <td class="dataset-details">{{ row.draft }}</td>
+            <td class="dataset-details">{{ row.active }}</td>
             <td class="dataset-details">{{ row.deleted }}</td>
+            <td class="dataset-details">{{ row.suspended }}</td>
             <td class="dataset-details">{{ row.total_per_date }}</td>
           </tr>
       {% endfor %}
     </tbody>
 </table>
-<p>(*)The creation of a dataset counts as a modification</p>
+<p><!--(*)The creation of a dataset counts as a modification</p>-->
 
