@@ -4,6 +4,7 @@ import ckan.plugins.toolkit as tk
 import sys
 import ckan
 import pylons
+import copy
 from ckanext.vdojstats.model import VDojStatsReport
 from ckan.common import _
 from ckan import model
@@ -585,11 +586,9 @@ def create_activity(context, pkg_dict):
                 if object_id == resource.get('id'):
                     activity_data = resource
 
-    serializable={}
-    for k,v in activity_data.items():
-        if isinstance(v, basestring):
-            serializable.update({k:v})
-            #ignore deeper layer since this data do not turn up on the screen
+    serializable=copy.deepcopy(activity_data)
+    if 'resources' in serializable:
+        _remove_datetime_object(serializable)
 
     detail_type = activity_info.get('detail_type')
         
@@ -603,6 +602,19 @@ def create_activity(context, pkg_dict):
 
     activity_detail = ActivityDetail(activity_id=activity.id, object_id=activity.object_id, object_type=activity_info.get('object_type'), activity_type=detail_type, data={activity_info.get('object_type'): serializable,})
     activity_detail.save()
+
+def _remove_datetime_object(dictionary):
+    for k,v in dictionary.items():
+        if isinstance(v, dict):
+            _remove_datetime_object(v)
+        elif isinstance(v, list):
+            for i in v:
+                _remove_datetime_object(i)
+        print '************remove_datetime_object**%s***'%(k)
+        print type(v)
+        if type(v) is datetime.datetime:
+            print '************remove_datetime_object**%s***'%(k)
+            del dictionary[k] #delete this since this contains unserialized datetime object
 
 def dict_to_etree(d):
     def _to_etree(d, root):
