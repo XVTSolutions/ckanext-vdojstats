@@ -18,6 +18,43 @@ class VDojStatsPlugin(SingletonPlugin):
     implements(plugins.IRoutes, inherit=True)
     implements(plugins.IConfigurer, inherit=True)
     implements(plugins.ITemplateHelpers)
+    implements(plugins.IPackageController, inherit=True)
+
+    def _trace(self, context, data_dict=None):
+        if context is not None:
+            print "----context----"
+            print [value for value in context.iteritems()]
+        if data_dict is not None:
+            print "----data_dict----"
+            print [value for value in data_dict.iteritems()]
+            pass
+        if plugins.toolkit.c is not None:
+            print "----plugins.toolkit.c----"
+            print plugins.toolkit.c
+            pass
+
+    def after_create(self, context, pkg_dict):
+        # IPackageController
+        #print '**********after_create***************'
+        #self._trace(context, pkg_dict)
+        h.create_activity(context, pkg_dict)
+        return super(VDojStatsPlugin, self).after_create(context, pkg_dict)
+
+    def after_update(self, context, pkg_dict):
+        # IPackageController
+        #print '**********after_update***************'
+        #self._trace(context, pkg_dict)
+        if pkg_dict.get('state')!=h.package_state_draft:
+            #if this package is not new then create activity
+            h.create_activity(context, pkg_dict)
+        return super(VDojStatsPlugin, self).after_update(context, pkg_dict)
+
+    def after_delete(self, context, pkg_dict):
+        # IPackageController
+        #print '**********after_delete***************'
+        #self._trace(context, pkg_dict)
+        h.create_activity(context, pkg_dict)
+        return super(VDojStatsPlugin, self).after_delete(context, pkg_dict)
 
     def before_map(self, map):
 
@@ -29,9 +66,13 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='overall')
 
-        map.connect('stats', '/stats/all_assets',
+        map.connect('stats', '/stats/all_assets_by_activity',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='all_assets')
+            action='all_assets_by_activity')
+
+        map.connect('stats', '/stats/all_assets_by_state',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_state')
 
         map.connect('stats', '/stats/assets',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -77,9 +118,13 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='overall_pdf')
 
-        map.connect('stats', '/stats/all_assets_pdf',
+        map.connect('stats', '/stats/all_assets_by_activity_pdf',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='all_assets_pdf')
+            action='all_assets_by_activity_pdf')
+
+        map.connect('stats', '/stats/all_assets_by_state_pdf',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_state_pdf')
 
         map.connect('stats', '/stats/assets_pdf',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -97,9 +142,13 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='overall_csv')
 
-        map.connect('stats', '/stats/all_assets_csv',
+        map.connect('stats', '/stats/all_assets_by_activity_csv',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='all_assets_csv')
+            action='all_assets_by_activity_csv')
+
+        map.connect('stats', '/stats/all_assets_by_state_csv',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_state_csv')
 
         map.connect('stats', '/stats/assets_csv',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -117,9 +166,13 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='overall_xml')
 
-        map.connect('stats', '/stats/all_assets_xml',
+        map.connect('stats', '/stats/all_assets_by_activity_xml',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='all_assets_xml')
+            action='all_assets_by_activity_xml')
+
+        map.connect('stats', '/stats/all_assets_by_state_xml',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_state_xml')
 
         map.connect('stats', '/stats/assets_xml',
             controller='ckanext.vdojstats.controller:VDojStatsController',
