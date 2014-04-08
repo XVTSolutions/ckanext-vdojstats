@@ -121,7 +121,7 @@ def _count_assets_by_date_and_activity(activity_types=None):
     activity = table('activity')
     detail = table('activity_detail')
     cols = [func.count(activity.c.activity_type).label('num'), activity.c.activity_type.label('activity_type'), detail.c.object_type, detail.c.activity_type.label('detail_type'), func.date_trunc('day', activity.c.timestamp).label('day')]
-    sql = select(cols, from_obj=[package, activity.outerjoin(detail)]).where(package.c.id == activity.c.object_id).where (or_( detail.c.object_type == object_type_package, detail.c.object_type == object_type_resource))
+    sql = select(cols, from_obj=[package, activity.outerjoin(detail)]).where(package.c.id == activity.c.object_id).where ( detail.c.object_type == object_type_package) #only package level
     if len(types):
         sql = sql.where(detail.c.activity_type.in_(types))
     sql = sql.group_by(func.date_trunc('day', activity.c.timestamp)).group_by(activity.c.activity_type).group_by(detail.c.object_type).group_by(detail.c.activity_type).order_by(func.date_trunc('day', activity.c.timestamp).desc())
@@ -131,6 +131,8 @@ def _count_assets_by_date_and_activity(activity_types=None):
         activity_list.append({
             'num':row['num'],
             'day':row['day'].strftime(DATE_FORMAT),
+            'activity_type':row['activity_type'],
+            'object_type':row['object_type'],
             'detail_type':row['detail_type'],
             })
 
@@ -551,8 +553,8 @@ def get_activity_dict():
         u'new': {'activity_type': dataset_activity_type_new, 'object_type': object_type_package, 'detail_type': activity_type_new},
         u'edit': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_package, 'detail_type': activity_type_changed},
         u'delete': {'activity_type': dataset_activity_type_deleted, 'object_type': object_type_package, 'detail_type': activity_type_deleted},
-        #metadata
-        u'new_metadata': {'activity_type': dataset_activity_type_new, 'object_type': object_type_metadata, 'detail_type': activity_type_new},
+        #metadata => the same as edit
+        u'new_metadata': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_package, 'detail_type': activity_type_changed},
         #suspend
         u'index': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_package, 'detail_type': package_state_suspended},
         u'unsuspend': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_package, 'detail_type': package_state_unsuspended},
@@ -616,7 +618,7 @@ def create_activity(context, pkg_dict):
                     detail_data = copy.deepcopy(resource)
                     _sanitize_dict(detail_data) #sanitize
     else:
-        return  #ignore metadata
+        return  #ignore unexpected
 
     if len(activity_data)==0:
         return
