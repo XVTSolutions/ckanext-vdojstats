@@ -1,13 +1,14 @@
 # -#-coding: utf-8 -#-
 import datetime
 import ckan.plugins.toolkit as tk
+import sys
 import ckan
 import pylons
 from ckanext.vdojstats.model import VDojStatsReport
 from ckan.common import _
 from ckan import model
 from ckan.model.meta import metadata
-from ckan.model import Session
+from ckan.model import Session, Activity, ActivityDetail
 from ckan.lib.navl.dictization_functions import StopOnError
 from ckan.lib.helpers import full_current_url
 from urlparse import urlparse
@@ -28,11 +29,21 @@ NotAuthorized = logic.NotAuthorized
 activity_type_new = 'new'
 activity_type_changed = 'changed'
 activity_type_deleted = 'deleted'
+
+object_type_package = 'Package'
+object_type_resource = 'Resource'
+object_type_metadata = 'Metadata'
+
+dataset_activity_type_new = 'new package'
+dataset_activity_type_changed = 'changed package'
+dataset_activity_type_deleted = 'deleted package'
+
 total_per_date = 'total_per_date'
 package_state_draft = 'draft'
 package_state_active = 'active'
 package_state_deleted = 'deleted'
 package_state_suspended = 'suspended'
+package_state_unsuspended = 'unsuspended'
 user_state_active = 'active'
 
 
@@ -90,6 +101,64 @@ def _count_state_users(state):
         if row['state']==state:
             return row['NUM']
     return 0
+
+def _count_assets_by_date_and_activity(activity_types=None):
+    """
+     get count of assets by date
+     parameter: activity_types (list)
+    """
+    types = []
+    if activity_types is not None:
+        if isinstance(activity_types, list):
+            types = activity_types
+        else:
+            types.append(activity_types)
+
+    package = table('package')
+    activity = table('activity')
+    detail = table('activity_detail')
+    cols = [func.count(activity.c.activity_type).label('num'), activity.c.activity_type.label('activity_type'), detail.c.object_type, detail.c.activity_type.label('detail_type'), func.date_trunc('day', activity.c.timestamp).label('day')]
+    sql = select(cols, from_obj=[package, activity.outerjoin(detail)]).where(package.c.id == activity.c.object_id).where( detail.c.object_type == 'Package')
+    if len(types):
+        sql = sql.where(detail.c.activity_type.in_(types))
+    sql = sql.group_by(func.date_trunc('day', activity.c.timestamp)).group_by(activity.c.activity_type).group_by(detail.c.object_type).group_by(detail.c.activity_type).order_by(func.date_trunc('day', activity.c.timestamp).desc())
+    rows = model.Session.execute(sql).fetchall()
+    activity_list = []
+    for row in rows:
+        activity_list.append({
+            'num':row['num'],
+            'day':row['day'].strftime(DATE_FORMAT),
+            'detail_type':row['detail_type'],
+            })
+
+    return activity_list
+
+def count_assets_by_date_and_activity():
+
+    records = []
+    record = None
+    current_day = None
+    rows = _count_assets_by_date_and_activity()
+    for row in rows:
+        if row['day'] != current_day:
+            if record is not None:
+                record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]})
+                records.append(record)
+
+            current_day = row['day']
+            record = {
+                'day': row['day'],
+                activity_type_new: 0L,
+                activity_type_changed: 0L,
+                activity_type_deleted: 0L,
+                total_per_date: 0L,
+            }
+        record.update({row['detail_type']:row['num']})
+    #finalize
+    if record is not None:
+        record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]})
+        records.append(record)
+    return records
 
 def _count_assets_by_date_and_state(states_types=None):
     """
@@ -469,6 +538,67 @@ def get_site_logo_url():
     parsed_uri = urlparse(full_current_url())
     domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
     return "%s%s"%(domain, config.get('ckan.site_logo', 'vdoj-logo-white-transparent.png'))
+
+
+def get_activity_dict():
+    return {
+        #package
+        u'new': {'activity_type': dataset_activity_type_new, 'object_type': object_type_package, 'detail_type': activity_type_new},
+        u'edit': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_package, 'detail_type': activity_type_changed},
+        u'delete': {'activity_type': dataset_activity_type_deleted, 'object_type': object_type_package, 'detail_type': activity_type_deleted},
+        #metadata
+        u'new_metadata': {'activity_type': dataset_activity_type_new, 'object_type': object_type_metadata, 'detail_type': activity_type_new},
+        #suspend
+        u'index': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_package, 'detail_type': package_state_suspended},
+        u'unsuspend': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_package, 'detail_type': package_state_unsuspended},
+        #resource
+        u'new_resource': {'activity_type': dataset_activity_type_new, 'object_type': object_type_resource, 'detail_type': activity_type_new},
+        u'resource_edit': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_resource, 'detail_type': activity_type_changed},
+        u'resource_delete': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_resource, 'detail_type': activity_type_deleted},
+    }
+
+def get_activity_info(action):
+    return get_activity_dict()[action]
+
+def create_activity(context, pkg_dict):
+
+    action = tk.c.action
+    if action not in get_activity_dict():
+        return
+
+    activity_info = get_activity_info(action)
+    object_id = None
+    activity_data = {}
+    if activity_info.get('object_type') == object_type_package:
+        object_id = pkg_dict.get('id')
+        activity_data = pkg_dict
+    elif activity_info.get('object_type') == object_type_resource:
+        if tk.c.resource_id:
+            object_id = tk.c.resource_id
+        if 'resources' in pkg_dict:
+            resources = pkg_dict.get('resources', [])
+            for resource in resources:
+                if object_id == resource.get('id'):
+                    activity_data = resource
+
+    serializable={}
+    for k,v in activity_data.items():
+        if isinstance(v, basestring):
+            serializable.update({k:v})
+            #ignore deeper layer since this data do not turn up on the screen
+
+    detail_type = activity_info.get('detail_type')
+        
+    model = context['model']
+    session = context['session']
+    user = context['user']
+    userobj = model.User.get(user)
+
+    activity = Activity(user_id=userobj.id, object_id=object_id, revision_id=pkg_dict.get('revision_id'), activity_type=activity_info.get('activity_type'), data={activity_info.get('object_type'): serializable,})
+    activity.save()
+
+    activity_detail = ActivityDetail(activity_id=activity.id, object_id=activity.object_id, object_type=activity_info.get('object_type'), activity_type=detail_type, data={activity_info.get('object_type'): serializable,})
+    activity_detail.save()
 
 def dict_to_etree(d):
     def _to_etree(d, root):
