@@ -29,6 +29,8 @@ NotAuthorized = logic.NotAuthorized
 activity_type_new = 'new'
 activity_type_changed = 'changed'
 activity_type_deleted = 'deleted'
+activity_type_suspended = 'suspended'
+activity_type_unsuspended = 'unsuspended'
 
 object_type_package = 'Package'
 object_type_resource = 'Resource'
@@ -142,7 +144,7 @@ def count_assets_by_date_and_activity():
     for row in rows:
         if row['day'] != current_day:
             if record is not None:
-                record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]})
+                record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]+record[activity_type_suspended]+record[activity_type_unsuspended]})
                 records.append(record)
 
             current_day = row['day']
@@ -151,12 +153,14 @@ def count_assets_by_date_and_activity():
                 activity_type_new: 0L,
                 activity_type_changed: 0L,
                 activity_type_deleted: 0L,
+                activity_type_suspended: 0L,
+                activity_type_unsuspended: 0L,
                 total_per_date: 0L,
             }
         record.update({row['detail_type']:row['num']})
     #finalize
     if record is not None:
-        record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]})
+        record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]+record[activity_type_suspended]+record[activity_type_unsuspended]})
         records.append(record)
     return records
 
