@@ -4,7 +4,7 @@
 		<div class="nav">
             <ul class="">
 		        <li class="">
-                    {% if current_action == 'overall' or current_action == 'all_assets' %} 
+                    {% if current_action == 'overall' or current_action == 'all_assets_by_state' or current_action == 'all_assets_by_activity' %} 
                         {{_('Summary')}}
                     {% else %}
                         <a href="/stats/overall">
@@ -17,16 +17,25 @@
                                 {{_('Overall')}}
                             {% else %}
                                 <a href="/stats/overall">
-                                    Overall
+                                    {{_('Overall')}}
                                 </a>
                             {% endif %}
                         </li>
 			            <li class="">
-                            {% if current_action == 'all_assets'%} 
-                                {{_('All Assets')}}
+                            {% if current_action == 'all_assets_by_activity'%} 
+                                {{_('All Assets By Activity')}}
                             {% else %}
-                                <a href="/stats/all_assets">
-                                    All Assets
+                                <a href="/stats/all_assets_by_activity">
+                                    {{_('All Assets By Activity')}}
+                                </a>
+                            {% endif %}
+                        </li>
+			            <li class="">
+                            {% if current_action == 'all_assets_by_state'%} 
+                                {{_('All Assets By State')}}
+                            {% else %}
+                                <a href="/stats/all_assets_by_state">
+                                    {{_('All Assets By State')}}
                                 </a>
                             {% endif %}
                         </li>
@@ -46,7 +55,7 @@
                         {{_('Users')}}
                     {% else %}
                         <a href="/stats/all_users">
-                            Users
+                            {{_('Users')}}
                         </a>
                     {% endif %}
                 </li>

@@ -1,0 +1,5 @@
+{% extends "vdojstats-base-pdf.html" %}
+
+{% block vdojstat_content %}
+{% snippet 'snippets/vdojstats-all-assets-by-activity-content.html', allassets=c.allassets %}
+{% endblock %}

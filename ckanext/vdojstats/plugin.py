@@ -66,9 +66,13 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='overall')
 
-        map.connect('stats', '/stats/all_assets',
+        map.connect('stats', '/stats/all_assets_by_activity',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='all_assets')
+            action='all_assets_by_activity')
+
+        map.connect('stats', '/stats/all_assets_by_state',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_state')
 
         map.connect('stats', '/stats/assets',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -114,9 +118,13 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='overall_pdf')
 
-        map.connect('stats', '/stats/all_assets_pdf',
+        map.connect('stats', '/stats/all_assets_by_activity_pdf',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='all_assets_pdf')
+            action='all_assets_by_activity_pdf')
+
+        map.connect('stats', '/stats/all_assets_by_state_pdf',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_state_pdf')
 
         map.connect('stats', '/stats/assets_pdf',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -134,9 +142,13 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='overall_csv')
 
-        map.connect('stats', '/stats/all_assets_csv',
+        map.connect('stats', '/stats/all_assets_by_activity_csv',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='all_assets_csv')
+            action='all_assets_by_activity_csv')
+
+        map.connect('stats', '/stats/all_assets_by_state_csv',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_state_csv')
 
         map.connect('stats', '/stats/assets_csv',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -154,9 +166,13 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='overall_xml')
 
-        map.connect('stats', '/stats/all_assets_xml',
+        map.connect('stats', '/stats/all_assets_by_activity_xml',
             controller='ckanext.vdojstats.controller:VDojStatsController',
-            action='all_assets_xml')
+            action='all_assets_by_activity_xml')
+
+        map.connect('stats', '/stats/all_assets_by_state_xml',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_state_xml')
 
         map.connect('stats', '/stats/assets_xml',
             controller='ckanext.vdojstats.controller:VDojStatsController',
