@@ -33,9 +33,9 @@ activity_type_deleted = 'deleted'
 activity_type_suspended = 'suspended'
 activity_type_unsuspended = 'unsuspended'
 
-object_type_package = 'Package'
-object_type_resource = 'Resource'
-object_type_metadata = 'Metadata'
+object_type_package = 'package'
+object_type_resource = 'resource'
+object_type_metadata = 'metadata'
 
 dataset_activity_type_new = 'new package'
 dataset_activity_type_changed = 'changed package'
@@ -121,7 +121,7 @@ def _count_assets_by_date_and_activity(activity_types=None):
     activity = table('activity')
     detail = table('activity_detail')
     cols = [func.count(activity.c.activity_type).label('num'), activity.c.activity_type.label('activity_type'), detail.c.object_type, detail.c.activity_type.label('detail_type'), func.date_trunc('day', activity.c.timestamp).label('day')]
-    sql = select(cols, from_obj=[package, activity.outerjoin(detail)]).where(package.c.id == activity.c.object_id).where( detail.c.object_type == 'Package')
+    sql = select(cols, from_obj=[package, activity.outerjoin(detail)]).where(package.c.id == activity.c.object_id).where (or_( detail.c.object_type == object_type_package, detail.c.object_type == object_type_resource))
     if len(types):
         sql = sql.where(detail.c.activity_type.in_(types))
     sql = sql.group_by(func.date_trunc('day', activity.c.timestamp)).group_by(activity.c.activity_type).group_by(detail.c.object_type).group_by(detail.c.activity_type).order_by(func.date_trunc('day', activity.c.timestamp).desc())
@@ -557,7 +557,7 @@ def get_activity_dict():
         u'index': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_package, 'detail_type': package_state_suspended},
         u'unsuspend': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_package, 'detail_type': package_state_unsuspended},
         #resource
-        u'new_resource': {'activity_type': dataset_activity_type_new, 'object_type': object_type_resource, 'detail_type': activity_type_new},
+        u'new_resource': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_resource, 'detail_type': activity_type_new},
         u'resource_edit': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_resource, 'detail_type': activity_type_changed},
         u'resource_delete': {'activity_type': dataset_activity_type_changed, 'object_type': object_type_resource, 'detail_type': activity_type_deleted},
     }
@@ -567,53 +567,79 @@ def get_activity_info(action):
 
 def create_activity(context, pkg_dict):
 
-    action = tk.c.action
-    if action not in get_activity_dict():
-        return
-
-    activity_info = get_activity_info(action)
-    object_id = None
-    activity_data = {}
-    if activity_info.get('object_type') == object_type_package:
-        object_id = pkg_dict.get('id')
-        activity_data = pkg_dict
-    elif activity_info.get('object_type') == object_type_resource:
-        if tk.c.resource_id:
-            object_id = tk.c.resource_id
-        if 'resources' in pkg_dict:
-            resources = pkg_dict.get('resources', [])
-            for resource in resources:
-                if object_id == resource.get('id'):
-                    activity_data = resource
-
-    serializable=copy.deepcopy(activity_data)
-    if 'resources' in serializable:
-        _remove_datetime_object(serializable)
-
-    detail_type = activity_info.get('detail_type')
-        
     model = context['model']
     session = context['session']
     user = context['user']
     userobj = model.User.get(user)
 
-    activity = Activity(user_id=userobj.id, object_id=object_id, revision_id=pkg_dict.get('revision_id'), activity_type=activity_info.get('activity_type'), data={activity_info.get('object_type'): serializable,})
+    dataset_context = {'model': model, 'session': session,
+           'api_version': 3, 'for_edit': True,
+           'user': tk.c.user or tk.c.author, 'auth_user_obj': userobj}
+    action = tk.c.action
+    if action not in get_activity_dict():
+        return
+
+    activity_info = get_activity_info(action)
+    activity_object_id = None
+    activity_data = {}
+    detail_data = {}
+    activity_object_id = pkg_dict.get('id')
+    if not activity_object_id:
+        return
+
+    #retrieve package data as activity_data
+    try:
+        activity_data =  tk.get_action('package_show')(dataset_context, {'id': activity_object_id})
+    except NotFound:
+        #at new creation of the package, the data has not been existing in the DB, so retrieve the data from pkg_dict and sanitize it
+        activity_data = copy.deepcopy(pkg_dict)
+        _sanitize_dict(activity_data) #sanitize
+
+    #retrieve package/resource data as detail_data
+    if activity_info.get('object_type') == object_type_package:
+        detail_data = activity_data
+    elif activity_info.get('object_type') == object_type_resource:
+        if tk.c.resource_id:
+            detail_object_id = tk.c.resource_id
+            try:
+                detail_data =  tk.get_action('resource_show')(dataset_context, {'id': detail_object_id})
+            except NotFound:
+                print '************no id=%s**************'%(detail_object_id)
+                pass
+        elif 'resources' in pkg_dict:
+            #retrieve non-id resource
+            activity_data = copy.deepcopy(pkg_dict)
+            _sanitize_dict(activity_data) #sanitize
+            for resource in activity_data.get('resources'):
+                if not 'id' in resource:
+                    #new resource data
+                    detail_data = copy.deepcopy(resource)
+                    _sanitize_dict(detail_data) #sanitize
+    else:
+        return  #ignore metadata
+
+    if len(activity_data)==0:
+        return
+
+    detail_type = activity_info.get('detail_type')
+
+    #create activity record
+    activity = Activity(user_id=userobj.id, object_id=activity_object_id, revision_id=pkg_dict.get('revision_id'), activity_type=activity_info.get('activity_type'), data={object_type_package: activity_data,})#always package
     activity.save()
 
-    activity_detail = ActivityDetail(activity_id=activity.id, object_id=activity.object_id, object_type=activity_info.get('object_type'), activity_type=detail_type, data={activity_info.get('object_type'): serializable,})
-    activity_detail.save()
+    #create detail record
+    if len(detail_data):
+        activity_detail = ActivityDetail(activity_id=activity.id, object_id=activity.object_id, object_type=activity_info.get('object_type'), activity_type=detail_type, data={activity_info.get('object_type'): detail_data,})
+        activity_detail.save()
 
-def _remove_datetime_object(dictionary):
+def _sanitize_dict(dictionary):
     for k,v in dictionary.items():
         if isinstance(v, dict):
-            _remove_datetime_object(v)
+            _sanitize_dict(v)
         elif isinstance(v, list):
             for i in v:
-                _remove_datetime_object(i)
-        print '************remove_datetime_object**%s***'%(k)
-        print type(v)
+                _sanitize_dict(i)
         if type(v) is datetime.datetime:
-            print '************remove_datetime_object**%s***'%(k)
             del dictionary[k] #delete this since this contains unserialized datetime object
 
 def dict_to_etree(d):

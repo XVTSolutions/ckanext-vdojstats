@@ -38,15 +38,15 @@ class VDojStatsPlugin(SingletonPlugin):
 
     def after_create(self, context, pkg_dict):
         # IPackageController
-        #print '**********after_create***************'
-        #self._trace(context, pkg_dict)
+        print '**********after_create***************'
+        self._trace(context, pkg_dict)
         h.create_activity(context, pkg_dict)
         return super(VDojStatsPlugin, self).after_create(context, pkg_dict)
 
     def after_update(self, context, pkg_dict):
         # IPackageController
-        #print '**********after_update***************'
-        #self._trace(context, pkg_dict)
+        print '**********after_update***************'
+        self._trace(context, pkg_dict)
         if pkg_dict.get('state')!=h.package_state_draft:
             #if this package is not new then create activity
             h.create_activity(context, pkg_dict)
@@ -54,8 +54,8 @@ class VDojStatsPlugin(SingletonPlugin):
 
     def after_delete(self, context, pkg_dict):
         # IPackageController
-        #print '**********after_delete***************'
-        #self._trace(context, pkg_dict)
+        print '**********after_delete***************'
+        self._trace(context, pkg_dict)
         h.create_activity(context, pkg_dict)
         return super(VDojStatsPlugin, self).after_delete(context, pkg_dict)
 
