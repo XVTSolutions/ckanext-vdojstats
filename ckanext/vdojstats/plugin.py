@@ -1,6 +1,8 @@
 import os
 from logging import getLogger
 
+import ckan.model as ckan_model
+import ckan.logic.converters as converters
 from ckan.plugins import implements, SingletonPlugin
 from ckan.lib.navl.dictization_functions import StopOnError
 from model import create_table
@@ -19,6 +21,7 @@ class VDojStatsPlugin(SingletonPlugin):
     implements(plugins.IConfigurer, inherit=True)
     implements(plugins.ITemplateHelpers)
     implements(plugins.IPackageController, inherit=True)
+    implements(plugins.IAuthFunctions)
 
     def _trace(self, context, data_dict=None):
         if context is not None:
@@ -216,4 +219,26 @@ class VDojStatsPlugin(SingletonPlugin):
             'get_export_header_title' : h.get_export_header_title,
             'get_site_logo_url' : h.get_site_logo_url,
                 }
+        
+    """   
+    IAuthFunctions
+    """ 
+    def get_auth_functions(self):
+        return {'statistics_show': _statistics_show}
+    
+    
+def _statistics_show(context, data_dict=None):
+    #if user is org admin allow access
+    user_id = converters.convert_user_name_or_id_to_id(tk.c.user, context)
+    
+    q = ckan_model.Session.query(ckan_model.Member) \
+            .filter(ckan_model.Member.table_name == 'user') \
+            .filter(ckan_model.Member.state == 'active') \
+            .filter(ckan_model.Member.capacity == 'admin') \
+            .filter(ckan_model.Member.table_id == user_id)
+    
+    if bool(q.count()):
+        return {'success': True }
+    
+    return {'success': False, 'msg': 'Not allowed to view statistics'}
 

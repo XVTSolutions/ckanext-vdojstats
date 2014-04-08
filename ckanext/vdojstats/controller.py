@@ -19,10 +19,17 @@ class VDojStatsController(BaseController):
 
     def __before__(self, action, **params):
         super(VDojStatsController, self).__before__(action, **params)
+        
         if not tk.c.userobj:
             print '**************invador***************'
             abort(401, _('You are not authorized to display statistics pages.') )
-
+        
+        context = {'user': tk.c.user or tk.c.author}
+        try:
+            tk.check_access('statistics_show', context, {})
+        except tk.NotAuthorized:
+            abort(401, tk._('You are not authorized to display statistics pages.'))
+        
     '''
     overall
     '''
