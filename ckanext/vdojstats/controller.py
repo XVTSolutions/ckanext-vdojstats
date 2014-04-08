@@ -39,7 +39,7 @@ class VDojStatsController(BaseController):
             'Published':published_num,
             'Active':active_num,
             'Not Active':dormant_num,
-            'Pending Approval':pending_approval_num,
+            'Pending Review':pending_approval_num,
         }
 
     def overall(self):
