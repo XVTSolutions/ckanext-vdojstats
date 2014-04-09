@@ -349,9 +349,9 @@ def list_activities_for_user(user_id, offset=0, limit=1000):
     activity_list = []
     for row in rows:
         activity_list.append({
-            'activity_type':row['activity_type'],
-            'detail_type':row['detail_type'] or '',
-            'object_type':row['object_type'] or '',
+            'activity_type':(row['activity_type'] or '').title(),#capitalize
+            'detail_type':(row['detail_type'] or '').title(),#capitalize
+            'object_type':(row['object_type'] or '').title(),#capitalize
             'timestamp':row['timestamp'].strftime(DATETIME_FORMAT),
             })
 
