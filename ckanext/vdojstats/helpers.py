@@ -617,6 +617,7 @@ def create_activity(context, pkg_dict):
                     #new resource data
                     detail_data = copy.deepcopy(resource)
                     _sanitize_dict(detail_data) #sanitize
+                    detail_data.update({'id':''})#to avoid server error at displaying on the user activity
     else:
         return  #ignore unexpected
 
