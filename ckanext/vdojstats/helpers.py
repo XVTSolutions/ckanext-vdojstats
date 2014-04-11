@@ -43,6 +43,7 @@ dataset_activity_type_deleted = 'deleted package'
 
 total_per_date = 'total_per_date'
 package_state_draft = 'draft'
+package_state_draft_complete = 'draft-complete'
 package_state_active = 'active'
 package_state_deleted = 'deleted'
 package_state_suspended = 'suspended'
@@ -167,7 +168,7 @@ def count_assets_by_date_and_activity():
         records.append(record)
     return records
 
-def _count_assets_by_date_and_state(states_types=None):
+def _count_assets_by_date_and_state_without_timezone(states_types=None):
     """
      get count of assets by date
      parameter: activity_types (list)
@@ -193,6 +194,31 @@ def _count_assets_by_date_and_state(states_types=None):
             'num':row['num'],
             'day':row['day'].strftime(DATE_FORMAT),
             'state':row['state'],
+            })
+
+    return state_list
+
+def _count_assets_by_date_and_state():
+    """
+     get count of assets by date
+     parameter: activity_types (list)
+    """
+
+    tz_code = config.get('ckan.timezone', 'Australia/Melbourne')
+
+    sql = "SELECT COUNT(revision.state) as num, revision.state as revision_state, date_trunc('day', (revision.metadata_modified + interval '1' hour * EXTRACT(timezone_hour from timezone('%s', revision.metadata_modified)) + interval '1' minute * EXTRACT(timezone_minute from timezone('%s', revision.metadata_modified)))) AS day "%(tz_code, tz_code)
+    sql = sql + " FROM package_revision revision "
+    sql = sql + " INNER JOIN package ON revision.id = package.id "
+    sql = sql + " GROUP BY day, revision_state "
+    sql = sql + " ORDER BY day DESC "
+
+    rows = model.Session.execute(sql).fetchall()
+    state_list = []
+    for row in rows:
+        state_list.append({
+            'num':row['num'],
+            'day':row['day'].strftime(DATE_FORMAT),
+            'state':row['revision_state'],
             })
 
     return state_list
@@ -263,13 +289,14 @@ def count_assets_by_date_and_state():
     for row in rows:
         if row['day'] != current_day:
             if record is not None:
-                record.update({total_per_date:record[package_state_draft]+record[package_state_active]+record[package_state_deleted]+record[package_state_suspended]})
+                record.update({total_per_date:record[package_state_draft]+record[package_state_draft_complete]+record[package_state_active]+record[package_state_deleted]+record[package_state_suspended]})
                 records.append(record)
 
             current_day = row['day']
             record = {
                 'day': row['day'],
                 package_state_draft: 0L,
+                package_state_draft_complete: 0L,
                 package_state_active: 0L,
                 package_state_deleted: 0L,
                 package_state_suspended: 0L,
@@ -278,7 +305,7 @@ def count_assets_by_date_and_state():
         record.update({row['state']:row['num']})
     #finalize
     if record is not None:
-        record.update({total_per_date:record[package_state_draft]+record[package_state_active]+record[package_state_deleted]+record[package_state_suspended]})
+        record.update({total_per_date:record[package_state_draft]+record[package_state_draft_complete]+record[package_state_active]+record[package_state_deleted]+record[package_state_suspended]})
         records.append(record)
     return records
 
@@ -426,7 +453,7 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             'package_id':row['package_id'],
             'package_title':row['package_title'],
             'package_name':row['package_name'],
-            'package_state':row['package_state'].capitalize(),
+            'package_state':row['package_state'].title(),
             'is_private':'Yes' if row['private'] else 'No',
             'is_suspended':'Yes' if row['suspended'] else 'No',
             'suspend_reason': row['suspend_reason'] or '',
@@ -473,10 +500,11 @@ def get_org_names():
 
 def get_package_states():
     return [
-        {'text': package_state_draft.capitalize(), 'value': package_state_draft},
-        {'text': package_state_active.capitalize(), 'value': package_state_active},
-        {'text': package_state_deleted.capitalize(), 'value': package_state_deleted},
-        {'text': package_state_suspended.capitalize(), 'value': package_state_suspended},
+        {'text': package_state_draft.title(), 'value': package_state_draft},
+        {'text': package_state_draft_complete.title(), 'value': package_state_draft_complete},
+        {'text': package_state_active.title(), 'value': package_state_active},
+        {'text': package_state_deleted.title(), 'value': package_state_deleted},
+        {'text': package_state_suspended.title(), 'value': package_state_suspended},
     ]
     
 def get_reports():

@@ -3,10 +3,11 @@
       <tr>
         <th scope="col">Date</th>
         <th scope="col">Draft</th>
+        <th scope="col" title="Draft Complete">Draft Comp</th>
         <th scope="col">Active</th>
         <th scope="col">Deleted</th>
         <th scope="col">Suspended</th>
-        <th scope="col">Total per day</th>
+        <th scope="col" title="Total per date">Total@day</th>
       </tr>
     </thead>
     <tbody>
@@ -16,6 +17,7 @@
             >
             <td class="dataset-label">{{ row.day }}</td>
             <td class="dataset-details">{{ row.draft }}</td>
+            <td class="dataset-details">{{ row.get('draft-complete') }}</td>
             <td class="dataset-details">{{ row.active }}</td>
             <td class="dataset-details">{{ row.deleted }}</td>
             <td class="dataset-details">{{ row.suspended }}</td>

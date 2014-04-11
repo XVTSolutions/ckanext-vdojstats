@@ -166,10 +166,10 @@ class VDojStatsController(BaseController):
         file_path = h.get_export_dir() + 'vdojstats-all-assets-by-state.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
-            record = ['Date', 'Draft', 'Active', 'Deleted', 'Suspended', 'Total']
+            record = ['Date', 'Draft', 'Draft-Complete', 'Active', 'Deleted', 'Suspended', 'Total']
             writer.writerow(record)
             for row in tk.c.allassets:
-                record = [row['day'], row[h.package_state_draft], row[h.package_state_active], row[h.package_state_deleted], row[h.package_state_suspended], row[h.total_per_date]]
+                record = [row['day'], row[h.package_state_draft], row[h.package_state_draft_complete], row[h.package_state_active], row[h.package_state_deleted], row[h.package_state_suspended], row[h.total_per_date]]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
@@ -183,6 +183,8 @@ class VDojStatsController(BaseController):
             day.text = row['day']
             draft = ET.SubElement(record, 'Draft')
             draft.text = str(row[h.package_state_draft])
+            draft_complete = ET.SubElement(record, 'Draft_Complete')
+            draft_complete.text = str(row[h.package_state_draft_complete])
             active = ET.SubElement(record, 'Active')
             active.text = str(row[h.package_state_active])
             deleted = ET.SubElement(record, 'Deleted')
