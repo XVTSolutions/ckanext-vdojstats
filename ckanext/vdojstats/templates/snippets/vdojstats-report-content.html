@@ -15,9 +15,14 @@
        </thead>
        <tbody>
          {% for row in users %}
+            {% if truncate_email %}
+              {% set email = h.markdown_wrap(row.email, extract_length=truncate_email) if h.markdown_wrap(row.email, extract_length=truncate_email)|length else h.markdown_extract(row.email, extract_length=truncate_email) %}
+            {% else %}
+               {% set email = row.email %}
+            {% endif %}
              <tr>
                <td class="dataset-label">{{ h.linked_user(row.name) }}</td>
-               <td class="dataset-details"><a href="mailto:{{ row.email }}">{{ row.email }}</a></td>
+               <td class="dataset-details"><a href="mailto:{{ email }}">{{ email }}</a></td>
                <td class="dataset-details">{{ row.state }}</td>
                {% if show_org %}
            	<td scope="col">{{ row.organization }}</td>
