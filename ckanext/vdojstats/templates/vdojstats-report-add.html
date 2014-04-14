@@ -39,10 +39,10 @@
 		    <label class="control-label" style="float: none;">{{ _('Report on') }}</label>
 		    <div class="controls editor">
 			    <div class="control-radio">
-				    <label class="no-colon"><input type="radio" name="report_on" value="activities" checked="checked"/>User Activities</label>
+				    <label class="no-colon"><input type="radio" name="report_on" value="activities" {% if data.report_on == "activities" %}checked="checked"{% endif %}/>User Activities</label>
 				</div>
 				<div class="control-radio">
-				    <label class="no-colon"><input type="radio" name="report_on" value="details" />User Details</label>
+				    <label class="no-colon"><input type="radio" name="report_on" value="details" {% if data.report_on == "details" %}checked="checked"{% endif %}/>User Details</label>
 			    </div>
 			</div>
 		</div>
