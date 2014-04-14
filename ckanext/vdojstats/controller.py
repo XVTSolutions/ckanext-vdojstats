@@ -110,10 +110,10 @@ class VDojStatsController(BaseController):
         file_path = h.get_export_dir() + 'vdojstats-all-assets-by-activity.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
-            record = ['Date', 'New', 'Modified', 'Deleted', 'Suspended', 'Unsuspended', 'Total']
+            record = ['Date', 'New', 'Modified', 'Deleted', 'Suspended', 'Unsuspended', 'Reviewed', 'Total']
             writer.writerow(record)
             for row in tk.c.allassets:
-                record = [row['day'], row[h.activity_type_new], row[h.activity_type_changed], row[h.activity_type_deleted], row[h.activity_type_suspended], row[h.activity_type_unsuspended], row[h.total_per_date]]
+                record = [row['day'], row[h.activity_type_new], row[h.activity_type_changed], row[h.activity_type_deleted], row[h.activity_type_suspended], row[h.activity_type_unsuspended], row[h.activity_type_reviewed], row[h.total_per_date]]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
@@ -135,6 +135,8 @@ class VDojStatsController(BaseController):
             suspended.text = str(row[h.activity_type_suspended])
             unsuspended = ET.SubElement(record, 'Unsuspended')
             unsuspended.text = str(row[h.activity_type_unsuspended])
+            reviewed = ET.SubElement(record, 'Reviewed')
+            reviewed.text = str(row[h.activity_type_reviewed])
             total = ET.SubElement(record, 'Total')
             total.text = str(row[h.total_per_date])
         file_path = h.get_export_dir() + 'vdojstats-all-assets-by-activity.xml'

@@ -5,9 +5,10 @@
         <th scope="col" class="short">*New</th>
         <th scope="col" class="short">Modified</th>
         <th scope="col" class="short">Deleted</th>
-        <th scope="col">Suspended</th>
-        <th scope="col">Unsuspended</th>
-        <th scope="col">Total per day</th>
+        <th scope="col" title="Suspended">Susp.</th>
+        <th scope="col" title="Unsuspended">Unsusp.</th>
+        <th scope="col">Reviewed</th>
+        <th scope="col" title="Total per day">Total</th>
       </tr>
     </thead>
     <tbody>
@@ -21,6 +22,7 @@
             <td class="dataset-details">{{ row.deleted }}</td>
             <td class="dataset-details">{{ row.suspended }}</td>
             <td class="dataset-details">{{ row.unsuspended }}</td>
+            <td class="dataset-details">{{ row.reviewed }}</td>
             <td class="dataset-details">{{ row.total_per_date }}</td>
           </tr>
       {% endfor %}

@@ -32,6 +32,7 @@ activity_type_changed = 'changed'
 activity_type_deleted = 'deleted'
 activity_type_suspended = 'suspended'
 activity_type_unsuspended = 'unsuspended'
+activity_type_reviewed = 'reviewed'
 
 object_type_package = 'package'
 object_type_resource = 'resource'
@@ -40,6 +41,7 @@ object_type_metadata = 'metadata'
 dataset_activity_type_new = 'new package'
 dataset_activity_type_changed = 'changed package'
 dataset_activity_type_deleted = 'deleted package'
+dataset_activity_type_reviewed = 'package reviewed'
 
 total_per_date = 'total_per_date'
 package_state_draft = 'draft'
@@ -148,7 +150,7 @@ def count_assets_by_date_and_activity():
     for row in rows:
         if row['day'] != current_day:
             if record is not None:
-                record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]+record[activity_type_suspended]+record[activity_type_unsuspended]})
+                record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]+record[activity_type_suspended]+record[activity_type_unsuspended]+record[activity_type_reviewed]})
                 records.append(record)
 
             current_day = row['day']
@@ -159,12 +161,13 @@ def count_assets_by_date_and_activity():
                 activity_type_deleted: 0L,
                 activity_type_suspended: 0L,
                 activity_type_unsuspended: 0L,
+                activity_type_reviewed: 0L,
                 total_per_date: 0L,
             }
         record.update({row['detail_type']:row['num']})
     #finalize
     if record is not None:
-        record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]+record[activity_type_suspended]+record[activity_type_unsuspended]})
+        record.update({total_per_date:record[activity_type_new]+record[activity_type_changed]+record[activity_type_deleted]+record[activity_type_suspended]+record[activity_type_unsuspended]+record[activity_type_reviewed]})
         records.append(record)
     return records
 
