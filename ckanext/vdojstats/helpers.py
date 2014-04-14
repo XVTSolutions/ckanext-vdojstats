@@ -420,11 +420,12 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
         else:
             pstats.append("'%s'"%(package_states))
 
-    sql = "SELECT P.id AS package_id, P.title AS package_title, P.name AS package_name, P.state AS package_state, P.private, P.type AS package_type, P.owner_org, G.title AS group_title, G.name AS group_name, review.next_review_date, (CASE WHEN suspend.package_id IS NOT NULL THEN True ELSE False END) as suspended, suspend.reason AS suspend_reason "
+    sql = "SELECT P.id AS package_id, P.title AS package_title, P.name AS package_name, P.state AS package_state, P.private, P.type AS package_type, P.owner_org, G.title AS group_title, G.name AS group_name, review.next_review_date, (CASE WHEN suspend.package_id IS NOT NULL THEN True ELSE False END) AS suspended, suspend.reason AS suspend_reason, activity.timestamp AS activity_timestamp "
     sql = sql + "FROM package P " 
     sql = sql + "LEFT OUTER JOIN \"group\" G ON P.owner_org = G.id AND G.is_organization IS TRUE "  #only organization
     sql = sql + "LEFT OUTER JOIN package_review review ON review.package_id = P.id "
     sql = sql + "LEFT OUTER JOIN package_suspend suspend ON suspend.package_id = P.id "
+    sql = sql + "LEFT OUTER JOIN activity ON activity.activity_type = '%s' AND activity.object_id = P.id "%(dataset_activity_type_reviewed)
     sql = sql + "WHERE P.id IS NOT NULL "   #dummy statement
     if len(organizations):
         sql = sql + "AND P.owner_org IN (%s) "%(",".join(organizations))
@@ -448,9 +449,12 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
     rows = model.Session.execute(sql).fetchall()
     activity_list = []
     for row in rows:
-        next_review_date = None
+        next_review_date = ''
+        last_review_date = ''
         if row['next_review_date']:
             next_review_date = row['next_review_date'].strftime(DATE_FORMAT)
+        if row['activity_timestamp']:
+            last_review_date = row['activity_timestamp'].strftime(DATE_FORMAT)
 
         activity_list.append({
             'package_id':row['package_id'],
@@ -463,7 +467,8 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             'owner_org':row['owner_org'] or '',
             'group_title':row['group_title'] or '',
             'group_name':row['group_name'] or '',
-            'next_review_date':next_review_date or '',
+            'last_review_date':last_review_date,
+            'next_review_date':next_review_date,
             })
     return activity_list
 

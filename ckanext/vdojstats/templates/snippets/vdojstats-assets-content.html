@@ -9,7 +9,8 @@
         <th scope="col" class="short">Private</th>
         <th scope="col" class="short">Suspend</th>
         <th scope="col" title="Suspend Reason">Susp. Reason</th>
-        <th scope="col">Review Date</th>
+        <th scope="col" title="Last Review Date">Last Rev.</th>
+        <th scope="col" title="Next Review Date">Next Rev.</th>
       </tr>
     </thead>
     <tbody>
@@ -23,6 +24,7 @@
             <td class="dataset-details">{{ row.is_private }}</td>
             <td class="dataset-details">{{ row.is_suspended }}</td>
             <td class="dataset-details">{{ row.suspend_reason }}</td>
+            <td class="dataset-details">{{ row.last_review_date }}</td>
             <td class="dataset-details">{{ row.next_review_date }}</td>
           </tr>
       {% endfor %}

@@ -271,10 +271,10 @@ class VDojStatsController(BaseController):
         file_path = h.get_export_dir() + 'vdojstats-assets.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
-            record = ['Organisation', 'Packasge', 'status', 'Private', 'Suspend', 'Suspend Reason', 'Review Date']
+            record = ['Organisation', 'Packasge', 'status', 'Private', 'Suspend', 'Suspend Reason', 'Last Review Date', 'Next Review Date']
             writer.writerow(record)
             for row in tk.c.org_assets:
-                record = [row['group_title'] or row['group_name'], row['package_title'] or row['package_name'], row['package_state'], row['is_private'], row['is_suspended'], row['suspend_reason'], row['next_review_date']]
+                record = [row['group_title'] or row['group_name'], row['package_title'] or row['package_name'], row['package_state'], row['is_private'], row['is_suspended'], row['suspend_reason'], row['last_review_date'], row['next_review_date']]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
@@ -296,7 +296,9 @@ class VDojStatsController(BaseController):
             is_suspended.text = row['is_suspended']
             suspend_reason = ET.SubElement(record, 'Suspend_Reason')
             suspend_reason.text = row['suspend_reason']
-            next_review_date = ET.SubElement(record, 'Review_Date')
+            last_review_date = ET.SubElement(record, 'Last_Review_Date')
+            last_review_date.text = row['last_review_date']
+            next_review_date = ET.SubElement(record, 'Next_Review_Date')
             next_review_date.text = row['next_review_date']
         file_path = h.get_export_dir() + 'vdojstats-organizations.xml'
         tree = ET.ElementTree(root)
