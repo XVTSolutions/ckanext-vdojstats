@@ -11,7 +11,7 @@ from ckan import model
 from ckan.model.meta import metadata
 from ckan.model import Session, Activity, ActivityDetail
 from ckan.lib.navl.dictization_functions import StopOnError
-from ckan.lib.helpers import full_current_url
+from ckan.lib.helpers import full_current_url, url_for, link_to, dataset_display_name, markdown_extract
 from urlparse import urlparse
 from ckan.logic.converters import convert_group_name_or_id_to_id
 from sqlalchemy import *
@@ -373,7 +373,7 @@ def list_activities_for_user(user_id, offset=0, limit=1000):
     user = table('user')
     activity = table('activity')
     detail = table('activity_detail')
-    cols = [activity.c.activity_type.label('activity_type'), detail.c.activity_type.label('detail_type'), detail.c.object_type, activity.c.timestamp]
+    cols = [activity.c.activity_type.label('activity_type'), activity.c.data.label('activity_data'), detail.c.activity_type.label('detail_type'), detail.c.object_type, activity.c.timestamp]
     sql = select(cols, from_obj=[user, activity.outerjoin(detail) ]).where(user.c.id == activity.c.user_id).where( user.c.id == user_id).order_by(activity.c.timestamp.desc())
     rows = model.Session.execute(sql).fetchall()
     activity_list = []
@@ -383,6 +383,7 @@ def list_activities_for_user(user_id, offset=0, limit=1000):
             'detail_type':(row['detail_type'] or '').title(),#capitalize
             'object_type':(row['object_type'] or '').title(),#capitalize
             'timestamp':row['timestamp'].strftime(DATETIME_FORMAT),
+            'activity_data':row['activity_data'],
             })
 
     return activity_list
@@ -708,4 +709,50 @@ def dict_to_etree(d):
     _to_etree(body, node)
     return ET.ElementTree(node)
 
+
+
+def vdoj_group_link(group, wordcount=None):
+    url = url_for(controller='group', action='read', id=group['name'])
+    display_text = group['title']
+    if wordcount:
+        display_text = markdown_extract(group['title'], extract_length=wordcount)
+    return link_to(display_text, url)
+
+def vdoj_organization_link(organization, wordcount=None):
+    url = url_for(controller='organization', action='read', id=organization['name'])
+    display_text = organization['name']
+    if wordcount:
+        display_text = markdown_extract(organization['name'], extract_length=wordcount)
+    return link_to(display_text, url)
+
+def vdoj_dataset_link(package_or_package_dict, wordcount=None):
+    if isinstance(package_or_package_dict, dict):
+        name = package_or_package_dict['name']
+    else:
+        name = package_or_package_dict.name
+    display_text = dataset_display_name(package_or_package_dict)
+    if wordcount:
+        display_text = markdown_extract(display_text, extract_length=wordcount)
+    return link_to(
+        display_text,
+        url_for(controller='package', action='read', id=name)
+    )
+
+def get_dispaly_name_for_object_data(data):
+    display_name = ''
+    if 'activity_data' in data:
+        activity_data = data.get('activity_data')
+        if 'package' in activity_data:
+            pkg = activity_data.get('package')
+            display_name = pkg.get('name')
+       	elif 'dataset' in activity_data:
+            ds = activity_data.get('dataset')
+            display_name = ds.get('name')
+       	elif 'group' in activity_data and activity_data.get('group'):
+            group = activity_data.get('group')
+            if group.get('is_organization'):
+                display_name = group.get('name')
+            else:
+                display_name = group.get('title')
+    return display_name
 
