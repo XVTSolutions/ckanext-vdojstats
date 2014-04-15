@@ -3,6 +3,7 @@
 {% block vdojstat_search %}
   {{ super() }}
         
+        <p class='flash-messages alert'> You can use the search filters by clicking plus(+) icon below. </p>
         <p id='search_option_trigger' data-module="search_option_popover"
             {% if c.search %}
                 class="icon-minus-sign"
