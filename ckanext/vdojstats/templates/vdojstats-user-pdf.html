@@ -1,6 +1,6 @@
 {% extends "vdojstats-base-pdf.html" %}
 
 {% block vdojstat_content %}
-{% snippet 'snippets/vdojstats-user-content.html', user_activity_list=c.user_activity_list %}
+{% snippet 'snippets/vdojstats-user-content.html', user_activity_list=c.user_activity_list, data_wordcount=20 %}
 {% endblock %}
 

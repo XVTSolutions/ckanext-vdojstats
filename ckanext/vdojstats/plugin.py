@@ -218,6 +218,9 @@ class VDojStatsPlugin(SingletonPlugin):
             'current_time'  : h.current_time,
             'get_export_header_title' : h.get_export_header_title,
             'get_site_logo_url' : h.get_site_logo_url,
+            'vdoj_group_link' : h.vdoj_group_link,
+            'vdoj_organization_link' : h.vdoj_organization_link,
+            'vdoj_dataset_link' : h.vdoj_dataset_link,
                 }
         
     """   

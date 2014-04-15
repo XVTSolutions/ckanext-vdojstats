@@ -417,14 +417,14 @@ class VDojStatsController(BaseController):
         file_path = h.get_export_dir() + 'vdojstats-user.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
-            record = ['Date Time', 'Activity', 'Object (Detail)', 'Activity (Detail)']
+            record = ['Date Time', 'Activity', 'Object (Detail)', 'Activity (Detail)', 'Data']
             writer.writerow(record)
             for row in tk.c.user_activity_list:
-                record = [row['timestamp'], row['activity_type'], row['object_type'], row['detail_type']]
+                record = [row['timestamp'], row['activity_type'], row['object_type'], row['detail_type'], h.get_dispaly_name_for_object_data(row)]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
-    
+
     def user_xml(self, username):
         self._user(username)
         root = ET.Element('root')
@@ -438,6 +438,8 @@ class VDojStatsController(BaseController):
             object_type.text = row['object_type']
             detail_type = ET.SubElement(record, 'Activity_Detail')
             detail_type.text = row['detail_type']
+            data = ET.SubElement(record, 'Data')
+            data.text = h.get_dispaly_name_for_object_data(row)
         file_path = h.get_export_dir() + 'vdojstats-user.xml'
         tree = ET.ElementTree(root)
         response = h.createResponseWithXML(tree, file_path, tk.response)
