@@ -362,7 +362,7 @@ class VDojStatsController(BaseController):
             record = ['User Name', 'Is Active', 'Is Administrator']
             writer.writerow(record)
             for row in tk.c.user_list:
-                record = [row['name'], row['state'], row['sysadmin']]
+                record = [row['fullname'] or row['name'], row['state'], row['sysadmin']]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
@@ -373,7 +373,7 @@ class VDojStatsController(BaseController):
         for row in tk.c.user_list:
             record = ET.SubElement(root, 'record')
             name = ET.SubElement(record, 'User_Name')
-            name.text = row['name']
+            name.text = row['fullname'] or row['name']
             state = ET.SubElement(record, 'Is_Active')
             state.text = row['state']
             sysadmin = ET.SubElement(record, 'Is_Administrator')
@@ -614,10 +614,21 @@ class VDojStatsController(BaseController):
         if report['report_on'] == "activities": 
             with open(file_path, 'wb') as csvfile:
                 writer = csv.writer(csvfile, lineterminator = '\n')
-                record = ['time', 'user', 'activity type']
+                record = ['Time', 'User', 'Activity Type', 'Data']
                 writer.writerow(record)
                 for row in results:
-                    record = [row['activity']['timestamp'], row['user']['fullname'], row['activity']['activity_type']]
+                    activity_data = {}
+                    data_name = ''
+                    if 'activity' in row and 'data' in row['activity']:
+                        activity = row['activity']['data']
+                        if 'package' in activity:
+                            activity_data = activity.get('package')
+                        elif 'dataset' in activity:
+                            activity_data = activity.get('dataset')
+                        elif 'group' in activity:
+                            activity_data = activity.get('group')
+                        data_name = activity_data.get('name', '')
+                    record = [row['activity']['timestamp'], row['user']['fullname'] or row['user']['name'], row['activity']['activity_type'], data_name]
                     writer.writerow(record)    
         elif report['report_on'] == "details":
             with open(file_path, 'wb') as csvfile:
@@ -625,7 +636,7 @@ class VDojStatsController(BaseController):
                 record = ['name', 'email', 'state', 'organization', 'role', 'system administrator']
                 writer.writerow(record)
                 for row in results:
-                    record = [row['fullname'], row['email'], row['state'], row['organization'], row['capacity'], row['sysadmin']]
+                    record = [row['fullname'] or row['name'], row['email'], row['state'], row['organization'], row['capacity'], row['sysadmin']]
                     writer.writerow(record)
             
         response = h.convertHtmlToCsv(file_path, tk.response)
@@ -635,19 +646,33 @@ class VDojStatsController(BaseController):
         report, results, total, show_org = self._report_view(id, None, None)
         file_path = '%s/%s.xml' % (h.get_export_dir(), re.sub('[^a-zA-Z0-9_-]+', '_', report['name'].encode('ascii','ignore')))
                 
-        if report['report_on'] == "activities":                    
-            tree = h.dict_to_etree({ 'activities' : {'activity' : [ {
-                                                                '@time': row['activity']['timestamp'],
-                                                                '@user': row['user']['fullname'],
-                                                                '@activity_type': row['activity']['activity_type']
-                                                                } for row in results]}})
-            
+        if report['report_on'] == "activities":
+            activity_list = []
+            for row in results:
+                data_name = ''
+                activity_data = {}
+                if 'activity' in row and 'data' in row['activity']:
+                    activity = row['activity']['data']
+                    if 'package' in activity:
+                        activity_data = activity.get('package')
+                    elif 'dataset' in activity:
+                        activity_data = activity.get('dataset')
+                    elif 'group' in activity:
+                        activity_data = activity.get('group')
+                    data_name = activity_data.get('name', '')
+                activity_list.append({
+                    '@time': row['activity']['timestamp'],
+                    '@user': row['user']['fullname'] or row['user']['name'],
+                    '@activity_type': row['activity']['activity_type'],
+                    '@data_name': data_name
+                    })
+            tree = h.dict_to_etree({ 'activities' : {'activity' : activity_list }})
             response = h.createResponseWithXML(tree, file_path, tk.response)
                     
                     
         elif report['report_on'] == "details":
             tree = h.dict_to_etree({ 'users' : {'user' : [ {
-                                                            '@name': row['fullname'],
+                                                            '@name': row['fullname'] or row['name'],
                                                             '@email': row['email'],
                                                             '@state': row['state'],
                                                             '@organization': row['organization'],
