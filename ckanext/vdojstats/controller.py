@@ -449,14 +449,15 @@ class VDojStatsController(BaseController):
         tk.c.sub_title = 'Add Report'
         
         if tk.request.method == 'POST':
-            
+            print 'POST'
             report = model.VDojStatsReport()
-            report.name = tk.request.params.getone('name')
+            report.name = tk.request.params.getone('name') if tk.request.params.getone('name') else None
             report.org_id = tk.request.params.getone('organization')
             report.permission = tk.request.params.getone('permission')
             report.report_on = tk.request.params.getone('report_on')
+
             report.custodian = 'custodian' in tk.request.params
-            
+
             #todo - validate
             is_valid, errors = report.validate()
             
@@ -479,7 +480,8 @@ class VDojStatsController(BaseController):
             vars = {
                 'errors': {},
                 'data': {
-                         'organizations' : [ { 'id': org.id, 'title' : org.title } for org in Session.query(Group.title, Group.id).filter(Group.is_organization == True).order_by(Group.title)]
+                         'organizations' : [ { 'id': org.id, 'title' : org.title } for org in Session.query(Group.title, Group.id).filter(Group.is_organization == True).order_by(Group.title)],
+                         'report_on' : 'activities'
                 }
             }
         
