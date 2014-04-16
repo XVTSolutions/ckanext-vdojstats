@@ -212,7 +212,6 @@ class VDojStatsController(BaseController):
         org_ids = []
         private = None
         suspended = None
-        pending_approval = None
         package = None
 
         tk.c.selected_org_names = []
@@ -247,16 +246,12 @@ class VDojStatsController(BaseController):
                 if tk.c.suspended =='not_suspended':
                     suspended = False
 
-            if data.has_key('pending_approval[]'):
-                tk.c.pending_approval = data.get('pending_approval[]')
-                if tk.c.pending_approval =='pending_approval':
-                    pending_approval = True
-                if tk.c.pending_approval =='not_pending_approval':
-                    pending_approval = False
+            if data.has_key('pending_review[]'):
+                tk.c.pending_review = data.get('pending_review[]')
 
         tk.c.option_org_names = h.get_org_names()
         tk.c.option_package_states = h.get_package_states()
-        tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_approval=pending_approval, package=package)
+        tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_review=tk.c.pending_review, package=package)
 
     def assets(self):
         self._assets()
