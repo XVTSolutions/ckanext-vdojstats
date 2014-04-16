@@ -6,12 +6,12 @@
       </tr>
     </thead>
     <tbody>
-      {% for key, value in overall.items() %}
+      {% for row in overall %}
           <tr 
             class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
             >
-            <td class="dataset-label">{{ key }}</td>
-            <td class="dataset-details">{{ value }}</td>
+            <td class="dataset-label">{{ row.label }}</td>
+            <td class="dataset-details">{{ row.num }}</td>
           </tr>
       {% endfor %}
     </tbody>

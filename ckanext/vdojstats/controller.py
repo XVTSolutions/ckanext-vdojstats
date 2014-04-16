@@ -40,14 +40,16 @@ class VDojStatsController(BaseController):
         published_num = h.count_published_assets()
         active_num = h.count_active_assets()
         dormant_num = h.count_dormant_assets()
-        pending_approval_num = h.count_pending_approval_assets()
-        tk.c.overall = {
-            'Private':private_num,
-            'Published':published_num,
-            'Active':active_num,
-            'Not Active':dormant_num,
-            'Pending Review':pending_approval_num,
-        }
+        today_review_num = h.count_today_review_assets()
+        delay_review_num = h.count_delay_review_assets()
+        tk.c.overall = [
+            {'label':'Private', 'num':private_num},
+            {'label':'Published', 'num':published_num},
+            {'label':'Active', 'num':active_num},
+            {'label':'Not Active', 'num':dormant_num},
+            {'label':'Pending Review for Today', 'num':today_review_num},
+            {'label':'Pending Review (Delay)', 'num':delay_review_num},
+        ]
 
     def overall(self):
         self._overall()
@@ -66,8 +68,8 @@ class VDojStatsController(BaseController):
             writer = csv.writer(csvfile, lineterminator = '\n')
             record = ['State', 'Count']
             writer.writerow(record)
-            for key, value in tk.c.overall.items():
-                record = [key, str(value)]
+            for row in tk.c.overall:
+                record = [row.get('label'), str(row.get('num'))]
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
@@ -76,12 +78,12 @@ class VDojStatsController(BaseController):
         #TODO
         self._overall()
         root = ET.Element('root')
-        for key, value in tk.c.overall.items():
+        for row in tk.c.overall:
             record = ET.SubElement(root, 'record')
             state = ET.SubElement(record, 'State')
-            state.text = key
+            state.text = row.get('label')
             count = ET.SubElement(record, 'Count')
-            count.text = str(value)
+            count.text = str(row.get('num'))
         file_path = h.get_export_dir() + 'vdojstats-overall.xml'
         tree = ET.ElementTree(root)
         response = h.createResponseWithXML(tree, file_path, tk.response)

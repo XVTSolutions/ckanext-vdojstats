@@ -227,7 +227,15 @@ def _count_assets_by_date_and_state():
     return state_list
 
 
-def count_pending_approval_assets(org_id=None):
+def count_today_review_assets(org_id=None):
+
+    return _count_delay_review_assets(org_id, only_today=True)
+
+def count_delay_review_assets(org_id=None):
+
+    return _count_delay_review_assets(org_id, only_today=False)
+
+def _count_delay_review_assets(org_id=None, only_today=True):
     """
      get count of the review-scheduled package
      parameter: organization_id
@@ -239,11 +247,14 @@ def count_pending_approval_assets(org_id=None):
     else:
         package = table('package')
         sql = select(cols, from_obj=[package_review.join(package)]).where(package.c.owner_org == org_id)
+    if only_today:
+        sql = sql.where(package_review.c.next_review_date == datetime.date.today())
+    else:   #delay
+        sql = sql.where(package_review.c.next_review_date < datetime.date.today())
     rows = model.Session.execute(sql).fetchall()
     for row in rows:
         return row['NUM']
     return 0
-
 def count_published_assets(org_id=None):
     return _count_public_or_private_assets(False, org_id)
 
@@ -426,7 +437,7 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
     sql = sql + "LEFT OUTER JOIN \"group\" G ON P.owner_org = G.id AND G.is_organization IS TRUE "  #only organization
     sql = sql + "LEFT OUTER JOIN package_review review ON review.package_id = P.id "
     sql = sql + "LEFT OUTER JOIN package_suspend suspend ON suspend.package_id = P.id "
-    sql = sql + "LEFT OUTER JOIN activity ON activity.activity_type = '%s' AND activity.object_id = P.id "%(dataset_activity_type_reviewed)
+    sql = sql + "LEFT OUTER JOIN (SELECT object_id, activity_type, MAX(timestamp) AS timestamp FROM activity WHERE activity_type = '%s' GROUP BY object_id, activity_type) activity ON activity.object_id = P.id "%(dataset_activity_type_reviewed)
     sql = sql + "WHERE P.id IS NOT NULL "   #dummy statement
     if len(organizations):
         sql = sql + "AND P.owner_org IN (%s) "%(",".join(organizations))
