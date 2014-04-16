@@ -52,6 +52,9 @@ package_state_suspended = 'suspended'
 package_state_unsuspended = 'unsuspended'
 user_state_active = 'active'
 
+today_pending_review = 'today_pending_review'
+delay_pending_review = 'delay_pending_review'
+
 
 DATE_FORMAT = '%d-%m-%Y'
 DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
@@ -408,14 +411,14 @@ def get_organization_id(name):
     except Exception:
         print 'cannot convert org name to org id'
 
-def list_assets(org_ids=None, package_states=None, private=None, suspended=None, pending_approval=None, package=None):
+def list_assets(org_ids=None, package_states=None, private=None, suspended=None, pending_review=None, package=None):
     """
      get list of assets
      parameter: org_ids (list)
      parameter: package_states (list)
      parameter: private (boolean)
      parameter: suspended (boolean)
-     parameter: pending_approval (boolean)
+     parameter: pending_review (string)
     """
     #parameter check
     organizations = []
@@ -450,11 +453,11 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             sql = sql + "AND suspend.package_id IS NOT NULL "
         else:
             sql = sql + "AND suspend.package_id IS NULL  "
-    if pending_approval is not None:
-        if pending_approval:
-            sql = sql + "AND review.package_id IS NOT NULL "
-        else:
-            sql = sql + "AND review.package_id IS NULL "
+    if pending_review is not None:
+        if pending_review == today_pending_review:
+            sql = sql + "AND review.package_id IS NOT NULL AND next_review_date = current_date "
+        elif pending_review == delay_pending_review:
+            sql = sql + "AND review.package_id IS NOT NULL AND next_review_date < current_date "
     if package is not None:
         sql = sql + "AND (P.title LIKE '%" + package + "%' OR P.name LIKE '%" + package + "%') " 
     sql = sql + "ORDER BY G.name ASC "

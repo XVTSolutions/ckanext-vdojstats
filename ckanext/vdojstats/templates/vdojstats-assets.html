@@ -109,22 +109,22 @@
           </div><!--controls-->
         </div><!--control-group control-medium-->
         <div class="control-group control-medium">
-            <label class="control-label" for="{{_('field-pending_approval')}}">
+            <label class="control-label" for="{{_('field-pending_review')}}">
             {{ _('Review') }}
             </label>
           <div class="controls ">
-            <label class="radio "><input id="field-pending_approval" type="radio" class="pending_approval"  name="pending_approval[]" value="pending_approval" 
-              {% if c.pending_approval == "pending_approval" %}
+            <label class="radio "><input id="field-pending_review" type="radio" class="pending_review"  name="pending_review[]" value="today_pending_review" 
+              {% if c.pending_review == "today_pending_review" %}
                 checked='checked'
               {% endif %}
-            placeholder=""/>{{_('Pending Review')}}</label>
-            <label class="radio "><input id="field-not_pending_approval" type="radio" class="pending_approval"  name="pending_approval[]" value="not_pending_approval" 
-              {% if c.pending_approval == "not_pending_approval" %}
+            placeholder=""/>{{_('Pending Review for Today')}}</label>
+            <label class="radio "><input id="field-not_pending_review" type="radio" class="pending_review"  name="pending_review[]" value="delay_pending_review" 
+              {% if c.pending_review == "delay_pending_review" %}
                 checked='checked'
               {% endif %}
-            placeholder=""/>{{_('Reviewed')}}</label>
-            <label class="radio "><input id="" type="radio" class="pending_approval"  name="pending_approval[]" value="any" 
-              {% if c.pending_approval == "any" %}
+            placeholder=""/>{{_('Pending Review (Delay)')}}</label>
+            <label class="radio "><input id="" type="radio" class="pending_review"  name="pending_review[]" value="any" 
+              {% if c.pending_review == "any" %}
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Any')}}</label>
