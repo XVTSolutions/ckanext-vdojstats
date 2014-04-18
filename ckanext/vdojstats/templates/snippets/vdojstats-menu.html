@@ -71,7 +71,7 @@
             	{% for r in h.get_reports() %}
             		<li><a href="/report/view/{{ r.id }}">{{ r.name }}</a></li>
             	{% endfor %}
-		        <li class=""><a class="btn btn-primary" style="margin-top: 1em" href="/report/add"><i class="icon-plus-sign-alt"></i>Add Report</a></li>
+		        <li class=""><a class="btn btn-primary" style="margin-top: 1em" href="/report/add"><i class="icon-plus-sign-alt"></i>{{ _("Add Report") }}</a></li>
             </ul>
 		</div>
 	</section>

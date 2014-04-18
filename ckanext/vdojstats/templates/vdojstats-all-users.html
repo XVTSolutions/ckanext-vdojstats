@@ -3,7 +3,7 @@
 {% block vdojstat_search %}
   {{ super() }}
         
-        <p class='flash-messages alert'> You can use the search filters by clicking plus(+) icon below. </p>
+        <p class='flash-messages alert'>{{ _('You can use the search filters by clicking plus(+) icon below..')}}</p>
         <p id='search_option_trigger' data-module="search_option_popover"
             {% if c.search %}
                 class="icon-minus-sign"
@@ -70,7 +70,7 @@
             placeholder=""/>{{_('Any')}}</label>
           </div><!--controls-->
         </div><!--control-group control-medium-->
-    <button id="search_form" class="btn btn-primary" type="submit" name="search" value="search_on">Search
+    <button id="search_form" class="btn btn-primary" type="submit" name="search" value="search_on">{{ _('Search')}}
     </button>
 
    </section>

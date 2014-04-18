@@ -1,32 +1,32 @@
 <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
-        <th scope="col">Date</th>
-        <th scope="col" class="short">*New</th>
-        <th scope="col" class="short">Modified</th>
-        <th scope="col" class="short">Deleted</th>
-        <th scope="col" title="Suspended">Susp.</th>
-        <th scope="col" title="Unsuspended">Unsusp.</th>
+        <th scope="col">{{_('Date')}}</th>
+        <th scope="col" class="short">*{{_('New')}}</th>
+        <th scope="col" class="short">{{_('Modified')}}</th>
+        <th scope="col" class="short">{{_('Deleted')}}</th>
+        <th scope="col" title="Suspended">{{_('Susp.')}}</th>
+        <th scope="col" title="Unsuspended">{{_('Unsusp.')}}</th>
         <th scope="col">Reviewed</th>
-        <th scope="col" title="Total per day">Total</th>
+        <th scope="col" title="Total per day">{{_('Total')}}</th>
       </tr>
     </thead>
     <tbody>
       {% for row in allassets %}
           <tr 
-            class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
+            class = {%if loop.index0 % 2 == 0 %} 'even' {% else %} 'odd' {% endif %}  
             >
-            <td class="dataset-label">{{ row.day }}</td>
-            <td class="dataset-details">{{ row.new }}</td>
-            <td class="dataset-details">{{ row.changed }}</td>
-            <td class="dataset-details">{{ row.deleted }}</td>
-            <td class="dataset-details">{{ row.suspended }}</td>
-            <td class="dataset-details">{{ row.unsuspended }}</td>
-            <td class="dataset-details">{{ row.reviewed }}</td>
-            <td class="dataset-details">{{ row.total_per_date }}</td>
+            <td class="dataset-label">{{ _(row.day) }}</td>
+            <td class="dataset-details">{{ _(row.new) }}</td>
+            <td class="dataset-details">{{ _(row.changed) }}</td>
+            <td class="dataset-details">{{ _(row.deleted) }}</td>
+            <td class="dataset-details">{{ _(row.suspended) }}</td>
+            <td class="dataset-details">{{ _(row.unsuspended) }}</td>
+            <td class="dataset-details">{{ _(row.reviewed) }}</td>
+            <td class="dataset-details">{{ _(row.total_per_date) }}</td>
           </tr>
       {% endfor %}
     </tbody>
 </table>
-<p>(*)The creation of a dataset counts as a modification</p>
+<p>(*){{_('The creation of a dataset counts as a modification.')}}</p>
 

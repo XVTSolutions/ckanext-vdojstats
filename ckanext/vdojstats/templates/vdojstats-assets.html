@@ -3,7 +3,7 @@
 {% block vdojstat_search %}
   {{ super() }}
         
-        <p class='flash-messages alert'> You can use the search filters by clicking plus(+) icon below. </p>
+        <p class='flash-messages alert'>{{ _('You can use the search filters by clicking plus(+) icon below.')}}</p>
         <p id='search_option_trigger' data-module="search_option_popover"
             {% if c.search %}
                 class="icon-minus-sign"
@@ -118,11 +118,16 @@
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Pending Review for Today')}}</label>
-            <label class="radio "><input id="field-not_pending_review" type="radio" class="pending_review"  name="pending_review[]" value="delay_pending_review" 
+            <label class="radio "><input id="field-delay_pending_review" type="radio" class="pending_review"  name="pending_review[]" value="delay_pending_review" 
               {% if c.pending_review == "delay_pending_review" %}
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Pending Review (Delay)')}}</label>
+            <label class="radio "><input id="onward_pending_review" type="radio" class="pending_review"  name="pending_review[]" value="onward_pending_review" 
+              {% if c.pending_review == "onward_pending_review" %}
+                checked='checked'
+              {% endif %}
+            placeholder=""/>{{_('Onward Review')}}</label>
             <label class="radio "><input id="" type="radio" class="pending_review"  name="pending_review[]" value="any" 
               {% if c.pending_review == "any" %}
                 checked='checked'
@@ -130,7 +135,7 @@
             placeholder=""/>{{_('Any')}}</label>
           </div><!--controls-->
         </div><!--control-group control-medium-->
-    <button id="search_form" class="btn btn-primary" type="submit" name="search" value="search_on">Search
+    <button id="search_form" class="btn btn-primary" type="submit" name="search" value="search_on">{{ _('Search')}}
     </button>
 
    </section>

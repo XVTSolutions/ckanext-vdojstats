@@ -54,6 +54,7 @@ user_state_active = 'active'
 
 today_pending_review = 'today_pending_review'
 delay_pending_review = 'delay_pending_review'
+onward_pending_review = 'onward_pending_review'
 
 
 DATE_FORMAT = '%d-%m-%Y'
@@ -458,6 +459,8 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             sql = sql + "AND review.package_id IS NOT NULL AND next_review_date = current_date "
         elif pending_review == delay_pending_review:
             sql = sql + "AND review.package_id IS NOT NULL AND next_review_date < current_date "
+        elif pending_review == onward_pending_review:
+            sql = sql + "AND review.package_id IS NOT NULL AND next_review_date > current_date "
     if package is not None:
         sql = sql + "AND (P.title LIKE '%" + package + "%' OR P.name LIKE '%" + package + "%') " 
     sql = sql + "ORDER BY G.name ASC "

@@ -11,12 +11,12 @@
     <tbody>
       {% for row in user_activity_list %}
           <tr 
-            class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
+            class = {%if loop.index0 % 2 == 0 %} 'even' {% else %} 'odd' {% endif %}  
             >
-            <td class="dataset-label">{{ row.timestamp }}</td>
-            <td class="dataset-details">{{ row.activity_type }}</td>
-            <td class="dataset-details">{{ row.object_type }}</td>
-            <td class="dataset-details">{{ row.detail_type }}</td>
+            <td class="dataset-label">{{ _(row.timestamp) if row.timestamp else ''  }}</td>
+            <td class="dataset-details">{{ _(row.activity_type) if row.activity_type else '' }}</td>
+            <td class="dataset-details">{{ _(row.object_type) if row.object_type else '' }}</td>
+            <td class="dataset-details">{{ _(row.detail_type) if row.detail_type else '' }}</td>
             <td> 
                 {% if row.activity_data %}
                    	{% if 'package' in row.activity_data %}

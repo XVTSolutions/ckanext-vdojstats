@@ -1,17 +1,17 @@
 <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
-        <th scope="col">State</th>
-        <th scope="col">Count</th>
+        <th scope="col">{{_('State')}}</th>
+        <th scope="col">{{_('Count')}}</th>
       </tr>
     </thead>
     <tbody>
       {% for row in overall %}
           <tr 
-            class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
+            class = {%if loop.index0 % 2 == 0 %} 'even' {% else %} 'odd' {% endif %}  
             >
-            <td class="dataset-label">{{ row.label }}</td>
-            <td class="dataset-details">{{ row.num }}</td>
+            <td class="dataset-label">{{_(row.label)}}</td>
+            <td class="dataset-details">{{_(row.num)}}</td>
           </tr>
       {% endfor %}
     </tbody>

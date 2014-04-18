@@ -3,29 +3,29 @@
 <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
-        <th scope="col">Organisation</th>
-        <th scope="col">Asset</th>
-        <th scope="col" style="width: 75px">Status</th>
-        <th scope="col" class="short">Private</th>
-        <th scope="col" class="short">Suspend</th>
-        <th scope="col" title="Suspend Reason">Susp. Reason</th>
-        <th scope="col" title="Last Review Date">Last Rev.</th>
-        <th scope="col" title="Next Review Date">Next Rev.</th>
+        <th scope="col">{{_('Organization') }}</th>
+        <th scope="col">{{_('Asset') }}</th>
+        <th scope="col" style="width: 75px">{{_('Status') }}</th>
+        <th scope="col" class="short">{{_('Private') }}</th>
+        <th scope="col" class="short">{{_('Suspend') }}</th>
+        <th scope="col" title={{_('Suspend Reason') }}>{{_('Susp. Reason') }}</th>
+        <th scope="col" title={{_('Last Review Date') }}>{{_('Last Rev.') }}</th>
+        <th scope="col" title={{_('Next Review Date') }}>{{_('Next Rev.') }}</th>
       </tr>
     </thead>
     <tbody>
       {% for row in org_assets %}
           <tr 
-            class = {%if loop.index0 % 2 == 0 %} {{_('even')}} {% else %} {{_('odd')}} {% endif %}  
+            class = {%if loop.index0 % 2 == 0 %} 'even' {% else %} 'odd' {% endif %}  
             >
             <td class="dataset-label">{{ h.link_to(h.truncate(row.group_title or row.group_name, truncate_title), h.url_for(controller='organization', action='read', id=row.group_name)) if (row.group_title or row.group_name)|length else '' }}</td>
             <td class="dataset-details">{{ h.link_to(h.truncate(row.package_title or row.package_name, truncate_title), h.url_for(controller='package', action='read', id=row.package_name)) }}</td>
-            <td class="dataset-details">{{ row.package_state }}</td>
-            <td class="dataset-details">{{ row.is_private }}</td>
-            <td class="dataset-details">{{ row.is_suspended }}</td>
-            <td class="dataset-details">{{ row.suspend_reason }}</td>
-            <td class="dataset-details">{{ row.last_review_date }}</td>
-            <td class="dataset-details">{{ row.next_review_date }}</td>
+            <td class="dataset-details">{{ _(row.package_state) }}</td>
+            <td class="dataset-details">{{ _(row.is_private) }}</td>
+            <td class="dataset-details">{{ _(row.is_suspended) }}</td>
+            <td class="dataset-details">{{ _(row.suspend_reason) if row.suspend_reason else '' }}</td>
+            <td class="dataset-details">{{ _(row.last_review_date) if row.last_review_date else '' }}</td>
+            <td class="dataset-details">{{ _(row.next_review_date) if row.next_review_date else '' }}</td>
           </tr>
       {% endfor %}
     </tbody>
