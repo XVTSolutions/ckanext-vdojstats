@@ -339,7 +339,7 @@ def list_users(candidate=None, is_active=None, is_sysadmin=None):
     try:
         check_access('user_list', context, data_dict)
     except NotAuthorized:
-        abort(401, _('Not authorized to see this page'))
+        tk.abort(401, _('Not authorized to see this page'))
 
     user = table('user')
     sql = select([user.c.id, user.c.fullname, user.c.name, user.c.state, user.c.sysadmin])
@@ -381,7 +381,7 @@ def list_activities_for_user(user_id, offset=0, limit=1000):
         check_access('user_list', context, data_dict)
 
     except NotAuthorized:
-        abort(401, _('Not authorized to see this page'))
+        tk.abort(401, _('Not authorized to see this page'))
 
     #return get_action('user_activity_list')(context, data_dict)
     #TODO

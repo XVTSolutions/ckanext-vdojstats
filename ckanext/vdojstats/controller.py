@@ -34,7 +34,7 @@ class VDojStatsController(BaseController):
     overall
     '''
     def _overall(self):
-        tk.c.sub_title = 'All sites overall'
+        tk.c.sub_title = _('All sites overall')
 
         private_num = h.count_private_assets()
         published_num = h.count_published_assets()
@@ -93,7 +93,7 @@ class VDojStatsController(BaseController):
     all assets by activity
     '''
     def _all_assets_by_activity(self):
-        tk.c.sub_title = 'All Assets By Activity'
+        tk.c.sub_title = _('All Assets By Activity')
         tk.c.allassets = h.count_assets_by_date_and_activity()
         return render('vdojstats-all-assets-by-activity.html')
 
@@ -150,7 +150,7 @@ class VDojStatsController(BaseController):
     all assets by state
     '''
     def _all_assets_by_state(self):
-        tk.c.sub_title = 'All Assets By State'
+        tk.c.sub_title = _('All Assets By State')
         #tk.c.allassets = h.count_assets_by_date()
         tk.c.allassets = h.count_assets_by_date_and_state()
         return render('vdojstats-all-assets-by-state.html')
@@ -206,7 +206,7 @@ class VDojStatsController(BaseController):
     Organizations
     '''
     def _assets(self):
-        tk.c.sub_title = 'Assets'
+        tk.c.sub_title = _('Assets')
 
         #search parameter
         org_ids = []
@@ -315,7 +315,7 @@ class VDojStatsController(BaseController):
     all users
     '''
     def _all_users(self):
-        tk.c.sub_title = 'All users'
+        tk.c.sub_title = _('All users')
         candidate = None
         is_active = None
         is_sysadmin = None
@@ -396,7 +396,7 @@ class VDojStatsController(BaseController):
         tk.c.username = username
         user = User.get(username)
         tk.c.user_info = h.get_user(user.id)
-        tk.c.sub_title = 'User Activities: %s'%(user.fullname or user.name) 
+        tk.c.sub_title = _('User Activities: %s'%(user.fullname or user.name) )
         tk.c.user_activity_list = h.list_activities_for_user(user_id=user.id)
 
     def user(self, username):
@@ -445,7 +445,7 @@ class VDojStatsController(BaseController):
     def report_add(self):
         """
         """        
-        tk.c.sub_title = 'Add Report'
+        tk.c.sub_title = _('Add Report')
         
         if tk.request.method == 'POST':
             print 'POST'
@@ -492,7 +492,7 @@ class VDojStatsController(BaseController):
         if not report:
             tk.abort(404, tk._('Report not found'))
             
-        tk.c.sub_title = report.name
+        tk.c.sub_title = _(report.name)
         tk.c.action = "report/view"
         
         show_org = report.org_id is None or len(report.org_id) == 0
@@ -571,7 +571,7 @@ class VDojStatsController(BaseController):
             
         report, results, total, show_org = self._report_view(id, page, perpage)
         
-        tk.c.sub_title = report['name']
+        tk.c.sub_title = _(report['name'])
         
         tk.c.total = total
         tk.c.page = page
@@ -687,7 +687,7 @@ class VDojStatsController(BaseController):
     def report_edit(self, id):
         """
         """
-        tk.c.sub_title = 'Edit Report'
+        tk.c.sub_title = _('Edit Report')
         
         report = Session.query(model.VDojStatsReport).filter(model.VDojStatsReport.id == id).first()
         
