@@ -9,15 +9,15 @@
 <ol>
 <li>open file /usr/lib/ckan/default/local/lib/python2.7/site-packages/xhtml2pdf/util.py", line 39, in <module></li>
 <li>comment out the below: 
-<p>if not (reportlab.Version[0] == "2" and reportlab.Version[2] >= "1"):
-</p>
+<p>if not (reportlab.Version[0] == "2" and reportlab.Version[2] >= "1"):</p>
+<p>raise ImportError("Reportlab Version 2.1+ is needed!")</p>
 <p>REPORTLAB22 = (reportlab.Version[0] == "2" and reportlab.Version[2] >= "2")
 </p>
 </li>
 
 <li>add the below:
-<p>if not (reportlab.Version[:3]>="2.1"):
-    raise ImportError("Reportlab Version 2.1+ is needed!")</p>
+<p>if not (reportlab.Version[:3]>="2.1"):</p>
+<p>raise ImportError("Reportlab Version 2.1+ is needed!")</p>
 <p>REPORTLAB22 = (reportlab.Version[:3]>="2.1")</p>
 </li>
 </ol>
