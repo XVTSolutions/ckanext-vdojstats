@@ -58,6 +58,7 @@ onward_pending_review = 'onward_pending_review'
 
 
 DATE_FORMAT = '%d-%m-%Y'
+DATE_FORMAT_WITHOUT_CENTURY = '%d-%m-%y'
 DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
 
 def table(name):
@@ -469,10 +470,14 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
     for row in rows:
         next_review_date = ''
         last_review_date = ''
+        next_review_date_title = ''
+        last_review_date_title = ''
         if row['next_review_date']:
-            next_review_date = row['next_review_date'].strftime(DATE_FORMAT)
+            next_review_date_title = row['next_review_date'].strftime(DATE_FORMAT)
+            next_review_date = row['next_review_date'].strftime(DATE_FORMAT_WITHOUT_CENTURY)
         if row['activity_timestamp']:
-            last_review_date = row['activity_timestamp'].strftime(DATE_FORMAT)
+            last_review_date_title = row['activity_timestamp'].strftime(DATE_FORMAT)
+            last_review_date = row['activity_timestamp'].strftime(DATE_FORMAT_WITHOUT_CENTURY)
 
         activity_list.append({
             'package_id':row['package_id'],
@@ -485,8 +490,10 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             'owner_org':row['owner_org'] or '',
             'group_title':row['group_title'] or '',
             'group_name':row['group_name'] or '',
-            'last_review_date':last_review_date,
-            'next_review_date':next_review_date,
+            'last_review_date':last_review_date or '',
+            'last_review_date_title':last_review_date_title or '',
+            'next_review_date':next_review_date or '',
+            'next_review_date_title':next_review_date_title or '',
             })
     return activity_list
 

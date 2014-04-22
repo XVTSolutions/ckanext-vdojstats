@@ -6,11 +6,11 @@
         <th scope="col">{{_('Organization') }}</th>
         <th scope="col">{{_('Asset') }}</th>
         <th scope="col" style="width: 75px">{{_('Status') }}</th>
-        <th scope="col" class="short">{{_('Private') }}</th>
-        <th scope="col" class="short">{{_('Suspend') }}</th>
+        <th scope="col" style="width: 50px">{{_('Private') }}</th>
+        <th scope="col" style="width: 50px" title={{_('Suspend') }}>{{_('Susp.') }}</th>
         <th scope="col" title={{_('Suspend Reason') }}>{{_('Susp. Reason') }}</th>
-        <th scope="col" title={{_('Last Review Date') }}>{{_('Last Rev.') }}</th>
-        <th scope="col" title={{_('Next Review Date') }}>{{_('Next Rev.') }}</th>
+        <th scope="col" style="width: 60px" title={{_('Last Review Date') }}>{{_('Last Rv.') }}</th>
+        <th scope="col" style="width: 60px" title={{_('Next Review Date') }}>{{_('Next Rv.') }}</th>
       </tr>
     </thead>
     <tbody>
@@ -18,14 +18,14 @@
           <tr 
             class = {%if loop.index0 % 2 == 0 %} 'even' {% else %} 'odd' {% endif %}  
             >
-            <td class="dataset-label">{{ h.link_to(h.truncate(row.group_title or row.group_name, truncate_title), h.url_for(controller='organization', action='read', id=row.group_name)) if (row.group_title or row.group_name)|length else '' }}</td>
-            <td class="dataset-details">{{ h.link_to(h.truncate(row.package_title or row.package_name, truncate_title), h.url_for(controller='package', action='read', id=row.package_name)) }}</td>
+            <td class="dataset-label" title="{{_(row.group_title or row.group_name)}}">{{ h.link_to(h.truncate(row.group_title or row.group_name, truncate_title), h.url_for(controller='organization', action='read', id=row.group_name)) if (row.group_title or row.group_name)|length else '' }}</td>
+            <td class="dataset-details" title="{{_(row.package_title or row.package_name)}}">{{ h.link_to(h.truncate(row.package_title or row.package_name, truncate_title), h.url_for(controller='package', action='read', id=row.package_name)) }}</td>
             <td class="dataset-details">{{ _(row.package_state) }}</td>
             <td class="dataset-details">{{ _(row.is_private) }}</td>
             <td class="dataset-details">{{ _(row.is_suspended) }}</td>
             <td class="dataset-details">{{ _(row.suspend_reason) if row.suspend_reason else '' }}</td>
-            <td class="dataset-details">{{ _(row.last_review_date) if row.last_review_date else '' }}</td>
-            <td class="dataset-details">{{ _(row.next_review_date) if row.next_review_date else '' }}</td>
+            <td class="dataset-details" title="{{ _(row.last_review_date_title)}}">{{ _(row.last_review_date) if row.last_review_date else '' }}</td>
+            <td class="dataset-details" title="{{ _(row.next_review_date_title)}}">{{ _(row.next_review_date) if row.next_review_date else '' }}</td>
           </tr>
       {% endfor %}
     </tbody>
