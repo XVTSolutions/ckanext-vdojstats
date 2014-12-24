@@ -614,7 +614,7 @@ def get_site_logo_path():
     logopath = config.get('vdojstats.logo_relative_path', 'ckan/ckan/public/base/images/ckan-logo.png')
     if logopath.startswith('/'):
         logopath = logopath[1:]
-    return os.path.abspath(logopath)
+    return os.path.relpath(logopath)
 
 def get_activity_dict():
     return {
