@@ -605,8 +605,10 @@ def get_export_header_title():
 def get_site_logo_url():
     parsed_uri = urlparse(full_current_url())
     domain = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
-    return "%s%s"%(domain, config.get('ckan.site_logo', 'vdoj-logo-white-transparent.png'))
-
+    logopath = config.get('ckan.site_logo', 'vdoj-logo-white-transparent.png')
+    if logopath.startswith('/'):
+        logopath = logopath[1:]
+    return "%s%s"%(domain, logopath)
 
 def get_activity_dict():
     return {
