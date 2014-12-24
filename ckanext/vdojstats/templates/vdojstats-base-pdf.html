@@ -175,11 +175,7 @@ tr.even{
 <div id="vdoj_content">
     <div class="masthead">
       {% block header_logo %}
-        {% if g.site_logo %}
-          <a class="logo" href="{{ h.url('home') }}"><img src="{{ h.get_site_logo_url() }}" style="height:25px;" alt="{{ g.site_title }} Logo" title="{{ g.site_title }} Logo" /></a>
-        {% else %}
-          {{ _(h.get_export_header_title()) }}
-        {% endif %}
+          <a class="logo" href="{{ h.url('home') }}"><img src="{{ h.get_site_logo_path() }}" style="height:25px;" alt="{{ g.site_title }} Logo" title="{{ g.site_title }} Logo" /></a>
       {% endblock %}
     </div>
     <h2>{{ _(c.sub_title) }}</h2>
