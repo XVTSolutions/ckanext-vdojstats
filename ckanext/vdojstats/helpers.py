@@ -260,7 +260,7 @@ def _count_delay_review_assets(org_id=None, only_today=True):
     for row in rows:
         return row['NUM']
     return 0
-def count_published_assets(org_id=None):
+def count_public_assets(org_id=None):
     return _count_public_or_private_assets(False, org_id)
 
 def count_private_assets(org_id=None):
@@ -785,4 +785,16 @@ def get_dispaly_name_for_object_data(data):
             else:
                 display_name = group.get('title')
     return display_name
+
+
+
+def get_openstatus_helper():
+    try:
+        import ckanext.vdojwovg.helpers as oh
+        return oh
+        return __import__(extension_name).find_module(module_name)
+    except ImportError:
+        return None
+
+
 

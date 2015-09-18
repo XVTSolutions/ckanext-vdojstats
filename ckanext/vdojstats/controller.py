@@ -36,20 +36,34 @@ class VDojStatsController(BaseController):
     def _overall(self):
         tk.c.sub_title = _('All sites overall')
 
+        oh = h.get_openstatus_helper()
+
         private_num = h.count_private_assets()
-        published_num = h.count_published_assets()
+        public_num = h.count_public_assets()
         active_num = h.count_active_assets()
         dormant_num = h.count_dormant_assets()
         today_review_num = h.count_today_review_assets()
         delay_review_num = h.count_delay_review_assets()
         tk.c.overall = [
-            {'label':'Private', 'num':private_num},
-            {'label':'Published', 'num':published_num},
-            {'label':'Active', 'num':active_num},
-            {'label':'Not Active', 'num':dormant_num},
+            {'header': 'Visibility',
+            'content':
+                [
+                    {'label':'Private', 'num':private_num},
+                    {'label':'Public', 'num':public_num},
+                ]},
+            {'header': 'Activeness',
+            'content':
+                [
+                    {'label':'Active', 'num':active_num},
+                    {'label':'Not Active', 'num':dormant_num},
+                ]},
+            {'header': 'Review Status',
+            'content':
+                [
             {'label':'Pending Review for Today', 'num':today_review_num},
             {'label':'Pending Review (Delay)', 'num':delay_review_num},
-        ]
+                ]},
+            ]
 
     def overall(self):
         self._overall()
@@ -66,11 +80,15 @@ class VDojStatsController(BaseController):
         file_path = h.get_export_dir() + 'vdojstats-overall.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
-            record = ['State', 'Count']
-            writer.writerow(record)
-            for row in tk.c.overall:
-                record = [row.get('label'), str(row.get('num'))]
+            for table in tk.c.overall:
+                header = table.get('header')
+                writer.writerow([header])
+                record = ['State', 'Count']
                 writer.writerow(record)
+                for row in table.get('content', []):
+                    record = [row.get('label'), str(row.get('num'))]
+                    writer.writerow(record)
+                writer.writerow([])
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
 
@@ -78,12 +96,16 @@ class VDojStatsController(BaseController):
         #TODO
         self._overall()
         root = ET.Element('root')
-        for row in tk.c.overall:
-            record = ET.SubElement(root, 'record')
-            state = ET.SubElement(record, 'State')
-            state.text = row.get('label')
-            count = ET.SubElement(record, 'Count')
-            count.text = str(row.get('num'))
+        for table in tk.c.overall:
+            tbl = ET.SubElement(root, 'table')
+            header = ET.SubElement(tbl, 'header')
+            header.text = table.get('header')
+            for row in table.get('content', []):
+                record = ET.SubElement(tbl, 'record')
+                state = ET.SubElement(record, 'State')
+                state.text = row.get('label')
+                count = ET.SubElement(record, 'Count')
+                count.text = str(row.get('num'))
         file_path = h.get_export_dir() + 'vdojstats-overall.xml'
         tree = ET.ElementTree(root)
         response = h.createResponseWithXML(tree, file_path, tk.response)

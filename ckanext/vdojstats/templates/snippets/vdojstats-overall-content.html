@@ -1,3 +1,5 @@
+{% for table in overall %}
+<h3>{{_(table.header)}}</h3>
 <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
@@ -6,7 +8,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for row in overall %}
+      {% for row in table.content %}
           <tr 
             class = {%if loop.index0 % 2 == 0 %} 'even' {% else %} 'odd' {% endif %}  
             >
@@ -16,4 +18,5 @@
       {% endfor %}
     </tbody>
 </table>
+{% endfor %}
 
