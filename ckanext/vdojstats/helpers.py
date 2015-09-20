@@ -61,6 +61,9 @@ DATE_FORMAT = '%d-%m-%Y'
 DATE_FORMAT_WITHOUT_CENTURY = '%d-%m-%y'
 DATETIME_FORMAT = '%d-%m-%Y %H:%M:%S'
 
+def _debug_mode():
+    return config.get('debug', False)
+
 def table(name):
     return Table(name, metadata, autoload=True)
 
@@ -786,15 +789,67 @@ def get_dispaly_name_for_object_data(data):
                 display_name = group.get('title')
     return display_name
 
-
-
-def get_openstatus_helper():
+def get_open_status_helper():
     try:
-        import ckanext.vdojwovg.helpers as oh
+        import ckanext.vdojopen.helpers as oh
         return oh
-        return __import__(extension_name).find_module(module_name)
     except ImportError:
         return None
 
+def get_open_status_options(org_id=None):
+    """
+     get open_status_options
+     parameter: organization_id
+    """
+    oh = get_open_status_helper()
+    option_list = []
+    if oh:
+        open_status_key = oh.vdojopen_key_open_status()
+        #TODO
+        option = table('vdoj_metameta_options')
+        sql = select([option.c.option_value]).where(option.c.key == open_status_key)
+        if org_id is not None:
+            sql = sql.where(option.c.owner_org == org_id)
+        sql = sql.order_by(option.c.option_value.asc()).group_by(option.c.option_value)
+        rows = model.Session.execute(sql).fetchall()
+        for row in rows:
+            option_list.append(row['option_value'])
+    return option_list
+
+def count_open_status_assets(org_id=None):
+    """
+    get count of the package with the parameter
+    parameter: organization_id
+
+    select count(package_id), option_value 
+    from vdoj_metameta_options option
+    left outer join package_extra extra on extra.value = option.option_value 
+    where option.key = 'vdoj_open_status'
+    group by option_value 
+    order by option_value 
+
+    """
+    oh = get_open_status_helper()
+    option_list = []
+    if oh:
+        open_status_key = oh.vdojopen_key_open_status()
+        #TODO
+        option = table('vdoj_metameta_options')
+        package = table('package')
+        extra = table('package_extra')
+        sql = select([option.c.option_value, func.count(package.c.id).label('NUM')], from_obj=[option.outerjoin(extra, and_(extra.c.key==option.c.key, extra.c.value==option.c.option_value)).outerjoin(package)])
+        if org_id is not None:
+            sql = sql.where(option.c.owner_org == org_id)
+        sql = sql.where(option.c.key == open_status_key)
+        sql = sql.order_by(option.c.option_value.asc()).group_by(option.c.option_value)
+        rows = model.Session.execute(sql).fetchall()
+        for row in rows:
+            option_list.append({
+                'label':row['option_value'],
+                'num':row['NUM'] ,
+                })
+        if _debug_mode():
+            print '==============sql = %s========'%sql
+    return option_list
 
 

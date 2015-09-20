@@ -36,8 +36,6 @@ class VDojStatsController(BaseController):
     def _overall(self):
         tk.c.sub_title = _('All sites overall')
 
-        oh = h.get_openstatus_helper()
-
         private_num = h.count_private_assets()
         public_num = h.count_public_assets()
         active_num = h.count_active_assets()
@@ -60,10 +58,21 @@ class VDojStatsController(BaseController):
             {'header': 'Review Status',
             'content':
                 [
-            {'label':'Pending Review for Today', 'num':today_review_num},
-            {'label':'Pending Review (Delay)', 'num':delay_review_num},
+                    {'label':'Pending Review for Today', 'num':today_review_num},
+                    {'label':'Pending Review (Delay)', 'num':delay_review_num},
                 ]},
             ]
+
+        oh = h.get_open_status_helper()
+        if oh:
+            #TODO
+            options = h.count_open_status_assets()
+            print options
+            tk.c.overall.append({
+                'header': 'Open datasets',
+                'content': options
+                })
+
 
     def overall(self):
         self._overall()
