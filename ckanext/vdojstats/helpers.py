@@ -837,7 +837,7 @@ def count_open_status_assets(org_id=None):
         option = table('vdoj_metameta_options')
         package = table('package')
         extra = table('package_extra')
-        sql = select([option.c.option_value, func.count(package.c.id).label('NUM')], from_obj=[option.outerjoin(extra, and_(extra.c.key==option.c.key, extra.c.value==option.c.option_value)).outerjoin(package)])
+        sql = select([option.c.option_value, func.count(distinct(package.c.id)).label('NUM')], from_obj=[option.outerjoin(extra, and_(extra.c.key==option.c.key, extra.c.value==option.c.option_value)).outerjoin(package)])
         if org_id is not None:
             sql = sql.where(option.c.owner_org == org_id)
         sql = sql.where(option.c.key == open_status_key)
