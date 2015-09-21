@@ -75,3 +75,36 @@ ckan.module('generateXML', function ($, _) {
 });
 
 
+ckan.module('vdojstats_select_organisation', function ($, _) {
+    var properties = {
+      opendata_organisation : ''
+    };
+
+    return {
+    /* An object of module options */
+
+    initialize: function () {
+      properties.opendata_organisation = this.options.opendata_organisation;
+      this.el.on('change', this._onChange);
+      this.el.trigger('change');
+    },
+
+    _onChange: function(event) {
+        var display = false;
+        $('#open_dataset_div').hide(500);
+        $(event.target).find('option:selected').each(function (){
+            if($(this).val()==properties.opendata_organisation){
+                display = true;
+            }
+        });
+        if (display)
+            $('#open_dataset_div').show(500);
+        else{
+            $('#open_dataset_div').hide(500);
+            //clear all selected
+            $('#open_dataset_div select option:selected').removeAttr('selected');
+        }
+
+    }
+  };
+});

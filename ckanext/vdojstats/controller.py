@@ -247,6 +247,7 @@ class VDojStatsController(BaseController):
 
         tk.c.selected_org_names = []
         tk.c.selected_package_states = []
+        tk.c.selected_open_datasets = []
         if tk.request.method == 'GET':
             data = tk.request.GET
             if data.has_key('search'):
@@ -280,8 +281,14 @@ class VDojStatsController(BaseController):
             if data.has_key('pending_review[]'):
                 tk.c.pending_review = data.get('pending_review[]')
 
+            if data.has_key('open_datasets'):
+                for key, value in data.iteritems():
+                    if key == 'open_datasets' and len(value):
+                        tk.c.selected_open_datasets.append(value)
+
         tk.c.option_org_names = h.get_org_names()
         tk.c.option_package_states = h.get_package_states()
+        tk.c.option_open_datasets = h.get_open_status_options()
         tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_review=tk.c.pending_review, package=package)
 
     def assets(self):

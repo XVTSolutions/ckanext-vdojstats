@@ -18,12 +18,13 @@
                 style='display:none'
             {% endif %}            
         >
+
         <div class="control-group control-medium">
             <label class="control-label" for="{{_('field-organization')}}">
             {{ _('Organization') }}
             </label>
           <div class="controls ">
-            <select id={{_('field-organization')}} multiple name="organization" data-module="">
+            <select id={{_('field-organization')}} multiple name="organization" data-module="vdojstats_select_organisation" data-module-opendata_organisation={{h.vdojstats_get_open_data_organisation()}} >
                 {% for option in c.option_org_names  %}
                     <option value="{{ option.value }}" 
                         {% for sel in c.selected_org_names %}
@@ -37,6 +38,7 @@
             </select>
           </div><!--controls-->
         </div><!--control-group control-medium-->
+
         <div class="control-group control-medium">
             <label class="control-label" for="{{_('field-package')}}">
             {{ _('Asset') }}
@@ -45,6 +47,7 @@
             <input id="{{_('field-package')}}" type="text" name="{{_('package')}}" value="{{c.package}}" placeholder="{{_('input key word')}}" data-module="autocomplete" data-module-source="/stats/autocomplete_package?search_key=?" />
           </div><!--controls-->
         </div><!--control-group control-medium-->
+
         <div class="control-group control-medium">
             <label class="control-label" for="{{_('field-package_state')}}">
             {{ _('Package Status') }}
@@ -64,6 +67,7 @@
             </select>
           </div><!--controls-->
         </div><!--control-group control-medium-->
+
         <div class="control-group control-medium">
             <label class="control-label" for="{{_('field-private')}}">
             {{ _('Publicity') }}
@@ -86,6 +90,7 @@
             placeholder=""/>{{_('Any')}}</label>
           </div><!--controls-->
         </div><!--control-group control-medium-->
+
         <div class="control-group control-medium">
             <label class="control-label" for="{{_('field-suspended')}}">
             {{ _('Suspended') }}
@@ -108,6 +113,7 @@
             placeholder=""/>{{_('Any')}}</label>
           </div><!--controls-->
         </div><!--control-group control-medium-->
+
         <div class="control-group control-medium">
             <label class="control-label" for="{{_('field-pending_review')}}">
             {{ _('Review') }}
@@ -135,6 +141,29 @@
             placeholder=""/>{{_('Any')}}</label>
           </div><!--controls-->
         </div><!--control-group control-medium-->
+
+        {% if c.option_open_datasets and c.option_open_datasets|length %}
+          <div id='open_dataset_div' class="control-group control-medium">
+              <label class="control-label" for="{{_('field-open_datasets')}}">
+              {{ _('Open Datasets') }}
+              </label>
+            <div class="controls ">
+              <select id={{_('field-open_datasets')}} multiple name="open_datasets" data-module="">
+                  {% for option in c.option_open_datasets  %}
+                      <option value="{{ option.value }}" 
+                          {% for sel in c.selected_open_datasets %}
+                              {% if option.value == sel %}
+                                  selected
+                              {% endif %}
+                          {% endfor %}
+                      >
+                      {{ option.text or option.value }}</option>
+                  {% endfor %}
+              </select>
+            </div><!--controls-->
+          </div><!--control-group control-medium-->
+        {% endif %}
+
     <button id="search_form" class="btn btn-primary" type="submit" name="search" value="search_on">{{ _('Search')}}
     </button>
 

@@ -796,11 +796,21 @@ def get_open_status_helper():
     except ImportError:
         return None
 
+'''
+get opendata organisation
+'''
+def get_open_data_organisation():
+
+    oh = get_open_status_helper()
+    if oh:
+        return oh.vdojopen_get_open_data_organisation()
+
+
+'''
+ get open_status_options
+ parameter: organization_id
+'''
 def get_open_status_options(org_id=None):
-    """
-     get open_status_options
-     parameter: organization_id
-    """
     oh = get_open_status_helper()
     option_list = []
     if oh:
@@ -813,22 +823,14 @@ def get_open_status_options(org_id=None):
         sql = sql.order_by(option.c.option_value.asc()).group_by(option.c.option_value)
         rows = model.Session.execute(sql).fetchall()
         for row in rows:
-            option_list.append(row['option_value'])
+            option_list.append({'text' : row['option_value'], 'value' : row['option_value']})
     return option_list
 
+'''
+get count of the package with the parameter
+parameter: organization_id
+'''
 def count_open_status_assets(org_id=None):
-    """
-    get count of the package with the parameter
-    parameter: organization_id
-
-    select count(package_id), option_value 
-    from vdoj_metameta_options option
-    left outer join package_extra extra on extra.value = option.option_value 
-    where option.key = 'vdoj_open_status'
-    group by option_value 
-    order by option_value 
-
-    """
     oh = get_open_status_helper()
     option_list = []
     if oh:
