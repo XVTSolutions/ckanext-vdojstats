@@ -36,6 +36,25 @@ ckan.module('generatePDF', function ($, _) {
   };
 });
 
+ckan.module('vdojstats_search', function ($, _) {
+  return {
+
+    initialize: function () {
+        this.el.on('click', this._onClick);    
+    },
+
+    _onClick: function(event) {
+        var action = $(this).attr('data-module-action');
+        var username = $(this).attr('data-module-username');
+        var action_url = '/stats/' + action;
+        if (username.length){
+            action_url = action_url + '/' + username;
+        }
+        $('#search_form').attr('action', action_url).removeAttr('target').submit();
+    }
+  };
+});
+
 ckan.module('generateCSV', function ($, _) {
   return {
 
