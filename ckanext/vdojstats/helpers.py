@@ -416,7 +416,7 @@ def get_organization_id(name):
     except Exception:
         print 'cannot convert org name to org id'
 
-def list_assets(org_ids=None, package_states=None, private=None, suspended=None, pending_review=None, package=None):
+def list_assets(org_ids=None, package_states=None, private=None, suspended=None, pending_review=None, opendata_sets=None, package=None):
     """
      get list of assets
      parameter: org_ids (list)
@@ -433,6 +433,8 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
         else:
             organizations.append("'%s'"%(org_ids))
 
+    oh = get_open_status_helper()
+
     pstats = []
     if package_states is not None:
         if isinstance(package_states, list):
@@ -440,11 +442,22 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
         else:
             pstats.append("'%s'"%(package_states))
 
+    open_statuses = []
+    if opendata_sets is not None:
+        if isinstance(opendata_sets, list):
+            open_statuses = ["'%s'"%(opendata_set) for opendata_set in opendata_sets]
+        else:
+            open_statuses.append("'%s'"%(opendata_sets))
+
     sql = "SELECT P.id AS package_id, P.title AS package_title, P.name AS package_name, P.state AS package_state, P.private, P.type AS package_type, P.owner_org, G.title AS group_title, G.name AS group_name, review.next_review_date, (CASE WHEN suspend.package_id IS NOT NULL THEN True ELSE False END) AS suspended, suspend.reason AS suspend_reason, activity.timestamp AS activity_timestamp "
+    if oh:
+        sql = sql + ", open_datasets_extra.value AS opendata_set "
     sql = sql + "FROM package P " 
     sql = sql + "LEFT OUTER JOIN \"group\" G ON P.owner_org = G.id AND G.is_organization IS TRUE "  #only organization
     sql = sql + "LEFT OUTER JOIN package_review review ON review.package_id = P.id "
     sql = sql + "LEFT OUTER JOIN package_suspend suspend ON suspend.package_id = P.id "
+    if oh:
+        sql = sql + "LEFT OUTER JOIN package_extra open_datasets_extra ON open_datasets_extra.package_id = P.id AND open_datasets_extra.key =  '%s' "%(oh.vdojopen_key_open_status()) 
     sql = sql + "LEFT OUTER JOIN (SELECT object_id, activity_type, MAX(timestamp) AS timestamp FROM activity WHERE activity_type = '%s' GROUP BY object_id, activity_type) activity ON activity.object_id = P.id "%(dataset_activity_type_reviewed)
     sql = sql + "WHERE P.id IS NOT NULL "   #dummy statement
     if len(organizations):
@@ -465,6 +478,8 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             sql = sql + "AND review.package_id IS NOT NULL AND next_review_date < current_date "
         elif pending_review == onward_pending_review:
             sql = sql + "AND review.package_id IS NOT NULL AND next_review_date > current_date "
+    if len(open_statuses):
+        sql = sql + "AND open_datasets_extra.value IN (%s) "%(",".join(open_statuses))
     if package is not None:
         sql = sql + "AND (P.title LIKE '%" + package + "%' OR P.name LIKE '%" + package + "%') " 
     sql = sql + "ORDER BY G.name ASC "
@@ -482,7 +497,7 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             last_review_date_title = row['activity_timestamp'].strftime(DATE_FORMAT)
             last_review_date = row['activity_timestamp'].strftime(DATE_FORMAT_WITHOUT_CENTURY)
 
-        activity_list.append({
+        record = {
             'package_id':row['package_id'],
             'package_title':row['package_title'],
             'package_name':row['package_name'],
@@ -497,7 +512,10 @@ def list_assets(org_ids=None, package_states=None, private=None, suspended=None,
             'last_review_date_title':last_review_date_title or '',
             'next_review_date':next_review_date or '',
             'next_review_date_title':next_review_date_title or '',
-            })
+            }
+        if oh:
+            record['opendata_set'] = row['opendata_set']
+        activity_list.append(record)
     return activity_list
 
 def autocomplete_package(search_key=None):
@@ -804,6 +822,13 @@ def get_open_data_organisation():
     oh = get_open_status_helper()
     if oh:
         return oh.vdojopen_get_open_data_organisation()
+
+
+def has_opendata_set(organisation_names):
+    for organisation_name in organisation_names:
+        if get_open_data_organisation() == organisation_name:
+            return True
+    return False
 
 
 '''

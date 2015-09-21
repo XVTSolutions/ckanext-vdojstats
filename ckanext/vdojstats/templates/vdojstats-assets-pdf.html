@@ -1,6 +1,6 @@
 {% extends "vdojstats-base-pdf.html" %}
 
 {% block vdojstat_content %}
-{% snippet 'snippets/vdojstats-assets-content.html', org_assets=c.org_assets %}
+{% snippet 'snippets/vdojstats-assets-content.html', org_assets=c.org_assets, has_opendata_set = h.vdojstats_has_opendata_set(c.selected_org_names) %}
 {% endblock %}
 

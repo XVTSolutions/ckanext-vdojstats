@@ -223,6 +223,7 @@ class VDojStatsPlugin(SingletonPlugin):
             'vdoj_organization_link' : h.vdoj_organization_link,
             'vdoj_dataset_link' : h.vdoj_dataset_link,
             'vdojstats_get_open_data_organisation': h.get_open_data_organisation,
+            'vdojstats_has_opendata_set': h.has_opendata_set,
                 }
         
     """   

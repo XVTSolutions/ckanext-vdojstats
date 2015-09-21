@@ -91,6 +91,28 @@
           </div><!--controls-->
         </div><!--control-group control-medium-->
 
+        {% if c.option_open_datasets and c.option_open_datasets|length %}
+          <div id='open_dataset_div' class="control-group control-medium">
+              <label class="control-label" for="{{_('field-open_datasets')}}">
+              {{ _('Open Datasets') }}
+              </label>
+            <div class="controls ">
+              <select id={{_('field-open_datasets')}} multiple name="open_datasets" data-module="">
+                  {% for option in c.option_open_datasets  %}
+                      <option value="{{ option.value }}" 
+                          {% for sel in c.selected_open_datasets %}
+                              {% if option.value == sel %}
+                                  selected
+                              {% endif %}
+                          {% endfor %}
+                      >
+                      {{ option.text or option.value }}</option>
+                  {% endfor %}
+              </select>
+            </div><!--controls-->
+          </div><!--control-group control-medium-->
+        {% endif %}
+
         <div class="control-group control-medium">
             <label class="control-label" for="{{_('field-suspended')}}">
             {{ _('Suspended') }}
@@ -142,28 +164,6 @@
           </div><!--controls-->
         </div><!--control-group control-medium-->
 
-        {% if c.option_open_datasets and c.option_open_datasets|length %}
-          <div id='open_dataset_div' class="control-group control-medium">
-              <label class="control-label" for="{{_('field-open_datasets')}}">
-              {{ _('Open Datasets') }}
-              </label>
-            <div class="controls ">
-              <select id={{_('field-open_datasets')}} multiple name="open_datasets" data-module="">
-                  {% for option in c.option_open_datasets  %}
-                      <option value="{{ option.value }}" 
-                          {% for sel in c.selected_open_datasets %}
-                              {% if option.value == sel %}
-                                  selected
-                              {% endif %}
-                          {% endfor %}
-                      >
-                      {{ option.text or option.value }}</option>
-                  {% endfor %}
-              </select>
-            </div><!--controls-->
-          </div><!--control-group control-medium-->
-        {% endif %}
-
     <button id="search_form" class="btn btn-primary" type="submit" name="search" value="search_on">{{ _('Search')}}
     </button>
 
@@ -174,6 +174,6 @@
 
 {% block vdojstat_content %}
   {{ super() }}
-{% snippet 'snippets/vdojstats-assets-content.html', org_assets=c.org_assets %}
+{% snippet 'snippets/vdojstats-assets-content.html', org_assets=c.org_assets, has_opendata_set = h.vdojstats_has_opendata_set(c.selected_org_names) %}
 {% endblock %}
 

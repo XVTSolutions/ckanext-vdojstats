@@ -48,19 +48,8 @@ class VDojStatsController(BaseController):
                 [
                     {'label':'Private', 'num':private_num},
                     {'label':'Public', 'num':public_num},
-                ]},
-            {'header': 'Activeness',
-            'content':
-                [
-                    {'label':'Active', 'num':active_num},
-                    {'label':'Not Active', 'num':dormant_num},
-                ]},
-            {'header': 'Review Status',
-            'content':
-                [
-                    {'label':'Pending Review for Today', 'num':today_review_num},
-                    {'label':'Pending Review (Delay)', 'num':delay_review_num},
-                ]},
+                ]
+            },
             ]
 
         oh = h.get_open_status_helper()
@@ -73,6 +62,23 @@ class VDojStatsController(BaseController):
                 'content': options
                 })
 
+        tk.c.overall.append(
+            {'header': 'Activeness',
+            'content':
+                [
+                    {'label':'Active', 'num':active_num},
+                    {'label':'Not Active', 'num':dormant_num},
+                ]
+            })
+
+        tk.c.overall.append(
+            {'header': 'Review Status',
+            'content':
+                [
+                    {'label':'Pending Review for Today', 'num':today_review_num},
+                    {'label':'Pending Review (Delay)', 'num':delay_review_num},
+                ]
+            })
 
     def overall(self):
         self._overall()
@@ -289,7 +295,7 @@ class VDojStatsController(BaseController):
         tk.c.option_org_names = h.get_org_names()
         tk.c.option_package_states = h.get_package_states()
         tk.c.option_open_datasets = h.get_open_status_options()
-        tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_review=tk.c.pending_review, package=package)
+        tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_review=tk.c.pending_review, opendata_sets=tk.c.selected_open_datasets, package=package)
 
     def assets(self):
         self._assets()
@@ -306,10 +312,16 @@ class VDojStatsController(BaseController):
         file_path = h.get_export_dir() + 'vdojstats-assets.csv'
         with open(file_path, 'wb') as csvfile:
             writer = csv.writer(csvfile, lineterminator = '\n')
-            record = ['Organisation', 'Packasge', 'status', 'Private', 'Suspend', 'Suspend Reason', 'Last Review Date', 'Next Review Date']
+            record = ['Organisation', 'Packasge', 'status', 'Private']
+            if h.has_opendata_set(tk.c.selected_org_names):
+                record.append('Opendata Sets');
+            record.extend(['Suspend', 'Suspend Reason', 'Last Review Date', 'Next Review Date'])
             writer.writerow(record)
             for row in tk.c.org_assets:
-                record = [row['group_title'] or row['group_name'], row['package_title'] or row['package_name'], row['package_state'], row['is_private'], row['is_suspended'], row['suspend_reason'], row['last_review_date'], row['next_review_date']]
+                record = [row['group_title'] or row['group_name'], row['package_title'] or row['package_name'], row['package_state'], row['is_private']]
+                if h.has_opendata_set(tk.c.selected_org_names):
+                    record.append(row['opendata_set']);
+                record.extend([row['is_suspended'], row['suspend_reason'], row['last_review_date'], row['next_review_date']])
                 writer.writerow(record)
         response = h.convertHtmlToCsv(file_path, tk.response)
         return response
@@ -327,6 +339,9 @@ class VDojStatsController(BaseController):
             status.text = row['package_state']
             is_private = ET.SubElement(record, 'Private')
             is_private.text = row['is_private']
+            if h.has_opendata_set(tk.c.selected_org_names):
+                opendata_set = ET.SubElement(record, 'Opendata_Sets')
+                opendata_set.text = row['opendata_set']
             is_suspended = ET.SubElement(record, 'Suspend')
             is_suspended.text = row['is_suspended']
             suspend_reason = ET.SubElement(record, 'Suspend_Reason')
