@@ -101,7 +101,7 @@
                   {% for option in c.option_open_datasets  %}
                       <option value="{{ option }}" 
                           {% for sel in c.selected_open_datasets %}
-                              {% if option.value == sel %}
+                              {% if option == sel %}
                                   selected
                               {% endif %}
                           {% endfor %}
