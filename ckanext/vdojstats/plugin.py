@@ -77,6 +77,10 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_assets_by_state')
 
+        map.connect('stats', '/stats/all_assets_by_open_dataset',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_open_dataset')
+
         map.connect('stats', '/stats/assets',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='assets')
@@ -129,6 +133,10 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_assets_by_state_pdf')
 
+        map.connect('stats', '/stats/all_assets_by_open_dataset_pdf',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_open_dataset_pdf')
+
         map.connect('stats', '/stats/assets_pdf',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='assets_pdf')
@@ -153,6 +161,10 @@ class VDojStatsPlugin(SingletonPlugin):
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_assets_by_state_csv')
 
+        map.connect('stats', '/stats/all_assets_by_open_dataset_csv',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_open_dataset_csv')
+
         map.connect('stats', '/stats/assets_csv',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='assets_csv')
@@ -176,6 +188,10 @@ class VDojStatsPlugin(SingletonPlugin):
         map.connect('stats', '/stats/all_assets_by_state_xml',
             controller='ckanext.vdojstats.controller:VDojStatsController',
             action='all_assets_by_state_xml')
+
+        map.connect('stats', '/stats/all_assets_by_open_dataset_xml',
+            controller='ckanext.vdojstats.controller:VDojStatsController',
+            action='all_assets_by_open_dataset_xml')
 
         map.connect('stats', '/stats/assets_xml',
             controller='ckanext.vdojstats.controller:VDojStatsController',
@@ -224,6 +240,8 @@ class VDojStatsPlugin(SingletonPlugin):
             'vdoj_dataset_link' : h.vdoj_dataset_link,
             'vdojstats_get_open_data_organisation': h.get_open_data_organisation,
             'vdojstats_has_opendata_set': h.has_opendata_set,
+            'vdojstats_get_open_status_helper': h.get_open_status_helper,
+            'vdojstats_get_open_status_options': h.get_open_status_options,
                 }
         
     """   

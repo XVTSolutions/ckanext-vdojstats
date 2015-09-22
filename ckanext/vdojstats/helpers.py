@@ -848,7 +848,7 @@ def get_open_status_options(org_id=None):
         sql = sql.order_by(option.c.option_value.asc()).group_by(option.c.option_value)
         rows = model.Session.execute(sql).fetchall()
         for row in rows:
-            option_list.append({'text' : row['option_value'], 'value' : row['option_value']})
+            option_list.append(row['option_value'])
     return option_list
 
 '''
@@ -878,5 +878,71 @@ def count_open_status_assets(org_id=None):
         if _debug_mode():
             print '==============sql = %s========'%sql
     return option_list
+
+def _count_extra_revision_by_date_and_extra_value(key):
+    """
+     get count of extra_revision by date
+     parameter: key
+    """
+
+    tz_code = config.get('ckan.timezone', 'Australia/Melbourne')
+
+    sql = "SELECT COUNT(value) as num, value, date_trunc('day', (revision_timestamp + interval '1' hour * EXTRACT(timezone_hour from timezone('%s', revision_timestamp)) + interval '1' minute * EXTRACT(timezone_minute from timezone('%s', revision_timestamp)))) AS day "%(tz_code, tz_code)
+    sql = sql + " FROM package_extra_revision "
+    sql = sql + " WHERE key = '%s' "%(key)
+    sql = sql + " GROUP BY day, value "
+    sql = sql + " ORDER BY day DESC "
+
+    rows = model.Session.execute(sql).fetchall()
+    value_list = []
+    for row in rows:
+        value_list.append({
+            'num':row['num'],
+            'day':row['day'].strftime(DATE_FORMAT),
+            'value':row['value'],
+            })
+
+    return value_list
+
+def count_extra_revision_by_date_and_open_datasets():
+
+    oh = get_open_status_helper()
+    if oh:
+        #get key
+        open_status_key = oh.vdojopen_key_open_status()
+
+        #get options
+        options = get_open_status_options()
+
+        records = []
+        record = None
+        current_day = None
+        rows = _count_extra_revision_by_date_and_extra_value(open_status_key)
+        for row in rows:
+            if row['day'] != current_day:
+                if record is not None:
+                    total = 0
+                    for option in options:
+                        total += record[option]
+                    record.update({total_per_date:total})
+                    records.append(record)
+
+                current_day = row['day']
+                record = {'day': row['day']}
+                for option in options:
+                    record.update({option : 0L})
+                record.update({total_per_date : 0L})
+            record.update({row['value']:row['num']})
+        #finalize
+        if record is not None:
+            total = 0
+            for option in options:
+                total += record[option]
+            record.update({total_per_date:total})
+            records.append(record)
+        if _debug_mode():
+            print 'records'
+            print records
+        return records
 
 

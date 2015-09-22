@@ -1,0 +1,28 @@
+{% set opts = h.vdojstats_get_open_status_options() %}
+
+<table class="table table-striped table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th scope="col">{{_('Date')}}</th>
+        {% for opt in opts %}
+          <th scope="col">{{_(opt)}}</th>
+        {% endfor %}
+        <th scope="col" title="Total per date">{{_('Total@day')}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in allassets %}
+          <tr 
+            class = {%if loop.index0 % 2 == 0 %} 'even' {% else %} 'odd' {% endif %}  
+            >
+            <td class="dataset-label">{{ _(row.day) }}</td>
+            {% for opt in opts %}
+              <td class="dataset-label">{{ _(row[opt]) }}</td>
+            {% endfor %}
+            <td class="dataset-details">{{ _(row.total_per_date) }}</td>
+          </tr>
+      {% endfor %}
+    </tbody>
+</table>
+<p><!--(*)The creation of a dataset counts as a modification</p>-->
+

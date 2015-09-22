@@ -132,7 +132,6 @@ class VDojStatsController(BaseController):
     def _all_assets_by_activity(self):
         tk.c.sub_title = _('All Assets By Activity')
         tk.c.allassets = h.count_assets_by_date_and_activity()
-        return render('vdojstats-all-assets-by-activity.html')
 
     def all_assets_by_activity(self):
         self._all_assets_by_activity()
@@ -190,7 +189,6 @@ class VDojStatsController(BaseController):
         tk.c.sub_title = _('All Assets By State')
         #tk.c.allassets = h.count_assets_by_date()
         tk.c.allassets = h.count_assets_by_date_and_state()
-        return render('vdojstats-all-assets-by-state.html')
 
     def all_assets_by_state(self):
         self._all_assets_by_state()
@@ -235,6 +233,62 @@ class VDojStatsController(BaseController):
             total = ET.SubElement(record, 'Total')
             total.text = str(row[h.total_per_date])
         file_path = h.get_export_dir() + 'vdojstats-all-assets-by-state.xml'
+        tree = ET.ElementTree(root)
+        response = h.createResponseWithXML(tree, file_path, tk.response)
+        return response
+
+    '''
+    all assets by open dataset
+    '''
+    def _all_assets_by_open_dataset(self):
+        tk.c.sub_title = _('All Assets By Open Datasets')
+        tk.c.allassets = h.count_extra_revision_by_date_and_open_datasets()
+
+    def all_assets_by_open_dataset(self):
+        self._all_assets_by_open_dataset()
+        return render('vdojstats-all-assets-by-open-dataset.html')
+
+    def all_assets_by_open_dataset_pdf(self):
+        self._all_assets_by_open_dataset()
+        file_path = h.get_export_dir() + 'vdojstats-all-assets-by-open-dataset.pdf'
+        response = h.convertHtmlToPdf(tk.render('vdojstats-all-assets-by-open-dataset-pdf.html'), file_path, tk.response)
+        return response
+
+    def all_assets_by_open_dataset_csv(self):
+        self._all_assets_by_open_dataset()
+        file_path = h.get_export_dir() + 'vdojstats-all-assets-by-open-dataset.csv'
+        options = h.get_open_status_options()
+        with open(file_path, 'wb') as csvfile:
+            writer = csv.writer(csvfile, lineterminator = '\n')
+            record = [u'Date']
+            record.extend(options)
+            record.append('Total')
+            writer.writerow(record)
+            for row in tk.c.allassets:
+                record = [row['day']]
+                for option in options:
+                    record.append(row[option])
+                record.append(row[h.total_per_date])
+                writer.writerow(record)
+        response = h.convertHtmlToCsv(file_path, tk.response)
+        return response
+
+    def all_assets_by_open_dataset_xml(self):
+        self._all_assets_by_open_dataset()
+        root = ET.Element('root')
+        options = h.get_open_status_options()
+        for row in tk.c.allassets:
+            record = ET.SubElement(root, 'record')
+            day = ET.SubElement(record, 'Date')
+            day.text = row['day']
+
+            for option in options:
+                option_element = ET.SubElement(record, re.sub('[^a-zA-Z0-9_-]+', '_', option.encode('ascii','ignore')))
+                option_element.text = str(row[option])
+
+            total = ET.SubElement(record, 'Total')
+            total.text = str(row[h.total_per_date])
+        file_path = h.get_export_dir() + 'vdojstats-all-assets-by-open-dataset.xml'
         tree = ET.ElementTree(root)
         response = h.createResponseWithXML(tree, file_path, tk.response)
         return response

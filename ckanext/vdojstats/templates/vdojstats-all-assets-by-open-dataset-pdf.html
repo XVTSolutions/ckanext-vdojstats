@@ -1,0 +1,7 @@
+{% extends "vdojstats-base-pdf.html" %}
+
+{% block vdojstat_content %}
+  {{ super() }}
+{% snippet 'snippets/vdojstats-all-assets-by-open-dataset-content.html', allassets=c.allassets %}
+{% endblock %}
+

@@ -1,3 +1,4 @@
+    {% set oh = h.vdojstats_get_open_status_helper %}
 
 	<section class="module module-narrow">
 		<h2 class="module-heading"><i class="icon-table"></i> {{ _("Standard Reports") }}</h2>
@@ -39,6 +40,18 @@
                                 </a>
                             {% endif %}
                         </li>
+                        {% if oh is not none %} 
+                            <li class="">
+                                {% if current_action == 'all_assets_by_open_dataset'%} 
+                                    {{_('All Assets By Open Datasets')}}
+                                {% else %}
+                                    <a href="/stats/all_assets_by_open_dataset">
+                                        {{_('All Assets By Open Datasets')}}
+                                    </a>
+                                {% endif %}
+                            </li>
+                        {% endif %}
+
 		            </ul>
                 </li>
 			    <li class="">
