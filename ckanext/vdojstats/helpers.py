@@ -940,9 +940,6 @@ def count_extra_revision_by_date_and_open_datasets():
                 total += record[option]
             record.update({total_per_date:total})
             records.append(record)
-        if _debug_mode():
-            print 'records'
-            print records
         return records
 
 

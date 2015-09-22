@@ -62,7 +62,7 @@
                             {% endif %}
                         {% endfor %}
                     >
-                    {{ option.text or option.value }}</option>
+                    {{ _(option.text or option.value) }}</option>
                 {% endfor %}
             </select>
           </div><!--controls-->
@@ -99,14 +99,14 @@
             <div class="controls ">
               <select id={{_('field-open_datasets')}} multiple name="open_datasets" data-module="">
                   {% for option in c.option_open_datasets  %}
-                      <option value="{{ option.value }}" 
+                      <option value="{{ option }}" 
                           {% for sel in c.selected_open_datasets %}
                               {% if option.value == sel %}
                                   selected
                               {% endif %}
                           {% endfor %}
                       >
-                      {{ option.text or option.value }}</option>
+                      {{ _(option) }}</option>
                   {% endfor %}
               </select>
             </div><!--controls-->

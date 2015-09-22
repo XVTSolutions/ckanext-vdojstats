@@ -3,11 +3,11 @@
 <table class="table table-striped table-bordered table-condensed">
     <thead>
       <tr>
-        <th scope="col">{{_('Date')}}</th>
+        <th scope="col" class="smallfont" title="{{_('Date')}}" >{{_('Date')}}</th>
         {% for opt in opts %}
-          <th scope="col">{{_(opt)}}</th>
+          <th scope="col" class="smallfont" title="{{_(opt)}}" >{{_(opt)}}</th>
         {% endfor %}
-        <th scope="col" title="Total per date">{{_('Total@day')}}</th>
+        <th scope="col" class="smallfont" title="Total per date">{{_('Total@day')}}</th>
       </tr>
     </thead>
     <tbody>
