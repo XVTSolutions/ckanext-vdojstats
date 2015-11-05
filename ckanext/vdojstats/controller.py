@@ -394,8 +394,8 @@ class VDojStatsController(BaseController):
             is_private = ET.SubElement(record, 'Private')
             is_private.text = row['is_private']
             if h.has_opendata_set(tk.c.selected_org_names):
-                datavic_datasets = ET.SubElement(record, 'Datavic_Datasets')
-                datavic_datasets.text = row['datavic_datasets']
+                opendata_set = ET.SubElement(record, 'Datavic_Datasets')
+                opendata_set.text = row['opendata_set']
             is_suspended = ET.SubElement(record, 'Suspend')
             is_suspended.text = row['is_suspended']
             suspend_reason = ET.SubElement(record, 'Suspend_Reason')
