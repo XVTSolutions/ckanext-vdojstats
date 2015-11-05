@@ -241,7 +241,7 @@ class VDojStatsController(BaseController):
     all assets by open dataset
     '''
     def _all_assets_by_open_dataset(self):
-        tk.c.sub_title = _('All Assets By Open Datasets')
+        tk.c.sub_title = _('All Assets By Datavic Datasets')
         tk.c.allassets = h.count_extra_revision_by_date_and_open_datasets()
 
     def all_assets_by_open_dataset(self):
@@ -368,7 +368,7 @@ class VDojStatsController(BaseController):
             writer = csv.writer(csvfile, lineterminator = '\n')
             record = ['Organisation', 'Packasge', 'status', 'Private']
             if h.has_opendata_set(tk.c.selected_org_names):
-                record.append('Opendata Sets');
+                record.append('Datavic Datasets');
             record.extend(['Suspend', 'Suspend Reason', 'Last Review Date', 'Next Review Date'])
             writer.writerow(record)
             for row in tk.c.org_assets:
@@ -394,8 +394,8 @@ class VDojStatsController(BaseController):
             is_private = ET.SubElement(record, 'Private')
             is_private.text = row['is_private']
             if h.has_opendata_set(tk.c.selected_org_names):
-                opendata_set = ET.SubElement(record, 'Opendata_Sets')
-                opendata_set.text = row['opendata_set']
+                datavic_datasets = ET.SubElement(record, 'Datavic_Datasets')
+                datavic_datasets.text = row['datavic_datasets']
             is_suspended = ET.SubElement(record, 'Suspend')
             is_suspended.text = row['is_suspended']
             suspend_reason = ET.SubElement(record, 'Suspend_Reason')
