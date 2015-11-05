@@ -58,7 +58,7 @@ class VDojStatsController(BaseController):
             options = h.count_open_status_assets()
             print options
             tk.c.overall.append({
-                'header': 'Open datasets',
+                'header': 'Datavic Datasets',
                 'content': options
                 })
 
