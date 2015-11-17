@@ -219,7 +219,7 @@ class VDojStatsPlugin(SingletonPlugin):
         here = os.path.dirname(__file__)
         tk.add_template_directory(config, 'templates')
         tk.add_public_directory(config, 'public')
-        tk.add_resource('public', 'ckanext-vdojstats')
+        tk.add_resource('fanstatic', 'ckanext-vdojstats')
 
         #configure vicdoj export directory and header
         site_id = config.get('ckan.site_id', 'default')

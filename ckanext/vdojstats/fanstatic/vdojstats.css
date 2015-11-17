@@ -114,3 +114,10 @@ div.control-radio input
 	margin-right: 5px;
 }
 
+/*override default style*/
+.form-horizontal .control-label {
+    width: 130px;
+}
+.form-horizontal .controls {
+    margin-left: 140px;
+}

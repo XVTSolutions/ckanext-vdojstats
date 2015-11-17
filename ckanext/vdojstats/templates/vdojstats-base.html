@@ -1,7 +1,7 @@
 {% extends "page.html" %}
 {% block styles %}
   {{ super() }}
-  <link rel="stylesheet" href="/style.css" />
+  {% resource 'ckanext-vdojstats/vdojstats.css' %}  
 {% endblock %}
 {%- block scripts %}
   {{ super() }}
