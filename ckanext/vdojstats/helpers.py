@@ -844,7 +844,17 @@ def get_open_status_options(org_id=None):
         option = table('vdoj_metameta_options')
         sql = select([option.c.option_value]).where(option.c.key == open_status_key)
         if org_id is not None:
-            sql = sql.where(option.c.owner_org == org_id)
+            sql = sql.where(option.c.org_id == org_id)
+        else:
+            organisation = oh.vdojopen_get_open_data_organisation()
+            try:
+                context = {'model': model, 'session': model.Session,
+                           'user': tk.c.user or tk.c.author, 'auth_user_obj': tk.c.userobj}
+                group_dict = tk.get_action('organization_show')(context, {'id': organisation})
+                sql = sql.where(option.c.org_id == group_dict['id'])
+            except NotFound:
+                pass
+
         sql = sql.order_by(option.c.option_value.asc()).group_by(option.c.option_value)
         rows = model.Session.execute(sql).fetchall()
         for row in rows:
