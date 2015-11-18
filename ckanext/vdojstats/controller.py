@@ -346,7 +346,7 @@ class VDojStatsController(BaseController):
                     if key == 'open_datasets' and len(value):
                         tk.c.selected_open_datasets.append(value)
 
-        tk.c.option_org_names = h.get_org_names()
+        tk.c.option_orgs = h.get_orgs()
         tk.c.option_package_states = h.get_package_states()
         tk.c.option_open_datasets = h.get_open_status_options()
         tk.c.org_assets = h.list_assets(org_ids=org_ids, package_states=tk.c.selected_package_states, private=private, suspended=suspended, pending_review=tk.c.pending_review, opendata_sets=tk.c.selected_open_datasets, package=package)

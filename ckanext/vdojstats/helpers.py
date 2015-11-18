@@ -539,16 +539,16 @@ def autocomplete_package(search_key=None):
     return package_list
 
 
-def get_org_names():
+def get_orgs():
     context = {'model': model,
                'user': tk.c.user}
-    data_dict = {}
-    names = get_action('organization_list')(context, data_dict)
+    data_dict = {'all_fields': True}
+    orgs = get_action('organization_list')(context, data_dict)
     organization_options = []
-    for name in names:
+    for org in orgs:
         organization_options.append({
-            'text': name,
-            'value': name,
+            'text': org.get('title'),
+            'value': org.get('name'),
         })
     return organization_options
 
@@ -846,7 +846,7 @@ def get_open_status_options(org_id=None):
         if org_id is not None:
             sql = sql.where(option.c.org_id == org_id)
         else:
-            organisation = oh.vdojopen_get_open_data_organisation()
+            organisation = get_open_data_organisation()
             try:
                 context = {'model': model, 'session': model.Session,
                            'user': tk.c.user or tk.c.author, 'auth_user_obj': tk.c.userobj}

@@ -25,7 +25,7 @@
             </label>
           <div class="controls ">
             <select id={{_('field-organization')}} multiple name="organization" data-module="vdojstats_select_organisation" data-module-opendata_organisation={{h.vdojstats_get_open_data_organisation()}} >
-                {% for option in c.option_org_names  %}
+                {% for option in c.option_orgs  %}
                     <option value="{{ option.value }}" 
                         {% for sel in c.selected_org_names %}
                             {% if option.value == sel %}
