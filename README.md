@@ -28,8 +28,6 @@
 <li>#vdojstats</li>
 <li>vdojstats.export_dir = /tmp/export/%(ckan.site_id)s/</li>
 <li>vdojstats.export_header = Victoria DoJ</li>
-<li>vdojstats.logo_absolute_path = /usr/lib/ckan/default/src/ckan/ckan/public/base/images/ckan-logo.png</li>
-<li>vdojstats.logo_bg_color = #00a0c4</li>
 </ul>
 
 
