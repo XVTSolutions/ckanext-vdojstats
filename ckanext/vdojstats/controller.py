@@ -238,7 +238,7 @@ class VDojStatsController(BaseController):
         return response
 
     '''
-    all assets by open dataset
+    all assets by Datavic Datasets
     '''
     def _all_assets_by_open_dataset(self):
         tk.c.sub_title = _('All Assets By Datavic Datasets')
