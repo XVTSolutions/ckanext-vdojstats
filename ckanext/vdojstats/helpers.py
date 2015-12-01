@@ -10,7 +10,7 @@ from ckan.common import _
 from ckan import model
 from ckan.model.meta import metadata
 from ckan.model import Session, Activity, ActivityDetail
-from ckan.lib.navl.dictization_functions import StopOnError
+from ckan.lib.navl.dictization_functions import StopOnError, Missing
 from ckan.lib.helpers import full_current_url, url_for, link_to, dataset_display_name, markdown_extract
 from urlparse import urlparse
 from ckan.logic.converters import convert_group_name_or_id_to_id
@@ -683,7 +683,7 @@ def create_activity(context, pkg_dict):
     except NotFound:
         #at new creation of the package, the data has not been existing in the DB, so retrieve the data from pkg_dict and sanitize it
         activity_data = copy.deepcopy(pkg_dict)
-        _sanitize_dict(activity_data) #sanitize
+    _sanitize_dict(activity_data) #sanitize
 
     #retrieve package/resource data as detail_data
     if activity_info.get('object_type') == object_type_package:
@@ -730,7 +730,7 @@ def _sanitize_dict(dictionary):
         elif isinstance(v, list):
             for i in v:
                 _sanitize_dict(i)
-        if type(v) is datetime.datetime:
+        if type(v) is datetime.datetime or type(v) is Missing:
             del dictionary[k] #delete this since this contains unserialized datetime object
 
 def dict_to_etree(d):
