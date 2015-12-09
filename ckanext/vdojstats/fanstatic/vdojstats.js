@@ -1,4 +1,4 @@
-ckan.module('search_option_popover', function ($, _) {
+ckan.module('search_option_toggle', function ($, _) {
   return {
     initialize: function () {
       this.el.on('click', this._onClick);
@@ -110,7 +110,6 @@ ckan.module('vdojstats_select_organisation', function ($, _) {
 
     _onChange: function(event) {
         var display = false;
-        $('#open_dataset_div').hide(500);
         $(event.target).find('option:selected').each(function (){
             if($(this).val()==properties.opendata_organisation){
                 display = true;
@@ -127,3 +126,36 @@ ckan.module('vdojstats_select_organisation', function ($, _) {
     }
   };
 });
+
+ckan.module('vdojstats_search_reset', function ($, _) {
+  return {
+
+    initialize: function () {
+        this.el.on('click', this._onClick);    
+    },
+
+
+    // in order to reset all field regardless of having searched or not
+    _onClick: function(event) {
+
+        var field_selection = $(this).closest('section.module-content').find('select');
+        var field_radio = $(this).closest('section.module-content').find('input:radio');
+        var field_package = $(this).closest('section.module-content').find('input:text');
+
+        //autocomplete
+        //clear contents
+        $(field_package).val('');
+        //clear display
+        $(field_package).closest('div.controls').find('span.select2-chosen').text('');
+
+        //clear all selected
+        $(field_selection).prop('selectedIndex', '-1');//for IE
+        $(field_selection).find('option').removeAttr('selected');
+        $(field_selection).trigger('change');
+
+        //clear radio
+        $(field_radio).removeAttr('checked');
+    }
+  };
+});
+

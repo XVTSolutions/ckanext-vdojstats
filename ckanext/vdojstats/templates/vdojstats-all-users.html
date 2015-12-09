@@ -4,7 +4,7 @@
   {{ super() }}
         
         <p class='flash-messages alert'>{{ _('You can use the search filters by clicking plus(+) icon below..')}}</p>
-        <p id='search_option_trigger' data-module="search_option_popover"
+        <p id='search_option_trigger' data-module="search_option_toggle"
             {% if c.search %}
                 class="icon-minus-sign"
             {% else %}            
@@ -71,6 +71,9 @@
           </div><!--controls-->
         </div><!--control-group control-medium-->
     <button class="btn btn-primary" type="submit" name="search" value="search_on" data-module='vdojstats_search' data-module-action="{{c.action}}" data-module-username="{{c.username}}" data-format='' title={{ _('Search') }} >{{ _('Search') }}
+    </button>
+    <button class="btn" type="button" name="reset" data-module='vdojstats_search_reset' title={{ _('Clear') }} >
+    {{ _('Clear Options') }}
     </button>
 
    </section>

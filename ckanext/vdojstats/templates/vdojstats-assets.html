@@ -4,7 +4,7 @@
   {{ super() }}
         
         <p class='flash-messages alert'>{{ _('You can use the search filters by clicking plus(+) icon below.')}}</p>
-        <p id='search_option_trigger' data-module="search_option_popover"
+        <p id='search_option_trigger' data-module="search_option_toggle"
             {% if c.search %}
                 class="icon-minus-sign"
             {% else %}            
@@ -20,11 +20,11 @@
         >
 
         <div class="control-group control-medium">
-            <label class="control-label" for="{{_('field-organization')}}">
+            <label class="control-label" for='field-organization'>
             {{ _('Organization') }}
             </label>
           <div class="controls ">
-            <select id={{_('field-organization')}} multiple name="organization" data-module="vdojstats_select_organisation" data-module-opendata_organisation={{h.vdojstats_get_open_data_organisation()}} >
+            <select id='field-organization' multiple name="organization" data-module="vdojstats_select_organisation" data-module-opendata_organisation={{h.vdojstats_get_open_data_organisation()}} >
                 {% for option in c.option_orgs  %}
                     <option value="{{ option.value }}" 
                         {% for sel in c.selected_org_names %}
@@ -40,20 +40,20 @@
         </div><!--control-group control-medium-->
 
         <div class="control-group control-medium">
-            <label class="control-label" for="{{_('field-package')}}">
+            <label class="control-label" for='field-package'>
             {{ _('Asset') }}
             </label>
           <div class="controls ">
-            <input id="{{_('field-package')}}" type="text" name="{{_('package')}}" value="{{c.package}}" placeholder="{{_('input key word')}}" data-module="autocomplete" data-module-source="/stats/autocomplete_package?search_key=?" />
+            <input id='field-package' type="text" name='package' value="{{c.package}}" placeholder="{{_('input key word')}}" data-module="autocomplete" data-module-source="/stats/autocomplete_package?search_key=?" />
           </div><!--controls-->
         </div><!--control-group control-medium-->
 
         <div class="control-group control-medium">
-            <label class="control-label" for="{{_('field-package_state')}}">
+            <label class="control-label" for='field-package_state'>
             {{ _('Package Status') }}
             </label>
           <div class="controls ">
-            <select id={{_('field-package_state')}} multiple name="package_state" data-module="">
+            <select id='field-package_state' multiple name="package_state" data-module="">
                 {% for option in c.option_package_states  %}
                     <option value="{{ option.value }}" 
                         {% for sel in c.selected_package_states %}
@@ -69,21 +69,21 @@
         </div><!--control-group control-medium-->
 
         <div class="control-group control-medium">
-            <label class="control-label" for="{{_('field-private')}}">
+            <label class="control-label" for='field-private'>
             {{ _('Publicity') }}
             </label>
           <div class="controls ">
-            <label class="radio "><input id="field-private" type="radio" class="private"  name="private[]" value="private" 
+            <label class="radio "><input id='field-private' type="radio" class="private"  name="private[]" value="private" 
               {% if c.private == "private" %}
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Private')}}</label>
-            <label class="radio "><input id="field-private" type="radio" class="private"  name="private[]" value="published" 
+            <label class="radio "><input id='field-private' type="radio" class="private"  name="private[]" value="published" 
               {% if c.private == "published" %}
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Published')}}</label>
-            <label class="radio "><input id="" type="radio" class="private"  name="private[]" value="any" 
+            <label class="radio "><input id='' type="radio" class="private"  name="private[]" value="any" 
               {% if c.private == "any" %}
                 checked='checked'
               {% endif %}
@@ -93,11 +93,11 @@
 
         {% if c.option_open_datasets and c.option_open_datasets|length %}
           <div id='open_dataset_div' class="control-group control-medium">
-              <label class="control-label" for="{{_('field-open_datasets')}}">
+              <label class="control-label" for='field-open_datasets'>
               {{ _('Datavic Datasets') }}
               </label>
             <div class="controls ">
-              <select id={{_('field-open_datasets')}} multiple name="open_datasets" data-module="">
+              <select id='field-open_datasets' multiple name="open_datasets" data-module="">
                   {% for option in c.option_open_datasets  %}
                       <option value="{{ option }}" 
                           {% for sel in c.selected_open_datasets %}
@@ -114,21 +114,21 @@
         {% endif %}
 
         <div class="control-group control-medium">
-            <label class="control-label" for="{{_('field-suspended')}}">
+            <label class="control-label" for='field-suspended'>
             {{ _('Suspended') }}
             </label>
           <div class="controls ">
-            <label class="radio "><input id="field-suspended" type="radio" class="suspended"  name="suspended[]" value="suspended" 
+            <label class="radio "><input id='field-suspended' type="radio" class="suspended"  name="suspended[]" value="suspended" 
               {% if c.suspended == "suspended" %}
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Suspended')}}</label>
-            <label class="radio "><input id="field-not_suspended" type="radio" class="suspended"  name="suspended[]" value="not_suspended" 
+            <label class="radio "><input id='field-not_suspended' type="radio" class="suspended"  name="suspended[]" value="not_suspended" 
               {% if c.suspended == "not_suspended" %}
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Not Suspended')}}</label>
-            <label class="radio "><input id="" type="radio" class="suspended"  name="suspended[]" value="any" 
+            <label class="radio "><input id='' type="radio" class="suspended"  name="suspended[]" value="any" 
               {% if c.suspended == "any" %}
                 checked='checked'
               {% endif %}
@@ -137,26 +137,26 @@
         </div><!--control-group control-medium-->
 
         <div class="control-group control-medium">
-            <label class="control-label" for="{{_('field-pending_review')}}">
+            <label class="control-label" for='field-pending_review'>
             {{ _('Review') }}
             </label>
           <div class="controls ">
-            <label class="radio "><input id="field-pending_review" type="radio" class="pending_review"  name="pending_review[]" value="today_pending_review" 
+            <label class="radio "><input id='field-pending_review' type="radio" class="pending_review"  name="pending_review[]" value="today_pending_review" 
               {% if c.pending_review == "today_pending_review" %}
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Pending Review for Today')}}</label>
-            <label class="radio "><input id="field-delay_pending_review" type="radio" class="pending_review"  name="pending_review[]" value="delay_pending_review" 
+            <label class="radio "><input id='field-delay_pending_review' type="radio" class="pending_review"  name="pending_review[]" value="delay_pending_review" 
               {% if c.pending_review == "delay_pending_review" %}
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Pending Review (Delay)')}}</label>
-            <label class="radio "><input id="onward_pending_review" type="radio" class="pending_review"  name="pending_review[]" value="onward_pending_review" 
+            <label class="radio "><input id='onward_pending_review' type="radio" class="pending_review"  name="pending_review[]" value="onward_pending_review" 
               {% if c.pending_review == "onward_pending_review" %}
                 checked='checked'
               {% endif %}
             placeholder=""/>{{_('Onward Review')}}</label>
-            <label class="radio "><input id="" type="radio" class="pending_review"  name="pending_review[]" value="any" 
+            <label class="radio "><input id='' type="radio" class="pending_review"  name="pending_review[]" value="any" 
               {% if c.pending_review == "any" %}
                 checked='checked'
               {% endif %}
@@ -164,7 +164,11 @@
           </div><!--controls-->
         </div><!--control-group control-medium-->
 
-    <button class="btn btn-primary" type="submit" name="search" value="search_on" data-module='vdojstats_search' data-module-action="{{c.action}}" data-module-username="{{c.username}}" data-format='' title={{ _('Search') }} >{{ _('Search') }}
+    <button class="btn btn-primary" type="submit" name="search" value="search_on" data-module='vdojstats_search' data-module-action="{{c.action}}" data-module-username="{{c.username}}" data-format='' title={{ _('Search') }} >
+    {{ _('Search') }}
+    </button>
+    <button class="btn" type="button" name="reset" data-module='vdojstats_search_reset' title={{ _('Clear') }} >
+    {{ _('Clear Options') }}
     </button>
 
    </section>
