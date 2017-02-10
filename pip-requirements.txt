@@ -3,5 +3,5 @@
 
 reportlab==3.0
 xhtml2pdf==0.0.5
-
+html5lib==1.0b8
 
